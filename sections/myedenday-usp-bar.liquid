@@ -1,0 +1,176 @@
+{%- comment -%}
+  MyEdenDay — USP / Trust Bar (Reusable)
+  - Section-first, reusable blocks
+  - No JS, lightweight
+{%- endcomment -%}
+
+{% style %}
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=Manrope:wght@400;500;700;800;900&display=swap');
+
+  #shopify-section-{{ section.id }}{
+    --bg: {{ section.settings.bg }};
+    --text: {{ section.settings.text }};
+    --accent: {{ section.settings.accent }};
+    --border: {{ section.settings.border }};
+    --radius: 16px;
+  }
+
+  #shopify-section-{{ section.id }} .ed-usp{
+    background: var(--bg);
+    color: var(--text);
+    border-top: 1px solid rgba(229, 226, 217, 0.85);
+    border-top: 1px solid color-mix(in srgb, var(--border) 85%, transparent);
+    border-bottom: 1px solid rgba(229, 226, 217, 0.85);
+    border-bottom: 1px solid color-mix(in srgb, var(--border) 85%, transparent);
+  }
+
+  #shopify-section-{{ section.id }} .ed-usp__container{
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: {{ section.settings.pad_y }}px 20px;
+  }
+
+  #shopify-section-{{ section.id }} .ed-usp__grid{
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  @media (min-width: 768px){
+    #shopify-section-{{ section.id }} .ed-usp__grid{
+      grid-template-columns: repeat({{ section.settings.columns_desktop }}, 1fr);
+      gap: 14px;
+    }
+  }
+
+  #shopify-section-{{ section.id }} .ed-usp__item{
+    background: rgba(255, 255, 255, 0.55);
+    background: color-mix(in srgb, #fff 55%, transparent);
+    border: 1px solid rgba(229, 226, 217, 0.9);
+    border: 1px solid color-mix(in srgb, var(--border) 90%, transparent);
+    border-radius: var(--radius);
+    padding: 14px 14px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    box-shadow: 0 10px 30px rgba(58,64,53,.05);
+  }
+
+  #shopify-section-{{ section.id }} .ed-usp__icon{
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+    border: 1px solid color-mix(in srgb, var(--border) 90%, transparent);
+    background: color-mix(in srgb, #fff 65%, transparent);
+    display: grid;
+    place-items: center;
+    flex: 0 0 auto;
+    color: var(--accent);
+    font-weight: 900;
+    letter-spacing: .02em;
+  }
+
+  #shopify-section-{{ section.id }} .ed-usp__title{
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--accent);
+    margin: 0;
+    line-height: 1.25;
+  }
+
+  #shopify-section-{{ section.id }} .ed-usp__text{
+    margin: 6px 0 0;
+    font-size: 13px;
+    line-height: 1.45;
+    color: color-mix(in srgb, var(--text) 82%, transparent);
+  }
+{% endstyle %}
+
+<section class="ed-usp" aria-label="Trust bar">
+  <div class="ed-usp__container">
+    <div class="ed-usp__grid">
+      {%- for block in section.blocks -%}
+        <div class="ed-usp__item" {{ block.shopify_attributes }}>
+          <div class="ed-usp__icon" aria-hidden="true">
+            {{ block.settings.icon }}
+          </div>
+          <div>
+            <p class="ed-usp__title">{{ block.settings.title }}</p>
+            <p class="ed-usp__text">{{ block.settings.text }}</p>
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "USP Bar",
+  "settings": [
+    { "type": "header", "content": "Layout" },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Desktop kolon sayısı",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "pad_y",
+      "label": "Dikey padding",
+      "min": 8,
+      "max": 48,
+      "step": 4,
+      "unit": "px",
+      "default": 16
+    },
+
+    { "type": "header", "content": "Renkler" },
+    { "type": "color", "id": "bg", "label": "Arka plan", "default": "#F9F8F5" },
+    { "type": "color", "id": "text", "label": "Metin", "default": "#4A4A4A" },
+    { "type": "color", "id": "accent", "label": "Vurgu", "default": "#3A4035" },
+    { "type": "color", "id": "border", "label": "Border", "default": "#E5E2D9" }
+  ],
+  "blocks": [
+    {
+      "type": "usp",
+      "name": "USP",
+      "limit": 4,
+      "settings": [
+        {
+          "type": "text",
+          "id": "icon",
+          "label": "İkon (1–2 karakter)",
+          "default": "✓"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Başlık",
+          "default": "Premium Qualität"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Açıklama",
+          "default": "Sorgfältig kuratiert, langlebig, zeitlos."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "USP Bar",
+      "blocks": [
+        { "type": "usp", "settings": { "icon": "✓", "title": "Premium Qualität", "text": "Sorgfältig kuratiert, langlebig, zeitlos." } },
+        { "type": "usp", "settings": { "icon": "↺", "title": "Einfache Rückgabe", "text": "Transparente Bedingungen, stressfrei." } },
+        { "type": "usp", "settings": { "icon": "⏱", "title": "Schneller Versand", "text": "Zuverlässig & nachverfolgbar." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

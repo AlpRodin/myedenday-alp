@@ -1,0 +1,571 @@
+{%- comment -%}
+  MyEdenDay — Hero (Premium) — PRO (Panel-Controlled, Safe Defaults) — SPLIT SAFE
+  Update (Richtext enable):
+  - Kicker: inline_richtext (bold/italic/link)
+  - Title: inline_richtext (bold/italic/link)
+  - Subtitle: richtext (bold/italic/link + paragraphs)
+  Notes:
+  - Render: DO NOT escape these fields, otherwise formatting won't show.
+  - Subtitle is wrapped in .rte to keep paragraph spacing sane.
+{%- endcomment -%}
+
+{%- liquid
+  assign s = section.settings
+  assign sid = section.id
+
+  assign bg_alpha = s.bg_opacity | default: 15 | times: 0.01
+  assign bg_mode = s.bg_mode | default: 'auto'
+  assign card_media_mode = s.card_media_mode | default: 'auto'
+
+  # ---- Safe tokens (guard allowed values) ----
+  assign layout_balance = s.layout_balance | default: 'text'
+  if layout_balance != 'text' and layout_balance != 'balanced' and layout_balance != 'media'
+    assign layout_balance = 'text'
+  endif
+
+  assign cta_size = s.cta_size | default: 'm'
+  if cta_size != 's' and cta_size != 'm' and cta_size != 'l'
+    assign cta_size = 'm'
+  endif
+
+  assign heading_size = s.heading_size | default: 'm'
+  if heading_size != 's' and heading_size != 'm' and heading_size != 'l'
+    assign heading_size = 'm'
+  endif
+
+  assign body_size = s.body_size | default: 'm'
+  if body_size != 's' and body_size != 'm' and body_size != 'l'
+    assign body_size = 'm'
+  endif
+
+  assign media_ratio = s.media_ratio | default: '16_10'
+  if media_ratio != '16_10' and media_ratio != '16_9' and media_ratio != '4_5' and media_ratio != '1_1'
+    assign media_ratio = '16_10'
+  endif
+
+  assign panel_size = s.panel_size | default: 'm'
+  if panel_size != 's' and panel_size != 'm' and panel_size != 'l'
+    assign panel_size = 'm'
+  endif
+
+  # ---- Background selection ----
+  assign use_bg_video = false
+  assign use_bg_image = false
+
+  if bg_mode == 'video' and s.bg_video != blank
+    assign use_bg_video = true
+  elsif bg_mode == 'image' and s.bg_image != blank
+    assign use_bg_image = true
+  elsif bg_mode == 'auto'
+    if s.bg_video != blank
+      assign use_bg_video = true
+    elsif s.bg_image != blank
+      assign use_bg_image = true
+    endif
+  endif
+
+  # ---- Card media selection ----
+  assign use_card_video = false
+  assign use_card_image = false
+
+  if card_media_mode == 'video' and s.card_video != blank
+    assign use_card_video = true
+  elsif card_media_mode == 'image' and s.card_image != blank
+    assign use_card_image = true
+  elsif card_media_mode == 'auto'
+    if s.card_video != blank
+      assign use_card_video = true
+    elsif s.card_image != blank
+      assign use_card_image = true
+    endif
+  endif
+
+  # Enforce SINGLE video in the entire Hero section:
+  if use_bg_video and use_card_video
+    assign use_card_video = false
+    if use_card_image == false and s.card_image != blank
+      assign use_card_image = true
+    endif
+  endif
+
+  # ---- Radii ----
+  assign radius = s.radius | default: 22
+  assign radius_media = radius | minus: 4
+  assign radius_panel = radius | minus: 6
+  if radius_media < 8
+    assign radius_media = 8
+  endif
+  if radius_panel < 8
+    assign radius_panel = 8
+  endif
+
+  # ---- Shadow ----
+  assign shadow_token = '0 18px 55px rgba(0,0,0,.12)'
+  if s.card_shadow == 'soft'
+    assign shadow_token = '0 14px 40px rgba(0,0,0,.10)'
+  elsif s.card_shadow == 'none'
+    assign shadow_token = 'none'
+  endif
+
+  # ---- Loading policy ----
+  assign img_loading = 'lazy'
+  assign img_fetchpriority = ''
+  if s.media_loading == 'eager'
+    assign img_loading = 'eager'
+    assign img_fetchpriority = 'high'
+  endif
+
+  # ---- Gradient ----
+  assign bg_grad_angle = s.bg_grad_angle | default: 180
+
+  # ---- Video preload safe values ----
+  assign bg_preload = s.bg_video_preload | default: 'metadata'
+  if bg_preload != 'none' and bg_preload != 'metadata' and bg_preload != 'auto'
+    assign bg_preload = 'metadata'
+  endif
+
+  assign card_preload = s.card_video_preload | default: 'metadata'
+  if card_preload != 'none' and card_preload != 'metadata' and card_preload != 'auto'
+    assign card_preload = 'metadata'
+  endif
+-%}
+
+{{ 'myedenday-hero-premium.css' | asset_url | stylesheet_tag }}
+
+{% style %}
+  #shopify-section-{{ sid }}{
+    --myed-max: {{ s.max_width | default: 1240 }}px;
+    --myed-bg: {{ s.bg_color }};
+    --myed-card: {{ s.card_bg }};
+    --myed-text: {{ s.text_color }};
+    --myed-muted: {{ s.muted_color }};
+    --myed-border: rgba(0,0,0,.10);
+
+    --myed-radius: {{ radius }}px;
+    --myed-radius-media: {{ radius_media }}px;
+    --myed-radius-panel: {{ radius_panel }}px;
+
+    --myed-side-pad: {{ s.side_padding | default: 16 }}px;
+    --myed-gap-m: {{ s.gap_mobile | default: 18 }}px;
+    --myed-gap-d: {{ s.gap_desktop | default: 22 }}px;
+
+    --myed-left-pad-m: {{ s.left_pad_mobile | default: 18 }}px;
+    --myed-left-pad-d: {{ s.left_pad_desktop | default: 22 }}px;
+
+    --myed-left-alpha: {{ s.left_alpha | default: 70 | times: 0.01 }};
+    --myed-left-blur: {{ s.left_blur | default: 10 }}px;
+
+    --myed-cta-gap-d: {{ s.cta_gap_desktop | default: 10 }}px;
+    --myed-cta-gap-m: {{ s.cta_gap_mobile | default: 8 }}px;
+
+    --myed-shadow: {{ shadow_token }};
+
+    position: relative;
+    overflow: hidden;
+    padding-top: {{ s.padding_top | default: 24 }}px;
+    padding-bottom: {{ s.padding_bottom | default: 24 }}px;
+
+    {% if bg_mode == 'gradient' %}
+      background: linear-gradient({{ bg_grad_angle }}deg, {{ s.bg_color }}, {{ s.bg_color_2 | default: s.bg_color }});
+    {% else %}
+      background: var(--myed-bg);
+    {% endif %}
+  }
+
+  /* panels desktop columns from editor (kept inline because it’s dynamic) */
+  @media (min-width: 750px){
+    #shopify-section-{{ sid }} .myed-panels{
+      grid-template-columns: repeat({{ s.panel_cols | default: 3 }}, minmax(0,1fr));
+    }
+  }
+
+  /* panel min height from editor (kept inline because it’s dynamic) */
+  #shopify-section-{{ sid }} .myed-panel{
+    min-height: {{ s.panel_min_h | default: 84 }}px;
+  }
+
+  /* richtext safety: prevent default <p> margins from breaking spacing */
+  #shopify-section-{{ sid }} .myed-sub.rte p{ margin: 0; }
+  #shopify-section-{{ sid }} .myed-sub.rte p + p{ margin-top: 10px; }
+{% endstyle %}
+
+<section
+  class="myed-hero
+    myed-hero--layout-{{ layout_balance }}
+    myed-hero--cta-{{ cta_size }}
+    myed-hero--h1-{{ heading_size }}
+    myed-hero--body-{{ body_size }}
+    myed-hero--ratio-{{ media_ratio }}
+    myed-hero--panel-{{ panel_size }}"
+  aria-label="Hero"
+>
+  <div class="myed-hero__bg" aria-hidden="true">
+    {%- if use_bg_video -%}
+      {{ s.bg_video | video_tag:
+        autoplay: s.bg_video_autoplay,
+        loop: true,
+        muted: true,
+        controls: false,
+        playsinline: true,
+        preload: bg_preload,
+        class: 'myed-hero__bg-media'
+      }}
+    {%- elsif use_bg_image and s.bg_image != blank -%}
+      <img
+        class="myed-hero__bg-media"
+        src="{{ s.bg_image | image_url: width: 2400 }}"
+        alt=""
+        loading="{{ img_loading }}"
+        decoding="async"
+        width="{{ s.bg_image.width }}"
+        height="{{ s.bg_image.height }}"
+        {% if img_fetchpriority != blank %}fetchpriority="{{ img_fetchpriority }}"{% endif %}
+      >
+    {%- endif -%}
+    <div class="myed-hero__overlay" style="opacity: {{ bg_alpha }};"></div>
+  </div>
+
+  <div class="myed-hero__inner">
+
+    {%- if s.show_hero_menu and s.hero_menu != blank -%}
+      <nav class="myed-hero__menu" aria-label="Hero menu">
+        <ul>
+          {%- for link in s.hero_menu.links -%}
+            <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+          {%- endfor -%}
+        </ul>
+      </nav>
+    {%- endif -%}
+
+    <div class="myed-hero__grid">
+      <div class="myed-left">
+        {%- if s.kicker != blank -%}
+          <div class="myed-kicker">{{ s.kicker }}</div>
+        {%- endif -%}
+
+        <h1 class="myed-title">{{ s.title }}</h1>
+
+        {%- if s.subtitle != blank -%}
+          <div class="myed-sub rte">{{ s.subtitle }}</div>
+        {%- endif -%}
+
+        <div class="myed-cta">
+          {%- if s.primary_cta_label != blank and s.primary_cta_link != blank -%}
+            <a class="myed-btn"
+               href="{{ s.primary_cta_link }}"
+               data-myed-event="hero_cta_click"
+               data-myed-component="hero_premium"
+               data-myed-cta="primary"
+               data-myed-label="{{ s.primary_cta_label | escape }}"
+               data-myed-href="{{ s.primary_cta_link }}">
+               {{ s.primary_cta_label }}
+            </a>
+          {%- endif -%}
+          {%- if s.secondary_cta_label != blank and s.secondary_cta_link != blank -%}
+            <a class="myed-btn myed-btn--ghost"
+               href="{{ s.secondary_cta_link }}"
+               data-myed-event="hero_cta_click"
+               data-myed-component="hero_premium"
+               data-myed-cta="secondary"
+               data-myed-label="{{ s.secondary_cta_label | escape }}"
+               data-myed-href="{{ s.secondary_cta_link }}">
+               {{ s.secondary_cta_label }}
+            </a>
+          {%- endif -%}
+        </div>
+      </div>
+
+      <aside class="myed-right" aria-label="Hero card">
+        <div class="myed-card__head">
+          <h3 class="myed-card__title">{{ s.card_title }}</h3>
+          {%- if s.card_tag_label != blank -%}<div class="myed-card__tag">{{ s.card_tag_label }}</div>{%- endif -%}
+        </div>
+
+        <div class="myed-card__media">
+          <div class="myed-card__media-inner">
+            {%- if use_card_video -%}
+              {{ s.card_video | video_tag:
+                autoplay: s.card_video_autoplay,
+                loop: true,
+                muted: true,
+                controls: false,
+                playsinline: true,
+                preload: card_preload
+              }}
+            {%- elsif use_card_image and s.card_image != blank -%}
+              <img
+                src="{{ s.card_image | image_url: width: 1600 }}"
+                alt="{{ s.card_title | escape }}"
+                loading="{{ img_loading }}"
+                decoding="async"
+                width="{{ s.card_image.width }}"
+                height="{{ s.card_image.height }}"
+                {% if img_fetchpriority != blank and use_bg_image == false and use_bg_video == false %}fetchpriority="{{ img_fetchpriority }}"{% endif %}
+              >
+            {%- else -%}
+              {{ 'lifestyle-1' | placeholder_svg_tag: 'placeholder-svg' }}
+            {%- endif -%}
+          </div>
+        </div>
+
+        <div class="myed-panels" role="list" aria-label="Info panels">
+          {%- if section.blocks.size > 0 -%}
+            {%- for block in section.blocks -%}
+              {%- assign t = block.settings.title -%}
+              {%- assign d = block.settings.desc -%}
+              {%- assign u = block.settings.url -%}
+              {%- if t != blank or d != blank -%}
+                {%- if u != blank -%}
+                  <a class="myed-panel"
+                    href="{{ u }}"
+                    data-myed-event="hero_panel_click"
+                    data-myed-component="hero_premium"
+                    data-myed-panel-index="{{ forloop.index0 }}"
+                    data-myed-label="{{ t | escape }}"
+                    data-myed-href="{{ u }}"
+                    {{ block.shopify_attributes }}>
+                    {%- if t != blank -%}<div class="myed-panel__t">{{ t }}</div>{%- endif -%}
+                    {%- if d != blank -%}<div class="myed-panel__d">{{ d }}</div>{%- endif -%}
+                  </a>
+                {%- else -%}
+                  <div class="myed-panel"
+                       data-myed-component="hero_premium"
+                       data-myed-panel-index="{{ forloop.index0 }}"
+                       data-myed-label="{{ t | escape }}"
+                       {{ block.shopify_attributes }}>
+                    {%- if t != blank -%}<div class="myed-panel__t">{{ t }}</div>{%- endif -%}
+                    {%- if d != blank -%}<div class="myed-panel__d">{{ d }}</div>{%- endif -%}
+                  </div>
+                {%- endif -%}
+              {%- endif -%}
+            {%- endfor -%}
+          {%- endif -%}
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  {% schema %}
+  {
+    "name": "MyEdenDay Hero (Premium)",
+    "tag": "section",
+    "class": "section",
+    "max_blocks": 12,
+    "settings": [
+      { "type": "header", "content": "Layout" },
+      { "type": "range", "id": "max_width", "label": "Max width", "min": 960, "max": 1440, "step": 20, "default": 1240 },
+      { "type": "range", "id": "padding_top", "label": "Padding top", "min": 0, "max": 96, "step": 4, "default": 24 },
+      { "type": "range", "id": "padding_bottom", "label": "Padding bottom", "min": 0, "max": 96, "step": 4, "default": 24 },
+      { "type": "range", "id": "side_padding", "label": "Side padding", "min": 0, "max": 28, "step": 2, "default": 16 },
+      { "type": "range", "id": "gap_mobile", "label": "Grid gap (mobile)", "min": 10, "max": 28, "step": 2, "default": 18 },
+      { "type": "range", "id": "gap_desktop", "label": "Grid gap (desktop)", "min": 12, "max": 40, "step": 2, "default": 22 },
+      {
+        "type": "select",
+        "id": "layout_balance",
+        "label": "Desktop layout balance",
+        "default": "text",
+        "options": [
+          { "value": "text", "label": "Text-focused (default)" },
+          { "value": "balanced", "label": "Balanced" },
+          { "value": "media", "label": "Media-focused" }
+        ]
+      },
+
+      { "type": "header", "content": "Background" },
+      { "type": "color", "id": "bg_color", "label": "Background", "default": "#f6f4ef" },
+      { "type": "color", "id": "bg_color_2", "label": "Gradient color 2 (optional)", "default": "#f0ede6" },
+      { "type": "range", "id": "bg_grad_angle", "label": "Gradient angle", "min": 0, "max": 360, "step": 10, "default": 180 },
+      { "type": "range", "id": "bg_opacity", "label": "Overlay opacity (%)", "min": 0, "max": 80, "step": 5, "default": 15 },
+      {
+        "type": "select",
+        "id": "bg_mode",
+        "label": "Background mode",
+        "default": "auto",
+        "options": [
+          { "value": "auto", "label": "Auto" },
+          { "value": "gradient", "label": "Gradient only" },
+          { "value": "image", "label": "Image" },
+          { "value": "video", "label": "Video" }
+        ]
+      },
+      { "type": "image_picker", "id": "bg_image", "label": "Background image" },
+      { "type": "video", "id": "bg_video", "label": "Background video" },
+      { "type": "checkbox", "id": "bg_video_autoplay", "label": "BG video autoplay", "default": true },
+      {
+        "type": "select",
+        "id": "bg_video_preload",
+        "label": "BG video preload",
+        "default": "metadata",
+        "options": [
+          { "value": "none", "label": "none (safest)" },
+          { "value": "metadata", "label": "metadata (default)" },
+          { "value": "auto", "label": "auto (heavier)" }
+        ]
+      },
+
+      { "type": "header", "content": "Typography" },
+      { "type": "inline_richtext", "id": "kicker", "label": "Kicker", "default": "Premium • Minimal • DACH" },
+      { "type": "inline_richtext", "id": "title", "label": "Title", "default": "Premium Home Rituals. Klar. Ruhig. Alltagstauglich." },
+      { "type": "richtext", "id": "subtitle", "label": "Subtitle", "default": "<p>Ein kurzes System, das du wirklich durchziehst: Morgen – Tag – Abend. Ohne Hype. Ohne leere Versprechen.</p>" },
+      {
+        "type": "select",
+        "id": "heading_size",
+        "label": "Heading size",
+        "default": "m",
+        "options": [
+          { "value": "s", "label": "Small" },
+          { "value": "m", "label": "Medium (default)" },
+          { "value": "l", "label": "Large" }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "body_size",
+        "label": "Body size",
+        "default": "m",
+        "options": [
+          { "value": "s", "label": "Small" },
+          { "value": "m", "label": "Medium (default)" },
+          { "value": "l", "label": "Large" }
+        ]
+      },
+
+      { "type": "header", "content": "CTA Buttons" },
+      { "type": "text", "id": "primary_cta_label", "label": "Primary CTA label", "default": "Ritual starten" },
+      { "type": "url", "id": "primary_cta_link", "label": "Primary CTA link" },
+      { "type": "text", "id": "secondary_cta_label", "label": "Secondary CTA label", "default": "Mehr erfahren" },
+      { "type": "url", "id": "secondary_cta_link", "label": "Secondary CTA link" },
+      {
+        "type": "select",
+        "id": "cta_size",
+        "label": "CTA size",
+        "default": "m",
+        "options": [
+          { "value": "s", "label": "Small" },
+          { "value": "m", "label": "Medium (default)" },
+          { "value": "l", "label": "Large" }
+        ]
+      },
+      { "type": "range", "id": "cta_gap_desktop", "label": "CTA gap (desktop)", "min": 6, "max": 20, "step": 1, "default": 10 },
+      { "type": "range", "id": "cta_gap_mobile", "label": "CTA gap (mobile)", "min": 6, "max": 20, "step": 1, "default": 8 },
+
+      { "type": "header", "content": "Hero Menu (optional)" },
+      { "type": "checkbox", "id": "show_hero_menu", "label": "Show hero menu", "default": false },
+      { "type": "link_list", "id": "hero_menu", "label": "Hero menu" },
+
+      { "type": "header", "content": "Cards & Colors" },
+      { "type": "color", "id": "card_bg", "label": "Right card background", "default": "#ffffff" },
+      { "type": "color", "id": "text_color", "label": "Text color", "default": "#111111" },
+      { "type": "color", "id": "muted_color", "label": "Muted color", "default": "#666666" },
+      { "type": "range", "id": "radius", "label": "Global radius", "min": 14, "max": 30, "step": 1, "default": 22 },
+
+      { "type": "header", "content": "Left Card (glass)" },
+      { "type": "checkbox", "id": "left_glass", "label": "Enable glass blur", "default": true },
+      { "type": "range", "id": "left_alpha", "label": "Left card opacity (%)", "min": 55, "max": 95, "step": 1, "default": 70 },
+      { "type": "range", "id": "left_blur", "label": "Left blur (px)", "min": 0, "max": 16, "step": 1, "default": 10 },
+      { "type": "range", "id": "left_pad_mobile", "label": "Left padding (mobile)", "min": 14, "max": 28, "step": 1, "default": 18 },
+      { "type": "range", "id": "left_pad_desktop", "label": "Left padding (desktop)", "min": 16, "max": 34, "step": 1, "default": 22 },
+
+      { "type": "header", "content": "Right Card Media" },
+      { "type": "text", "id": "card_title", "label": "Card title", "default": "Heute. Nicht „irgendwann“." },
+      { "type": "text", "id": "card_tag_label", "label": "Card tag (optional)", "default": "System" },
+      {
+        "type": "select",
+        "id": "card_media_mode",
+        "label": "Card media mode",
+        "default": "auto",
+        "options": [
+          { "value": "auto", "label": "Auto" },
+          { "value": "image", "label": "Image" },
+          { "value": "video", "label": "Video" }
+        ]
+      },
+      { "type": "image_picker", "id": "card_image", "label": "Card image" },
+      { "type": "video", "id": "card_video", "label": "Card video" },
+      { "type": "checkbox", "id": "card_video_autoplay", "label": "Card video autoplay", "default": true },
+      {
+        "type": "select",
+        "id": "card_video_preload",
+        "label": "Card video preload",
+        "default": "metadata",
+        "options": [
+          { "value": "none", "label": "none (safest)" },
+          { "value": "metadata", "label": "metadata (default)" },
+          { "value": "auto", "label": "auto (heavier)" }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "media_ratio",
+        "label": "Card media aspect ratio",
+        "default": "16_10",
+        "options": [
+          { "value": "16_10", "label": "16:10 (default)" },
+          { "value": "16_9", "label": "16:9" },
+          { "value": "4_5", "label": "4:5" },
+          { "value": "1_1", "label": "1:1" }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "card_shadow",
+        "label": "Right card shadow",
+        "default": "medium",
+        "options": [
+          { "value": "medium", "label": "Medium (default)" },
+          { "value": "soft", "label": "Soft" },
+          { "value": "none", "label": "None" }
+        ]
+      },
+
+      { "type": "header", "content": "Info Panels" },
+      {
+        "type": "select",
+        "id": "panel_size",
+        "label": "Panel size",
+        "default": "m",
+        "options": [
+          { "value": "s", "label": "Small (mobile-friendly)" },
+          { "value": "m", "label": "Medium (default)" },
+          { "value": "l", "label": "Large" }
+        ]
+      },
+      { "type": "range", "id": "panel_cols", "label": "Panel columns (desktop)", "min": 2, "max": 4, "step": 1, "default": 3 },
+      { "type": "range", "id": "panel_min_h", "label": "Panel min height (px)", "min": 64, "max": 120, "step": 2, "default": 84 },
+
+      { "type": "header", "content": "Performance (optional)" },
+      {
+        "type": "select",
+        "id": "media_loading",
+        "label": "Hero images loading",
+        "default": "lazy",
+        "options": [
+          { "value": "lazy", "label": "lazy (current default)" },
+          { "value": "eager", "label": "eager (LCP-focused)" }
+        ]
+      }
+    ],
+    "blocks": [
+      {
+        "type": "panel",
+        "name": "Info panel",
+        "settings": [
+          { "type": "text", "id": "title", "label": "Title", "default": "Klarer Ablauf" },
+          { "type": "textarea", "id": "desc", "label": "Description", "default": "Morgen–Tag–Abend. Wiederholbar, realistisch." },
+          { "type": "url", "id": "url", "label": "Optional link" }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "MyEdenDay Hero (Premium)",
+        "blocks": [
+          { "type": "panel" },
+          { "type": "panel" },
+          { "type": "panel" }
+        ]
+      }
+    ]
+  }
+  {% endschema %}
+</section>

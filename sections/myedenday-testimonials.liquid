@@ -1,0 +1,224 @@
+{%- comment -%}
+  MyEdenDay — Testimonials (Reusable)
+  - No JS
+  - Block-based
+  - Shopify-safe schema (short names)
+{%- endcomment -%}
+
+{% style %}
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=Manrope:wght@400;500;700;800;900&display=swap');
+
+  #shopify-section-{{ section.id }}{
+    --bg: {{ section.settings.bg }};
+    --text: {{ section.settings.text }};
+    --accent: {{ section.settings.accent }};
+    --border: {{ section.settings.border }};
+    --radius: 16px;
+  }
+
+  #shopify-section-{{ section.id }} .ed-t{
+    background: var(--bg);
+    color: var(--text);
+    padding: {{ section.settings.pad_y }}px 0;
+  }
+
+  #shopify-section-{{ section.id }} .ed-t__container{
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  #shopify-section-{{ section.id }} .ed-t__head{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    gap:16px;
+    margin-bottom: 16px;
+  }
+
+  #shopify-section-{{ section.id }} .ed-t__title{
+    margin:0;
+    font-size: clamp(22px, 2.4vw, 32px);
+    font-weight: 900;
+    color: var(--accent);
+    letter-spacing: -0.01em;
+  }
+
+  #shopify-section-{{ section.id }} .ed-t__sub{
+    margin-top: 6px;
+    font-size: 14px;
+    line-height: 1.55;
+    color: rgba(74, 74, 74, 0.78);
+    color: color-mix(in srgb, var(--text) 78%, transparent);
+    max-width: 60ch;
+  }
+
+  #shopify-section-{{ section.id }} .ed-t__grid{
+    display:grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  @media (min-width: 768px){
+    #shopify-section-{{ section.id }} .ed-t__grid{
+      grid-template-columns: repeat({{ section.settings.cols_desktop }}, 1fr);
+      gap: 16px;
+    }
+  }
+
+  #shopify-section-{{ section.id }} .ed-t__card{
+    border: 1px solid rgba(229, 226, 217, 0.9);
+    border: 1px solid color-mix(in srgb, var(--border) 90%, transparent);
+    border-radius: var(--radius);
+    background: color-mix(in srgb, #fff 60%, transparent);
+    box-shadow: 0 10px 30px rgba(58,64,53,.05);
+    padding: 16px;
+    display:flex;
+    flex-direction:column;
+    gap: 12px;
+    min-height: 100%;
+  }
+
+  #shopify-section-{{ section.id }} .ed-t__stars{
+    font-size: 12px;
+    letter-spacing: .18em;
+    color: var(--accent);
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  #shopify-section-{{ section.id }} .ed-t__quote{
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.7;
+    color: rgba(74, 74, 74, 0.88);
+    color: color-mix(in srgb, var(--text) 88%, transparent);
+  }
+
+  #shopify-section-{{ section.id }} .ed-t__meta{
+    margin-top:auto;
+    display:flex;
+    flex-direction:column;
+    gap: 2px;
+    padding-top: 6px;
+    border-top: 1px solid color-mix(in srgb, var(--border) 85%, transparent);
+  }
+
+  #shopify-section-{{ section.id }} .ed-t__name{
+    font-size: 13px;
+    font-weight: 900;
+    color: var(--accent);
+  }
+
+  #shopify-section-{{ section.id }} .ed-t__loc{
+    font-size: 12px;
+    color: color-mix(in srgb, var(--text) 70%, transparent);
+  }
+
+  #shopify-section-{{ section.id }} .ed-t__badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    margin-left:auto;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--text) 70%, transparent);
+  }
+{% endstyle %}
+
+<section class="ed-t" aria-label="Testimonials">
+  <div class="ed-t__container">
+    <div class="ed-t__head">
+      <div>
+        {%- if section.settings.title != blank -%}
+          <h2 class="ed-t__title">{{ section.settings.title }}</h2>
+        {%- endif -%}
+        {%- if section.settings.sub != blank -%}
+          <div class="ed-t__sub">{{ section.settings.sub }}</div>
+        {%- endif -%}
+      </div>
+
+      {%- if section.settings.show_badge -%}
+        <div class="ed-t__badge">{{ section.settings.badge_text }}</div>
+      {%- endif -%}
+    </div>
+
+    <div class="ed-t__grid">
+      {%- for block in section.blocks -%}
+        {%- assign stars = block.settings.stars | plus: 0 -%}
+        <article class="ed-t__card" {{ block.shopify_attributes }} itemscope itemtype="https://schema.org/Review">
+          <div class="ed-t__stars" aria-label="Rating" itemprop="reviewRating" itemscope itemtype="https://schema.org/Rating">
+            <meta itemprop="ratingValue" content="{{ stars }}">
+            <meta itemprop="bestRating" content="5">
+            {%- for i in (1..stars) -%}★{%- endfor -%}
+          </div>
+
+          <p class="ed-t__quote" itemprop="reviewBody">"{{ block.settings.quote | escape }}"</p>
+
+          <div class="ed-t__meta" itemprop="author" itemscope itemtype="https://schema.org/Person">
+            <div class="ed-t__name" itemprop="name">{{ block.settings.name | escape }}</div>
+            {%- if block.settings.loc != blank -%}
+              <div class="ed-t__loc">{{ block.settings.loc | escape }}</div>
+            {%- endif -%}
+          </div>
+
+          <meta itemprop="itemReviewed" itemscope itemtype="https://schema.org/Product" content="MyEdenDay Ritual Collection">
+        </article>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Testimonials",
+  "settings": [
+    { "type": "text", "id": "title", "label": "Başlık", "default": "Kundenstimmen" },
+    { "type": "richtext", "id": "sub", "label": "Alt metin", "default": "<p>Kuratiert. Langlebig. Alltagstauglich.</p>" },
+
+    { "type": "header", "content": "Layout" },
+    { "type": "range", "id": "cols_desktop", "label": "Desktop kolon", "min": 2, "max": 4, "step": 1, "default": 3 },
+    { "type": "range", "id": "pad_y", "label": "Dikey boşluk", "min": 24, "max": 96, "step": 4, "unit": "px", "default": 56 },
+
+    { "type": "header", "content": "Üst Etiket" },
+    { "type": "checkbox", "id": "show_badge", "label": "Etiket göster", "default": true },
+    { "type": "text", "id": "badge_text", "label": "Etiket metni", "default": "ECHT. KURATIERT." },
+
+    { "type": "header", "content": "Renkler" },
+    { "type": "color", "id": "bg", "label": "Arka plan", "default": "#F9F8F5" },
+    { "type": "color", "id": "text", "label": "Metin", "default": "#4A4A4A" },
+    { "type": "color", "id": "accent", "label": "Vurgu", "default": "#3A4035" },
+    { "type": "color", "id": "border", "label": "Border", "default": "#E5E2D9" }
+  ],
+  "blocks": [
+    {
+      "type": "t",
+      "name": "Yorum",
+      "limit": 6,
+      "settings": [
+        { "type": "textarea", "id": "quote", "label": "Yorum", "default": "Verarbeitung top, fühlt sich wirklich hochwertig an." },
+        { "type": "text", "id": "name", "label": "İsim", "default": "Mara" },
+        { "type": "text", "id": "loc", "label": "Şehir/Ülke", "default": "Berlin, DE" },
+        { "type": "select", "id": "stars", "label": "Yıldız", "default": "5",
+          "options": [
+            { "value": "5", "label": "5" },
+            { "value": "4", "label": "4" },
+            { "value": "3", "label": "3" }
+          ]
+        }
+      ]
+    }
+  ],
+  "presets": [
+    { "name": "Testimonials",
+      "blocks": [
+        { "type": "t", "settings": { "quote": "Verarbeitung top, fühlt sich wirklich hochwertig an. Die Produkte passen perfekt in meine Morgenroutine.", "name": "Mara K.", "loc": "Berlin, Deutschland", "stars": "5" } },
+        { "type": "t", "settings": { "quote": "Endlich eine klare Struktur statt Produktchaos. Die Rituale sind einfach und alltagstauglich.", "name": "Jan S.", "loc": "München, Deutschland", "stars": "5" } },
+        { "type": "t", "settings": { "quote": "Die Qualität überzeugt mich total. Minimalistisch, aber effektiv – genau mein Stil.", "name": "Lisa M.", "loc": "Hamburg, Deutschland", "stars": "5" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,320 @@
+{%- comment -%}
+  MyED Spotlight (OS 2.0)
+  - Mode: product / catalog / set
+  - Background layers controlled by CSS vars
+  - Optional product card (uses snippet: myed-spotlight-card)
+{%- endcomment -%}
+
+{{ 'myed-product-spotlight.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign s = section.settings
+  assign mode = s.mode | default: 'product'
+
+  assign accent = s.accent | default: '#8A9A5B'
+  assign bg_top = s.bg_top | default: 'rgba(0,0,0,0)'
+  assign bg_bot = s.bg_bot | default: 'rgba(0,0,0,0)'
+
+  assign bg_img_url = ''
+  if s.bg_img != blank
+    assign bg_img_url = s.bg_img | image_url: width: 2400
+  endif
+
+  assign tex_img_url = ''
+  if s.tex_img != blank
+    assign tex_img_url = s.tex_img | image_url: width: 2000
+  endif
+
+  assign bg_img_op_f = s.bg_img_op | default: 0 | times: 0.01
+  assign tex_op_f    = s.tex_op    | default: 0 | times: 0.01
+
+  assign spot_a = s.spot | default: 0 | times: 0.01
+  assign vig_a  = s.vig  | default: 0 | times: 0.01
+
+  assign drift_on    = s.drift_on
+  assign drift_speed = s.drift_speed | default: 18
+
+  assign img_scale_f = s.img_scale | default: 100 | times: 0.01
+  assign reflection  = s.ref
+
+  assign kicker  = s.kicker
+  assign heading = s.heading
+  assign body    = s.body
+
+  assign show_cta = s.show_cta
+  assign cta_text = s.cta
+
+  assign link_url = ''
+  assign img = ''
+
+  assign p = ''
+  assign c = ''
+
+  if mode == 'product'
+    assign p = s.p
+    if p == blank
+      assign p = product
+    endif
+
+    if heading == blank and p != blank
+      assign heading = p.title
+    endif
+
+    if p != blank
+      assign link_url = p.url
+      if p.featured_media != blank
+        assign img = p.featured_media.preview_image
+      elsif p.featured_image != blank
+        assign img = p.featured_image
+      elsif p.images != blank and p.images.size > 0
+        assign img = p.images.first
+      endif
+    endif
+
+    if cta_text == blank
+      assign cta_text = 'View product'
+    endif
+
+  elsif mode == 'catalog'
+    assign c = s.c
+    if c == blank
+      assign c = collection
+    endif
+
+    if heading == blank and c != blank
+      assign heading = c.title
+    endif
+
+    if c != blank
+      assign link_url = c.url
+      if c.image != blank
+        assign img = c.image
+      elsif c.products_count > 0 and c.products != blank
+        assign fp = c.products.first
+        if fp != blank
+          if fp.featured_media != blank
+            assign img = fp.featured_media.preview_image
+          elsif fp.featured_image != blank
+            assign img = fp.featured_image
+          elsif fp.images != blank and fp.images.size > 0
+            assign img = fp.images.first
+          endif
+        endif
+      endif
+    endif
+
+    if cta_text == blank
+      assign cta_text = 'View catalog'
+    endif
+
+  else
+    assign set_name = s.set_name | default: 'Set'
+    if heading == blank
+      assign heading = set_name
+    endif
+
+    assign link_url = s.set_link
+    assign img = s.set_hero
+
+    if cta_text == blank
+      assign cta_text = 'Explore set'
+    endif
+  endif
+
+  if link_url == blank
+    assign show_cta = false
+  endif
+
+  assign alt_text = heading | default: 'Spotlight'
+  assign show_card = s.show_card
+-%}
+
+<section class="myed-spotlight" data-myed-spotlight>
+  <div
+    class="myed-spotlight__stage{% if drift_on %} is-drift{% endif %}"
+    style="
+      --myed-accent: {{ accent }};
+      --myed-bg-top: {{ bg_top }};
+      --myed-bg-bot: {{ bg_bot }};
+      --myed-bg-img: {% if bg_img_url != blank %}url('{{ bg_img_url }}'){% else %}none{% endif %};
+      --myed-bg-img-op: {{ bg_img_op_f }};
+      --myed-tex-img: {% if tex_img_url != blank %}url('{{ tex_img_url }}'){% else %}none{% endif %};
+      --myed-tex-op: {{ tex_op_f }};
+      --myed-spot-a: {{ spot_a }};
+      --myed-vig-a: {{ vig_a }};
+      --myed-drift-speed: {{ drift_speed }}s;
+      --myed-img-scale: {{ img_scale_f }};
+    "
+  >
+    <div class="myed-spotlight__bg" aria-hidden="true"></div>
+    <div class="myed-spotlight__tex" aria-hidden="true"></div>
+
+    <div class="myed-spotlight__inner page-width">
+      <div class="myed-spotlight__grid">
+
+        <!-- LEFT -->
+        <div class="myed-spotlight__left">
+          {%- if kicker != blank -%}
+            <div class="myed-spotlight__kicker">{{ kicker }}</div>
+          {%- endif -%}
+
+          {%- if heading != blank -%}
+            <h2 class="myed-spotlight__heading">{{ heading }}</h2>
+          {%- endif -%}
+
+          {%- if body != blank -%}
+            <div class="myed-spotlight__body rte">{{ body }}</div>
+          {%- endif -%}
+
+          {%- if mode == 'set' and s.set_note != blank -%}
+            <div class="myed-spotlight__body rte" style="margin-top:12px;">
+              {{ s.set_note }}
+            </div>
+          {%- endif -%}
+
+          {%- if show_cta -%}
+            <a class="myed-spotlight__cta button" href="{{ link_url }}">
+              {{ cta_text }}
+            </a>
+          {%- endif -%}
+        </div>
+
+        <!-- CENTER -->
+        <div class="myed-spotlight__center">
+          {%- if mode == 'product' and show_card and p != blank -%}
+            {% render 'myed-spotlight-card', product: p %}
+          {%- elsif img != blank -%}
+            <div class="myed-spotlight__imageWrap" aria-hidden="true">
+              {{
+                img
+                | image_url: width: 1800
+                | image_tag:
+                  widths: '600,900,1200,1500,1800',
+                  sizes: '(min-width: 990px) 40vw, 80vw',
+                  class: 'myed-spotlight__image',
+                  loading: 'lazy',
+                  alt: alt_text
+              }}
+              {%- if reflection -%}
+                <div class="myed-spotlight__reflection" aria-hidden="true"></div>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+        </div>
+
+        <!-- RIGHT -->
+        <div class="myed-spotlight__right">
+          <div class="myed-spotlight__panel">
+            {%- for block in section.blocks -%}
+              {% case block.type %}
+                {% when 'set_item' %}
+                  <details class="spotlight-set-item"{% if block.settings.open %} open{% endif %} {{ block.shopify_attributes }}>
+                    <summary>{{ block.settings.label | escape }}</summary>
+                    {{ block.settings.content }}
+                  </details>
+                {% else %}
+                  {%- if block.type == 'panel' or block.type == 'item' -%}
+                    <details class="myed-spotlight__item" {% if block.settings.open %}open{% endif %} {{ block.shopify_attributes }}>
+                      <summary class="myed-spotlight__summary">
+                        <span class="myed-spotlight__dot" aria-hidden="true"></span>
+                        <span class="myed-spotlight__label">{{ block.settings.label | escape }}</span>
+                        <span class="myed-spotlight__chev" aria-hidden="true">+</span>
+                      </summary>
+                      <div class="myed-spotlight__content rte">
+                        {{ block.settings.content }}
+                      </div>
+                    </details>
+                  {%- endif -%}
+              {% endcase %}
+            {%- endfor -%}
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "MyED Spotlight",
+  "settings": [
+    { "type": "select", "id": "mode", "label": "Mode", "default": "product",
+      "options": [
+        { "value": "product", "label": "Product" },
+        { "value": "catalog", "label": "Catalog" },
+        { "value": "set", "label": "Set" }
+      ]
+    },
+
+    { "type": "product", "id": "p", "label": "P (product)" },
+    { "type": "collection", "id": "c", "label": "C (collection)" },
+
+    { "type": "checkbox", "id": "show_card", "label": "Show product card (uses snippet)", "default": false },
+
+    { "type": "text", "id": "set_name", "label": "Set name", "default": "The Set" },
+    { "type": "url", "id": "set_link", "label": "Set link" },
+    { "type": "image_picker", "id": "set_hero", "label": "Set hero" },
+    { "type": "richtext", "id": "set_note", "label": "Set note" },
+
+    { "type": "text", "id": "kicker", "label": "Kicker", "default": "THE METHOD" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Daily Ritual, Elevated" },
+    { "type": "richtext", "id": "body", "label": "Body", "default": "<p>Clinically crafted essentials designed for visible results, day after day.</p>" },
+
+    { "type": "checkbox", "id": "show_cta", "label": "Show CTA", "default": true },
+    { "type": "text", "id": "cta", "label": "CTA text", "default": "View" },
+
+    { "type": "color", "id": "accent", "label": "Accent", "default": "#8A9A5B" },
+
+    { "type": "header", "content": "Background" },
+    { "type": "color", "id": "bg_top", "label": "Top color", "default": "rgba(0,0,0,0)" },
+    { "type": "color", "id": "bg_bot", "label": "Bottom color", "default": "rgba(0,0,0,0)" },
+    { "type": "image_picker", "id": "bg_img", "label": "Background image" },
+    { "type": "range", "id": "bg_img_op", "label": "Background image opacity", "min": 0, "max": 100, "step": 1, "unit": "%", "default": 70 },
+
+    { "type": "image_picker", "id": "tex_img", "label": "Texture image" },
+    { "type": "range", "id": "tex_op", "label": "Texture opacity", "min": 0, "max": 100, "step": 1, "unit": "%", "default": 12 },
+
+    { "type": "range", "id": "spot", "label": "Spotlight intensity", "min": 0, "max": 50, "step": 1, "unit": "%", "default": 18 },
+    { "type": "range", "id": "vig", "label": "Vignette strength", "min": 0, "max": 60, "step": 1, "unit": "%", "default": 28 },
+
+    { "type": "checkbox", "id": "drift_on", "label": "Enable drift", "default": false },
+    { "type": "range", "id": "drift_speed", "label": "Drift speed", "min": 6, "max": 40, "step": 1, "unit": "s", "default": 18 },
+
+    { "type": "range", "id": "img_scale", "label": "Image scale", "min": 80, "max": 130, "step": 1, "unit": "%", "default": 100 },
+    { "type": "checkbox", "id": "ref", "label": "Reflection", "default": true }
+  ],
+  "blocks": [
+    {
+      "type": "panel",
+      "name": "Panel",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Label", "default": "Research" },
+        { "type": "richtext", "id": "content", "label": "Content", "default": "<p>Evidence-backed actives and minimal routine philosophy.</p>" },
+        { "type": "checkbox", "id": "open", "label": "Open", "default": true }
+      ]
+    },
+    {
+      "type": "item",
+      "name": "Item",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Label", "default": "Ingredients" },
+        { "type": "richtext", "id": "content", "label": "Content", "default": "<p>Transparent ingredient priorities.</p>" },
+        { "type": "checkbox", "id": "open", "label": "Open", "default": false }
+      ]
+    },
+    {
+      "type": "set_item",
+      "name": "Legacy Set Item",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Label", "default": "Item" },
+        { "type": "richtext", "id": "content", "label": "Content", "default": "<p>...</p>" },
+        { "type": "checkbox", "id": "open", "label": "Open", "default": false }
+      ]
+    }
+  ],
+  "presets": [
+    { "name": "MyED Spotlight", "blocks": [ { "type": "panel" }, { "type": "item" } ] }
+  ]
+}
+{% endschema %}

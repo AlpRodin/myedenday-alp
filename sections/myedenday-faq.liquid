@@ -1,0 +1,176 @@
+{%- comment -%}
+  MyEdenDay — FAQ Accordion (Reusable)
+  - Minimal vanilla JS
+  - Accessible: button + aria-expanded + aria-controls
+{%- endcomment -%}
+
+{% style %}
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=Manrope:wght@400;500;700;800;900&display=swap');
+
+  #shopify-section-{{ section.id }}{
+    --bg: {{ section.settings.bg }};
+    --text: {{ section.settings.text }};
+    --accent: {{ section.settings.accent }};
+    --border: {{ section.settings.border }};
+    --radius: 16px;
+  }
+
+  #shopify-section-{{ section.id }} .ed-faq{
+    background: var(--bg);
+    color: var(--text);
+    padding: {{ section.settings.pad_y }}px 0;
+  }
+
+  #shopify-section-{{ section.id }} .ed-faq__container{
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  #shopify-section-{{ section.id }} .ed-faq__title{
+    margin: 0 0 14px;
+    font-size: clamp(22px, 2.4vw, 30px);
+    font-weight: 800;
+    color: var(--accent);
+    letter-spacing: -0.01em;
+  }
+
+  #shopify-section-{{ section.id }} .ed-faq__list{
+    display: grid;
+    gap: 10px;
+  }
+
+  #shopify-section-{{ section.id }} .ed-faq__item{
+    border: 1px solid rgba(229, 226, 217, 0.9);
+    border: 1px solid color-mix(in srgb, var(--border) 90%, transparent);
+    border-radius: var(--radius);
+    background: color-mix(in srgb, #fff 55%, transparent);
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(58,64,53,.05);
+  }
+
+  #shopify-section-{{ section.id }} .ed-faq__q{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 14px;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    text-align: left;
+    color: var(--accent);
+    font-weight: 800;
+    font-size: 14px;
+  }
+
+  #shopify-section-{{ section.id }} .ed-faq__icon{
+    width: 30px;
+    height: 30px;
+    border-radius: 12px;
+    border: 1px solid color-mix(in srgb, var(--border) 90%, transparent);
+    display: grid;
+    place-items: center;
+  }
+
+  #shopify-section-{{ section.id }} .ed-faq__a{
+    padding: 0 14px 14px;
+    color: rgba(74, 74, 74, 0.84);
+    color: color-mix(in srgb, var(--text) 84%, transparent);
+    font-size: 13px;
+    line-height: 1.55;
+    display: none;
+  }
+
+  #shopify-section-{{ section.id }} .ed-faq__item[data-open="true"] .ed-faq__a{
+    display: block;
+  }
+{% endstyle %}
+
+<section class="ed-faq" aria-label="FAQ">
+  <div class="ed-faq__container">
+    {%- if section.settings.title != blank -%}
+      <h2 class="ed-faq__title">{{ section.settings.title }}</h2>
+    {%- endif -%}
+
+    <div class="ed-faq__list" data-ed-faq-root>
+      {%- for block in section.blocks -%}
+        <div class="ed-faq__item" data-open="false" {{ block.shopify_attributes }}>
+          <button class="ed-faq__q" type="button">
+            <span>{{ block.settings.q }}</span>
+            <span class="ed-faq__icon">+</span>
+          </button>
+          <div class="ed-faq__a">
+            {{ block.settings.a }}
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+<script>
+  (function () {
+    var root = document.querySelector('#shopify-section-{{ section.id }} [data-ed-faq-root]');
+    if (!root) return;
+
+    root.addEventListener('click', function (e) {
+      var btn = e.target.closest('.ed-faq__q');
+      if (!btn) return;
+
+      var item = btn.closest('.ed-faq__item');
+      var open = item.getAttribute('data-open') === 'true';
+      item.setAttribute('data-open', open ? 'false' : 'true');
+      
+      // Track FAQ expand events for analytics
+      if (!open) {
+        var question = btn.querySelector('span').textContent.trim().substring(0, 50);
+        
+        if (typeof gtag !== 'undefined') {
+          gtag('event', 'faq_expand', {
+            question: question,
+            section: 'faq'
+          });
+        }
+        if (typeof fbq !== 'undefined') {
+          fbq('trackCustom', 'FAQExpand', { question: question });
+        }
+      }
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "MyEdenDay — FAQ",
+  "settings": [
+    { "type": "text", "id": "title", "label": "Başlık", "default": "FAQ" },
+    { "type": "range", "id": "pad_y", "label": "Dikey padding", "min": 20, "max": 100, "step": 4, "unit": "px", "default": 52 },
+
+    { "type": "header", "content": "Renkler" },
+    { "type": "color", "id": "bg", "label": "Arka plan", "default": "#F9F8F5" },
+    { "type": "color", "id": "text", "label": "Metin", "default": "#4A4A4A" },
+    { "type": "color", "id": "accent", "label": "Vurgu", "default": "#3A4035" },
+    { "type": "color", "id": "border", "label": "Border", "default": "#E5E2D9" }
+  ],
+  "blocks": [
+    {
+      "type": "faq",
+      "name": "Soru",
+      "settings": [
+        { "type": "text", "id": "q", "label": "Soru" },
+        { "type": "richtext", "id": "a", "label": "Cevap" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "MyEdenDay — FAQ",
+      "blocks": [
+        { "type": "faq", "settings": { "q": "Wie lange dauert der Versand?", "a": "<p>2–4 Werktage innerhalb Deutschlands.</p>" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,532 @@
+{%- comment -%}
+  MyEdenDay — Orbit (true upright + center logo + hide ring)
+  - Ring rotates (layout + animation)
+  - Each item stays upright (cancels static angle + cancels animation)
+  - Optional: hide ring line (but keep rotation)
+  - Optional: center image (favicon/logo) instead of center text
+  - Mobile responsive
+  - Pro controls: pause on hover, vibrance, center styles
+{%- endcomment -%}
+
+{%- liquid
+  assign ns = 'myed-orbit-' | append: section.id
+
+  assign item_count = 0
+  for block in section.blocks
+    if block.type == 'orbit_item'
+      assign item_count = item_count | plus: 1
+    endif
+  endfor
+
+  if item_count > 0
+    assign step_deg = 360 | divided_by: item_count
+  else
+    assign step_deg = 60
+  endif
+
+  assign ring_a = section.settings.ring_alpha | times: 0.01
+  assign has_bg = false
+  if section.settings.bg_image_desktop != blank or section.settings.bg_image_mobile != blank
+    assign has_bg = true
+  endif
+  assign bg_overlay_a = section.settings.bg_overlay_opacity | default: 15 | times: 0.01
+  assign c_bg_a = section.settings.center_bg_alpha | times: 0.01
+  assign c_bd_a = section.settings.center_border_alpha | times: 0.01
+  assign vib = section.settings.vibrance | times: 0.01
+
+  assign bg_anim = section.settings.bg_animation | default: 'none'
+-%}
+
+<section
+  id="{{ ns }}"
+  class="{{ ns }}{% if bg_anim != 'none' and has_bg %} is-bg-{{ bg_anim }}{% endif %}"
+  style="
+    --bg: {{ section.settings.bg_color }};
+    --text: {{ section.settings.text_color }};
+    --muted: {{ section.settings.muted_color }};
+
+    {% if has_bg %}
+      --orbit-bg-overlay: {{ section.settings.bg_overlay_color | color_modify: 'alpha', bg_overlay_a }};
+    {% endif %}
+    {% if section.settings.bg_image_desktop != blank %}
+      --orbit-bg-image-d: url('{{ section.settings.bg_image_desktop | image_url: width: 2400 }}');
+    {% endif %}
+    {% if section.settings.bg_image_mobile != blank %}
+      --orbit-bg-image-m: url('{{ section.settings.bg_image_mobile | image_url: width: 1600 }}');
+    {% endif %}
+
+    --ring: {{ section.settings.ring_color | color_modify: 'alpha', ring_a }};
+    --ring-w: {{ section.settings.ring_width }}px;
+
+    --size: {{ section.settings.size }}px;
+    --radius: {{ section.settings.radius }}px;
+    --item: {{ section.settings.item_size }}px;
+    --speed: {{ section.settings.speed }}s;
+
+    --size-m: {{ section.settings.size_m }}px;
+    --radius-m: {{ section.settings.radius_m }}px;
+    --item-m: {{ section.settings.item_size_m }}px;
+
+    --vib: {{ vib }};
+
+    --center-bg: {{ section.settings.center_bg | color_modify: 'alpha', c_bg_a }};
+    --center-text: {{ section.settings.center_text }};
+    --center-bd: {{ section.settings.center_border | color_modify: 'alpha', c_bd_a }};
+    --center-bw: {{ section.settings.center_border_w }}px;
+    --center-shadow: {{ section.settings.center_shadow }}px;
+
+    --pulse-amt: {{ section.settings.pulse_amt }}%;
+
+    --center-img: {{ section.settings.center_image_size }}px;
+    --center-img-radius: {{ section.settings.center_image_radius }}px;
+  "
+>
+  <div class="{{ ns }}__wrap">
+    {%- if section.settings.kicker != blank -%}
+      <p class="{{ ns }}__kicker">{{ section.settings.kicker | escape }}</p>
+    {%- endif -%}
+
+    {%- if section.settings.heading != blank -%}
+      <h2 class="{{ ns }}__h">{{ section.settings.heading | escape }}</h2>
+    {%- endif -%}
+
+    {%- if section.settings.subheading != blank -%}
+      <p class="{{ ns }}__sub">{{ section.settings.subheading | escape }}</p>
+    {%- endif -%}
+
+    <div class="{{ ns }}__stage" aria-label="Orbit navigation">
+      <div class="{{ ns }}__center{% if section.settings.center_pulse %} is-pulse{% endif %}">
+        {%- if section.settings.center_image != blank -%}
+          {%- assign cimg = section.settings.center_image -%}
+          <img
+            class="{{ ns }}__centerImg"
+            src="{{ cimg | image_url: width: 240 }}"
+            alt="{{ section.settings.center_label | escape }}"
+            loading="lazy"
+            width="240"
+            height="240"
+          >
+        {%- else -%}
+          <span class="{{ ns }}__centerText">{{ section.settings.center_label | escape }}</span>
+        {%- endif -%}
+      </div>
+
+      <div class="{{ ns }}__ring{% if section.settings.animate == false or item_count < 2 %} is-static{% endif %}">
+        {%- assign i = 0 -%}
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'orbit_item' -%}
+            {%- assign angle = step_deg | times: i -%}
+            {%- assign i = i | plus: 1 -%}
+
+            <div
+              class="{{ ns }}__pos"
+              style="--a: {{ angle }}deg;"
+              {{ block.shopify_attributes }}
+            >
+              <a
+                class="{{ ns }}__card"
+                href="{{ block.settings.link | default: '#' }}"
+                {% if block.settings.link == blank %}aria-disabled="true"{% endif %}
+                aria-label="{{ block.settings.label | escape }}"
+              >
+                <!-- rotation cancellation lives here -->
+                <span class="{{ ns }}__inner" aria-hidden="true">
+                  <!-- visual/content wrapper: safe to scale without breaking upright -->
+                  <span class="{{ ns }}__content">
+                    {%- if block.settings.image != blank -%}
+                      <img
+                        class="{{ ns }}__img"
+                        src="{{ block.settings.image | image_url: width: 800 }}"
+                        alt="{{ block.settings.label | escape }}"
+                        loading="lazy"
+                        width="800"
+                        height="800"
+                      >
+                    {%- endif -%}
+
+                    {%- if block.settings.label != blank -%}
+                      <span class="{{ ns }}__label">{{ block.settings.label | escape }}</span>
+                    {%- endif -%}
+                  </span>
+                </span>
+              </a>
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .{{ ns }}{
+      position: relative;
+      overflow: hidden;
+      background-color: var(--bg);
+      background-image:
+        linear-gradient(var(--orbit-bg-overlay, rgba(0,0,0,0)), var(--orbit-bg-overlay, rgba(0,0,0,0))),
+        var(--orbit-bg-image-m, var(--orbit-bg-image-d, none));
+      background-size: cover, cover;
+      background-position: center, center;
+      background-repeat: no-repeat, no-repeat;
+      color: var(--text);
+      padding: 40px 0;
+    }
+    @media (min-width: 750px){
+      .{{ ns }}{
+        background-image:
+          linear-gradient(var(--orbit-bg-overlay, rgba(0,0,0,0)), var(--orbit-bg-overlay, rgba(0,0,0,0))),
+          var(--orbit-bg-image-d, var(--orbit-bg-image-m, none));
+      }
+    }
+    .{{ ns }}.is-bg-drift{
+      animation: {{ ns }}-bg-drift 26s ease-in-out infinite;
+    }
+    .{{ ns }}.is-bg-shimmer::before{
+      content: "";
+      position: absolute;
+      inset: -20%;
+      pointer-events: none;
+      background: linear-gradient(110deg,
+        rgba(255,255,255,0) 0%,
+        rgba(255,255,255,.12) 35%,
+        rgba(255,255,255,0) 70%);
+      animation: {{ ns }}-bg-shimmer 12s linear infinite;
+      mix-blend-mode: screen;
+      z-index: 0;
+    }
+    .{{ ns }}__wrap{
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 16px;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+    .{{ ns }}__kicker{
+      margin: 0 0 10px;
+      color: var(--muted);
+      font-size: 13px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .{{ ns }}__h{
+      margin: 0;
+      font-size: 40px;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+    .{{ ns }}__sub{
+      margin: 12px auto 0;
+      max-width: 720px;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    .{{ ns }}__stage{
+      position: relative;
+      width: var(--size);
+      height: var(--size);
+      margin: 34px auto 0;
+      isolation: isolate;
+    }
+
+    /* subtle depth (not the ring line) */
+    .{{ ns }}__stage::before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      border-radius:999px;
+      background: radial-gradient(closest-side, rgba(0,0,0,.06), rgba(0,0,0,0) 62%);
+      opacity:.55;
+      pointer-events:none;
+      z-index:0;
+    }
+
+    /* CENTER */
+    .{{ ns }}__center{
+      position: absolute;
+      inset: 0;
+      margin: auto;
+      width: calc(var(--item) + 46px);
+      height: calc(var(--item) + 46px);
+      border-radius: 999px;
+      border: var(--center-bw) solid var(--center-bd);
+      background: var(--center-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 3;
+      box-shadow: 0 12px var(--center-shadow) rgba(0,0,0,.10);
+      backdrop-filter: blur(8px);
+    }
+    .{{ ns }}__centerText{
+      font-size: 22px;
+      letter-spacing: .01em;
+      color: var(--center-text);
+    }
+    .{{ ns }}__centerImg{
+      width: var(--center-img);
+      height: var(--center-img);
+      border-radius: var(--center-img-radius);
+      object-fit: contain;
+      display:block;
+      filter: saturate(var(--vib));
+    }
+    .{{ ns }}__center.is-pulse{
+      animation: {{ ns }}-pulse 4.2s ease-in-out infinite;
+      transform-origin: center;
+    }
+    @keyframes {{ ns }}-pulse{
+      0%,100% { transform: scale(1); }
+      50%     { transform: scale(calc(1 + (var(--pulse-amt) / 100))); }
+    }
+
+    /* RING ROTATION */
+    .{{ ns }}__ring{
+      position: absolute;
+      inset: 0;
+      border-radius: 999px;
+      border: var(--ring-w) solid var(--ring);
+      animation: {{ ns }}-spin var(--speed) linear infinite;
+      will-change: transform;
+      transform: translate3d(0,0,0);
+      z-index:1;
+    }
+    .{{ ns }}__ring.is-static{ animation: none !important; }
+
+    /* hide ONLY the ring line (keep rotation) */
+    {%- if section.settings.show_ring == false -%}
+      .{{ ns }}__ring{ border-color: transparent !important; }
+    {%- endif -%}
+
+    /* POSITIONS */
+    .{{ ns }}__pos{
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      transform: rotate(var(--a)) translateX(var(--radius));
+      transform-origin: 0 0;
+      z-index:2;
+    }
+
+    /* CARD */
+    .{{ ns }}__card{
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: var(--item);
+      height: var(--item);
+      transform: translate(-50%, -50%);
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid rgba(0,0,0,.08);
+      background: rgba(255,255,255,.55);
+      display: block;
+      text-decoration: none;
+      box-shadow: 0 14px 28px rgba(0,0,0,.10);
+    }
+    .{{ ns }}__card[aria-disabled="true"]{ pointer-events:none; }
+
+    /*
+      TRUE UPRIGHT:
+      - cancel static placement angle: rotate(-var(--a))
+      - cancel the ring spin over time: rotate(-360deg)
+      This keeps image + label always upright.
+    */
+    .{{ ns }}__inner{
+      position: relative;
+      display: block;
+      width: 100%;
+      height: 100%;
+      transform-origin: 50% 50%;
+      transform: rotate(calc(-1 * var(--a)));
+      animation: {{ ns }}-upright var(--speed) linear infinite;
+      will-change: transform;
+    }
+
+    .{{ ns }}__content{
+      position: relative;
+      display: block;
+      width: 100%;
+      height: 100%;
+      transform: translateZ(0);
+    }
+
+    .{{ ns }}__img{
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: saturate(var(--vib));
+      transform: translateZ(0);
+    }
+
+    .{{ ns }}__label{
+      position: absolute;
+      left: 10px;
+      right: 10px;
+      bottom: 10px;
+      display: block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 13px;
+      line-height: 1;
+      color: #fff;
+      background: rgba(0,0,0,.38);
+      text-align: center;
+      backdrop-filter: blur(8px);
+      text-shadow: 0 1px 1px rgba(0,0,0,.22);
+    }
+
+    @media (hover:hover){
+      .{{ ns }}__card:hover{ filter: brightness(1.02); }
+      .{{ ns }}__card:hover .{{ ns }}__content{ transform: scale(1.03); }
+    }
+
+    @keyframes {{ ns }}-spin{
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+    @keyframes {{ ns }}-bg-drift{
+      0%   { background-position: center, 50% 50%; }
+      50%  { background-position: center, 56% 44%; }
+      100% { background-position: center, 50% 50%; }
+    }
+    @keyframes {{ ns }}-bg-shimmer{
+      0%   { transform: translateX(-35%) rotate(0.001deg); }
+      100% { transform: translateX(35%) rotate(0.001deg); }
+    }
+    @keyframes {{ ns }}-upright{
+      from { transform: rotate(calc(-1 * var(--a) + 0deg)); }
+      to   { transform: rotate(calc(-1 * var(--a) - 360deg)); }
+    }
+
+    /* PAUSE ON HOVER */
+    {%- if section.settings.pause_on_hover -%}
+    @media (hover:hover){
+      .{{ ns }}__stage:hover .{{ ns }}__ring,
+      .{{ ns }}__stage:hover .{{ ns }}__inner{
+        animation-play-state: paused !important;
+      }
+    }
+    {%- endif -%}
+
+    /* MOBILE */
+    @media (max-width: 749px){
+      .{{ ns }}__h{ font-size: 30px; }
+      .{{ ns }}__stage{
+        width: var(--size-m);
+        height: var(--size-m);
+      }
+      .{{ ns }}__pos{
+        transform: rotate(var(--a)) translateX(var(--radius-m));
+      }
+      .{{ ns }}__card{
+        width: var(--item-m);
+        height: var(--item-m);
+      }
+      .{{ ns }}__center{
+        width: calc(var(--item-m) + 40px);
+        height: calc(var(--item-m) + 40px);
+      }
+      .{{ ns }}__centerText{ font-size: 18px; }
+      .{{ ns }}__label{ font-size: 12px; }
+      .{{ ns }}__centerImg{
+        width: calc(var(--center-img) * 0.9);
+        height: calc(var(--center-img) * 0.9);
+      }
+    }
+
+    /* REDUCED MOTION */
+    @media (prefers-reduced-motion: reduce){
+      .{{ ns }}__ring, .{{ ns }}__inner, .{{ ns }}__center.is-pulse,
+      .{{ ns }}.is-bg-drift, .{{ ns }}.is-bg-shimmer::before{
+        animation: none !important;
+      }
+    }
+  </style>
+</section>
+
+{% schema %}
+{
+  "name": "MyED Orbit",
+  "settings": [
+    { "type": "color", "id": "bg_color", "label": "Background", "default": "#F9F8F5" },
+    { "type": "color", "id": "text_color", "label": "Text", "default": "#1f1f1f" },
+    { "type": "color", "id": "muted_color", "label": "Muted", "default": "#6b6b6b" },
+
+    { "type": "header", "content": "Background image + overlay" },
+    { "type": "image_picker", "id": "bg_image_desktop", "label": "Background image (desktop)" },
+    { "type": "image_picker", "id": "bg_image_mobile", "label": "Background image (mobile)" },
+    { "type": "color", "id": "bg_overlay_color", "label": "Overlay color", "default": "#000000" },
+    { "type": "range", "id": "bg_overlay_opacity", "min": 0, "max": 65, "step": 1, "label": "Overlay opacity (%)", "default": 15 },
+    {
+      "type": "select",
+      "id": "bg_animation",
+      "label": "Background animation",
+      "default": "none",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "drift", "label": "Drift" },
+        { "value": "shimmer", "label": "Shimmer" }
+      ]
+    },
+
+    { "type": "checkbox", "id": "show_ring", "label": "Show ring line", "default": false },
+    { "type": "color", "id": "ring_color", "label": "Ring", "default": "#000000" },
+    { "type": "range", "id": "ring_alpha", "min": 6, "max": 30, "step": 2, "label": "Ring alpha (%)", "default": 12 },
+    { "type": "range", "id": "ring_width", "min": 1, "max": 3, "step": 1, "label": "Ring width (px)", "default": 1 },
+
+    { "type": "text", "id": "kicker", "label": "Kicker", "default": "Rituel" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Browse by Emotion" },
+    { "type": "text", "id": "subheading", "label": "Subheading", "default": "A calm, simple way to explore." },
+
+    { "type": "text", "id": "center_label", "label": "Center label", "default": "Rituel" },
+    { "type": "image_picker", "id": "center_image", "label": "Center image (favicon/logo)" },
+    { "type": "range", "id": "center_image_size", "min": 28, "max": 90, "step": 2, "label": "Center image size (px)", "default": 56 },
+    { "type": "range", "id": "center_image_radius", "min": 0, "max": 40, "step": 2, "label": "Center image radius (px)", "default": 14 },
+
+    { "type": "checkbox", "id": "animate", "label": "Animate orbit", "default": true },
+    { "type": "range", "id": "speed", "min": 8, "max": 40, "step": 1, "label": "Speed (s)", "default": 20 },
+
+    { "type": "range", "id": "size", "min": 320, "max": 620, "step": 10, "label": "Stage size (px)", "default": 520 },
+    { "type": "range", "id": "radius", "min": 110, "max": 220, "step": 5, "label": "Radius (px)", "default": 180 },
+    { "type": "range", "id": "item_size", "min": 74, "max": 120, "step": 2, "label": "Item size (px)", "default": 92 },
+
+    { "type": "range", "id": "size_m", "min": 260, "max": 420, "step": 10, "label": "Stage mobile", "default": 320 },
+    { "type": "range", "id": "radius_m", "min": 90, "max": 160, "step": 5, "label": "Radius mobile", "default": 120 },
+    { "type": "range", "id": "item_size_m", "min": 62, "max": 96, "step": 2, "label": "Item mobile", "default": 76 },
+
+    { "type": "range", "id": "vibrance", "min": 90, "max": 120, "step": 2, "label": "Image vibrance (%)", "default": 106 },
+    { "type": "checkbox", "id": "pause_on_hover", "label": "Pause on hover", "default": true },
+
+    { "type": "color", "id": "center_bg", "label": "Center bg", "default": "#ffffff" },
+    { "type": "range", "id": "center_bg_alpha", "min": 40, "max": 100, "step": 5, "label": "Center bg (%)", "default": 70 },
+    { "type": "color", "id": "center_text", "label": "Center text", "default": "#1f1f1f" },
+    { "type": "color", "id": "center_border", "label": "Center border", "default": "#000000" },
+    { "type": "range", "id": "center_border_alpha", "min": 0, "max": 25, "step": 5, "label": "Border alpha (%)", "default": 10 },
+    { "type": "range", "id": "center_border_w", "min": 0, "max": 2, "step": 1, "label": "Border width", "default": 1 },
+    { "type": "range", "id": "center_shadow", "min": 0, "max": 28, "step": 2, "label": "Center shadow", "default": 16 },
+    { "type": "checkbox", "id": "center_pulse", "label": "Center pulse", "default": false },
+    { "type": "range", "id": "pulse_amt", "min": 0, "max": 6, "step": 1, "label": "Pulse amount", "default": 2 }
+  ],
+  "blocks": [
+    {
+      "type": "orbit_item",
+      "name": "Orbit item",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "text", "id": "label", "label": "Label", "default": "Comfort" },
+        { "type": "url", "id": "link", "label": "Link" }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [
+    { "name": "MyED Orbit" }
+  ]
+}
+{% endschema %}
