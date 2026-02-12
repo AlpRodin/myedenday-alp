@@ -1,0 +1,77 @@
+{%- comment -%}
+  Minimal product card for MyED Spotlight.
+  Expects `product` object. Falls back gracefully when blank.
+{%- endcomment -%}
+
+{%- liquid
+  assign card_product = product
+-%}
+
+{%- if card_product == blank -%}
+  <div class="myed-spotlight__emptyHint">Add a product to show the spotlight card.</div>
+{%- else -%}
+  {%- liquid
+    assign card_url = card_product.url | default: '#'
+
+    assign media = card_product.featured_media | default: card_product.featured_image
+    if media == blank and card_product.images != blank and card_product.images.size > 0
+      assign media = card_product.images.first
+    endif
+
+    assign has_compare = card_product.compare_at_price > card_product.price
+  -%}
+
+  <article class="myed-spotlight-card" itemscope itemtype="https://schema.org/Product">
+    {%- if card_url != blank -%}
+      <a class="myed-spotlight-card__media" href="{{ card_url }}" aria-label="{{ card_product.title | escape }}">
+    {%- else -%}
+      <div class="myed-spotlight-card__media" role="img" aria-label="{{ card_product.title | escape }}">
+    {%- endif -%}
+
+        {%- if media != blank -%}
+          {{
+            media
+            | image_url: width: 1200
+            | image_tag:
+              widths: '360,480,720,960,1200',
+              sizes: '(min-width: 990px) 440px, 88vw',
+              class: 'myed-spotlight-card__img',
+              loading: 'lazy',
+              alt: card_product.title | escape
+          }}
+        {%- else -%}
+          <div class="myed-spotlight-card__ph" aria-hidden="true"></div>
+        {%- endif -%}
+
+    {%- if card_url != blank -%}
+      </a>
+    {%- else -%}
+      </div>
+    {%- endif -%}
+
+    <div class="myed-spotlight-card__body">
+      <a class="myed-spotlight-card__title" href="{{ card_url }}" itemprop="name">
+        {{ card_product.title | default: 'Featured product' }}
+      </a>
+
+      <div class="myed-spotlight-card__meta">
+        <div>
+          <span class="myed-spotlight-card__priceNow">
+            {{ card_product.price | money_with_currency }}
+          </span>
+          {%- if has_compare -%}
+            <span class="myed-spotlight-card__priceWas">
+              {{ card_product.compare_at_price | money_with_currency }}
+            </span>
+          {%- endif -%}
+        </div>
+
+        {%- if card_product.available == false -%}
+          <span class="myed-spotlight-card__badge">Sold Out</span>
+        {%- elsif has_compare -%}
+          <span class="myed-spotlight-card__badge">Save</span>
+        {%- endif -%}
+      </div>
+    </div>
+  </article>
+{%- endif -%}

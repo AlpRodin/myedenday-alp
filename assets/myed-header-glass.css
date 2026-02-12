@@ -1,0 +1,140 @@
+.myed-glass-header .header {
+  position: relative;
+  --myed-glass-opacity: clamp(0, var(--myed-glass-opacity, 0.18), 0.3);
+  --myed-glass-blur: clamp(0px, var(--myed-glass-blur, 12px), 16px);
+  --myed-glass-border-opacity: clamp(0, var(--myed-glass-border-opacity, 0.12), 0.3);
+  background-color: color-mix(in srgb, var(--myed-glass-base, #ffffff) calc(var(--myed-glass-opacity) * 100%), transparent);
+  border: 1px solid color-mix(in srgb, var(--myed-glass-base, #ffffff) calc(var(--myed-glass-border-opacity) * 100%), transparent);
+  background-clip: padding-box;
+}
+
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .myed-glass-header .header {
+    -webkit-backdrop-filter: blur(var(--myed-glass-blur));
+    backdrop-filter: blur(var(--myed-glass-blur));
+  }
+}
+
+.myed-glass-header .header .header__inline-menu,
+.myed-glass-header .header .header__icons {
+  z-index: 1;
+  position: relative;
+}
+
+.myed-glass-header .section-header {
+  position: relative;
+}
+
+/* Drawer glass */
+.myed-glass-drawer .menu-drawer {
+  --myed-drawer-opacity: clamp(0, var(--myed-drawer-opacity, 0.18), 0.3);
+  --myed-drawer-blur: clamp(0px, var(--myed-drawer-blur, 12px), 16px);
+  background-color: rgba(var(--color-background), var(--myed-drawer-opacity));
+  border-left: 1px solid rgba(var(--color-foreground), 0.14);
+}
+
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .myed-glass-drawer .menu-drawer {
+    -webkit-backdrop-filter: blur(var(--myed-drawer-blur));
+    backdrop-filter: blur(var(--myed-drawer-blur));
+  }
+}
+
+.myed-glass-drawer .menu-drawer__navigation .menu-drawer__menu-item:hover,
+.myed-glass-drawer .menu-drawer__navigation .menu-drawer__menu-item:focus-visible {
+  background-color: rgba(var(--color-foreground), 0.04);
+}
+
+/* Header text/ikon renk override */
+.myed-glass-header .header {
+  color: var(--myed-header-text, rgb(var(--color-foreground)));
+}
+.myed-glass-header .header a,
+.myed-glass-header .header .header__icon,
+.myed-glass-header .header .header__heading-link {
+  color: inherit;
+}
+.myed-glass-header .header svg {
+  fill: currentColor;
+  stroke: currentColor;
+}
+.myed-glass-header .header .header__localization,
+.myed-glass-header .header .localization-form,
+.myed-glass-header .header .localization-form__select,
+.myed-glass-header .header .localization-form__select .disclosure__button,
+.myed-glass-header .header .disclosure__button,
+.myed-glass-header .header .disclosure__list,
+.myed-glass-header .header .disclosure__item,
+.myed-glass-header .header .disclosure__link {
+  color: inherit;
+}
+.myed-glass-header .header .localization-form__select .disclosure__button {
+  color: inherit !important;
+}
+.myed-glass-header .header .localization-form__select .disclosure__button svg,
+.myed-glass-header .header .disclosure__button svg,
+.myed-glass-header .header .disclosure__link svg {
+  fill: currentColor;
+  stroke: currentColor;
+}
+
+/* Drawer text/ikon renk override */
+.myed-glass-drawer .menu-drawer {
+  color: var(--myed-drawer-text, rgb(var(--color-foreground)));
+}
+.myed-glass-drawer .menu-drawer a,
+.myed-glass-drawer .menu-drawer .menu-drawer__menu-item {
+  color: inherit;
+}
+.myed-glass-drawer .menu-drawer svg {
+  fill: currentColor;
+  stroke: currentColor;
+}
+
+.myed-glass-drawer .menu-drawer__navigation .menu-drawer__menu-item:hover,
+.myed-glass-drawer .menu-drawer__navigation .menu-drawer__menu-item:focus-visible {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Wordmark polish (text fallback when no logo image) */
+.header__heading-link .h2 {
+  letter-spacing: 0.06em;
+  font-weight: 500;
+  text-transform: none;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+
+@media (max-width: 749px) {
+  .header__heading-link .h2 {
+    letter-spacing: 0.04em;
+  }
+}
+
+/* Logo scale fix: width slider works, header height stable */
+.header__heading-logo-wrapper {
+  display: flex;
+  align-items: center;
+  line-height: 0;
+  overflow: hidden;
+  max-height: 44px;
+}
+.header__heading-logo-wrapper img,
+.header__heading-link img.header__heading-logo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+@media (max-width: 749px) {
+  .header__heading-logo-wrapper {
+    max-height: 34px;
+  }
+  .header__heading-logo-wrapper img,
+  .header__heading-link img.header__heading-logo {
+    max-height: 100%;
+  }
+}

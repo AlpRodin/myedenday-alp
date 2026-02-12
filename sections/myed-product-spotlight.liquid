@@ -127,6 +127,25 @@
 
   assign alt_text = heading | default: 'Spotlight'
   assign show_card = s.show_card
+
+  capture bg_style
+    echo "background-image: "
+    if bg_img_url != blank
+      echo "url('{{ bg_img_url }}');"
+    else
+      echo "none;"
+    endif
+    echo " background-position: center;"
+    echo " background-size: cover;"
+    echo " background-repeat: no-repeat;"
+    echo " opacity: "
+    if bg_img_url != blank
+      echo bg_img_op_f
+    else
+      echo 0
+    endif
+    echo ";"
+  endcapture
 -%}
 
 <section class="myed-spotlight" data-myed-spotlight>
@@ -136,8 +155,6 @@
       --myed-accent: {{ accent }};
       --myed-bg-top: {{ bg_top }};
       --myed-bg-bot: {{ bg_bot }};
-      --myed-bg-img: {% if bg_img_url != blank %}url('{{ bg_img_url }}'){% else %}none{% endif %};
-      --myed-bg-img-op: {{ bg_img_op_f }};
       --myed-tex-img: {% if tex_img_url != blank %}url('{{ tex_img_url }}'){% else %}none{% endif %};
       --myed-tex-op: {{ tex_op_f }};
       --myed-spot-a: {{ spot_a }};
@@ -146,7 +163,7 @@
       --myed-img-scale: {{ img_scale_f }};
     "
   >
-    <div class="myed-spotlight__bg" aria-hidden="true"></div>
+    <div class="myed-spotlight__bg" aria-hidden="true" style="{{ bg_style | strip | strip_newlines }}"></div>
     <div class="myed-spotlight__tex" aria-hidden="true"></div>
 
     <div class="myed-spotlight__inner page-width">

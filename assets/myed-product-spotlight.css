@@ -1,9 +1,10 @@
 /* MyED Spotlight (OS 2.0) — CLEAN + NO DUPLICATES
    Uses CSS vars set inline on .myed-spotlight__stage:
-   --myed-bg-top, --myed-bg-bot, --myed-bg-img, --myed-bg-img-op
+   --myed-bg-top, --myed-bg-bot,
    --myed-tex-img, --myed-tex-op
    --myed-spot-a, --myed-vig-a, --myed-drift-speed
    --myed-accent, --myed-img-scale
+   Background image + opacity are set inline on .myed-spotlight__bg.
 */
 
 .myed-spotlight {
@@ -33,18 +34,11 @@
   inset: 0;
   z-index: 0;
   pointer-events: none;
-}
-
-.myed-spotlight__bg::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image: var(--myed-bg-img, none);
-  background-size: cover;
   background-position: center;
+  background-size: cover;
   background-repeat: no-repeat;
-  opacity: var(--myed-bg-img-op, 0);
   filter: saturate(1.05) contrast(1.02);
+  opacity: 0;
 }
 
 /* Texture / grain layer */
