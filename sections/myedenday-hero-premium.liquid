@@ -16,6 +16,58 @@
   assign bg_alpha = s.bg_opacity | default: 15 | times: 0.01
   assign bg_mode = s.bg_mode | default: 'auto'
   assign card_media_mode = s.card_media_mode | default: 'auto'
+  assign orb_blocks = section.blocks | where: 'type', 'orb_link'
+  assign panel_blocks = section.blocks | where: 'type', 'panel'
+
+  assign show_left = s.show_left_card
+  if show_left == nil
+    assign show_left = true
+  endif
+
+  assign show_right = s.show_right_card
+  if show_right == nil
+    assign show_right = true
+  endif
+
+  assign orb_align_desktop_raw = s.orb_align_desktop | default: 'center'
+  assign orb_align_desktop = 'center'
+  if orb_align_desktop_raw == 'left'
+    assign orb_align_desktop = 'flex-start'
+  elsif orb_align_desktop_raw == 'space-between'
+    assign orb_align_desktop = 'space-between'
+  elsif orb_align_desktop_raw == 'space-evenly'
+    assign orb_align_desktop = 'space-evenly'
+  endif
+
+  assign orb_align_mobile_raw = s.orb_align_mobile | default: 'center'
+  assign orb_align_mobile = 'center'
+  if orb_align_mobile_raw == 'left'
+    assign orb_align_mobile = 'flex-start'
+  elsif orb_align_mobile_raw == 'space-between'
+    assign orb_align_mobile = 'space-between'
+  elsif orb_align_mobile_raw == 'space-evenly'
+    assign orb_align_mobile = 'space-evenly'
+  endif
+
+  assign panel_orb_align_desktop_raw = s.panel_orb_align_desktop | default: 'center'
+  assign panel_orb_align_desktop = 'center'
+  if panel_orb_align_desktop_raw == 'left'
+    assign panel_orb_align_desktop = 'flex-start'
+  elsif panel_orb_align_desktop_raw == 'space-between'
+    assign panel_orb_align_desktop = 'space-between'
+  elsif panel_orb_align_desktop_raw == 'space-evenly'
+    assign panel_orb_align_desktop = 'space-evenly'
+  endif
+
+  assign panel_orb_align_mobile_raw = s.panel_orb_align_mobile | default: 'center'
+  assign panel_orb_align_mobile = 'center'
+  if panel_orb_align_mobile_raw == 'left'
+    assign panel_orb_align_mobile = 'flex-start'
+  elsif panel_orb_align_mobile_raw == 'space-between'
+    assign panel_orb_align_mobile = 'space-between'
+  elsif panel_orb_align_mobile_raw == 'space-evenly'
+    assign panel_orb_align_mobile = 'space-evenly'
+  endif
 
   # ---- Safe tokens (guard allowed values) ----
   assign layout_balance = s.layout_balance | default: 'text'
@@ -107,6 +159,13 @@
     assign shadow_token = 'none'
   endif
 
+  # ---- Glass tokens ----
+  assign right_alpha_setting = s.right_glass_opacity | default: 65
+  assign right_border_alpha_setting = right_alpha_setting | times: 0.35
+  assign panel_alpha_setting = s.panel_glass_opacity | default: 80
+  assign panel_border_alpha_setting = panel_alpha_setting | times: 0.35
+  assign panel_hover_alpha_setting = s.panel_hover_opacity | default: 88
+
   # ---- Loading policy ----
   assign img_loading = 'lazy'
   assign img_fetchpriority = ''
@@ -141,6 +200,14 @@
     --myed-muted: {{ s.muted_color }};
     --myed-border: rgba(0,0,0,.10);
 
+    --myed-kicker-color: {{ s.kicker_text_color | default: '#666666' }};
+    --myed-title-color: {{ s.title_text_color | default: '#111111' }};
+    --myed-sub-color: {{ s.subtitle_text_color | default: '#666666' }};
+    --myed-card-title-color: {{ s.card_title_color | default: '#111111' }};
+    --myed-card-tag-color: {{ s.card_tag_color | default: '#111111' }};
+    --myed-panel-title-color: {{ s.panel_title_color | default: '#111111' }};
+    --myed-panel-desc-color: {{ s.panel_desc_color | default: '#666666' }};
+
     --myed-radius: {{ radius }}px;
     --myed-radius-media: {{ radius_media }}px;
     --myed-radius-panel: {{ radius_panel }}px;
@@ -159,6 +226,42 @@
     --myed-cta-gap-m: {{ s.cta_gap_mobile | default: 8 }}px;
 
     --myed-shadow: {{ shadow_token }};
+
+    --myed-orb-size-m: {{ s.orb_size_mobile | default: 68 }}px;
+    --myed-orb-size-d: {{ s.orb_size_desktop | default: 84 }}px;
+    --myed-orb-gap-m: {{ s.orb_gap_mobile | default: 14 }}px;
+    --myed-orb-gap-d: {{ s.orb_gap_desktop | default: 14 }}px;
+    --myed-orb-blur: {{ s.orb_blur | default: 10 }}px;
+    --myed-orb-alpha: {{ s.orb_bg_opacity | default: 70 | times: 0.01 }};
+    --myed-orb-ring-glow: {{ s.orb_ring_glow | default: 35 | divided_by: 100.0 }};
+    --myed-orb-spin: {{ s.orb_spin | default: 12 }}s;
+    --myed-orb-label: {% if s.orb_label_style == 'light' %}#ffffff{% else %}#111111{% endif %};
+    --myed-orb-align-d: {{ orb_align_desktop }};
+    --myed-orb-align-m: {{ orb_align_mobile }};
+
+    --myed-panel-orb-size-m: {{ s.panel_orb_size_mobile | default: s.orb_size_mobile | default: 68 }}px;
+    --myed-panel-orb-size-d: {{ s.panel_orb_size_desktop | default: s.orb_size_desktop | default: 84 }}px;
+    --myed-panel-orb-gap-m: {{ s.panel_orb_gap_mobile | default: s.orb_gap_mobile | default: 14 }}px;
+    --myed-panel-orb-gap-d: {{ s.panel_orb_gap_desktop | default: s.orb_gap_desktop | default: 16 }}px;
+    --myed-panel-orb-align-m: {{ panel_orb_align_mobile }};
+    --myed-panel-orb-align-d: {{ panel_orb_align_desktop }};
+
+    --myed-right-bg: var(--myed-card);
+    --myed-right-border: rgba(0,0,0,.08);
+    --myed-right-blur-token: none;
+    --myed-right-alpha-glass: {{ right_alpha_setting | times: 0.01 }};
+    --myed-right-border-alpha-glass: {{ right_border_alpha_setting | times: 0.01 }};
+    --myed-right-blur-glass: {{ s.right_glass_blur | default: 12 }}px;
+
+    --myed-panel-bg: rgba(255,255,255,.85);
+    --myed-panel-border: rgba(0,0,0,.08);
+    --myed-panel-hover-bg: rgba(255,255,255,.95);
+    --myed-panel-hover-border: rgba(0,0,0,.14);
+    --myed-panel-blur-token: none;
+    --myed-panel-alpha-glass: {{ panel_alpha_setting | times: 0.01 }};
+    --myed-panel-border-alpha-glass: {{ panel_border_alpha_setting | times: 0.01 }};
+    --myed-panel-blur-glass: {{ s.panel_glass_blur | default: 10 }}px;
+    --myed-panel-hover-alpha: {{ panel_hover_alpha_setting | times: 0.01 }};
 
     position: relative;
     overflow: hidden;
@@ -184,19 +287,131 @@
     min-height: {{ s.panel_min_h | default: 84 }}px;
   }
 
+  {% if s.orb_limit_mobile and s.orb_limit_mobile > 0 %}
+  @media (max-width: 989px){
+    #shopify-section-{{ sid }} .myed-orbs--cta > .myed-orb-tile:nth-child(n+{{ s.orb_limit_mobile | plus: 1 }}){
+      display: none;
+    }
+  }
+  {% endif %}
+
+  {% if s.orb_limit_desktop and s.orb_limit_desktop > 0 %}
+  @media (min-width: 990px){
+    #shopify-section-{{ sid }} .myed-orbs--cta > .myed-orb-tile:nth-child(n+{{ s.orb_limit_desktop | plus: 1 }}){
+      display: none;
+    }
+  }
+  {% endif %}
+
+  {% if s.panel_orb_limit_mobile and s.panel_orb_limit_mobile > 0 %}
+  @media (max-width: 989px){
+    #shopify-section-{{ sid }} .myed-orbs--panel > .myed-orb-tile:nth-child(n+{{ s.panel_orb_limit_mobile | plus: 1 }}){
+      display: none;
+    }
+  }
+  {% endif %}
+
+  {% if s.panel_orb_limit_desktop and s.panel_orb_limit_desktop > 0 %}
+  @media (min-width: 990px){
+    #shopify-section-{{ sid }} .myed-orbs--panel > .myed-orb-tile:nth-child(n+{{ s.panel_orb_limit_desktop | plus: 1 }}){
+      display: none;
+    }
+  }
+  {% endif %}
+
   /* richtext safety: prevent default <p> margins from breaking spacing */
   #shopify-section-{{ sid }} .myed-sub.rte p{ margin: 0; }
   #shopify-section-{{ sid }} .myed-sub.rte p + p{ margin-top: 10px; }
+
+  {% if s.left_glass %}
+    #shopify-section-{{ sid }} .myed-left{
+      -webkit-backdrop-filter: blur(var(--myed-left-blur));
+      backdrop-filter: blur(var(--myed-left-blur));
+    }
+  {% endif %}
+
+  #shopify-section-{{ sid }}.myed-hero--right-glass .myed-right,
+  body.myed-has-site-bg #shopify-section-{{ sid }} .myed-right{
+    --myed-right-bg: rgba(255,255,255,var(--myed-right-alpha-glass));
+    --myed-right-border: rgba(255,255,255,var(--myed-right-border-alpha-glass));
+    --myed-right-blur-token: blur(var(--myed-right-blur-glass));
+  }
+
+  #shopify-section-{{ sid }}.myed-hero--panel-glass .myed-panel,
+  body.myed-has-site-bg #shopify-section-{{ sid }} .myed-panel{
+    --myed-panel-bg: rgba(255,255,255,var(--myed-panel-alpha-glass));
+    --myed-panel-border: rgba(255,255,255,var(--myed-panel-border-alpha-glass));
+    --myed-panel-hover-bg: rgba(255,255,255,var(--myed-panel-hover-alpha));
+    --myed-panel-hover-border: rgba(255,255,255,var(--myed-panel-border-alpha-glass));
+    --myed-panel-blur-token: blur(var(--myed-panel-blur-glass));
+  }
+
+  body.myed-has-site-bg #shopify-section-{{ sid }} .myed-panel:hover{
+    --myed-panel-hover-bg: rgba(255,255,255,var(--myed-panel-hover-alpha));
+    --myed-panel-hover-border: rgba(255,255,255,var(--myed-panel-border-alpha-glass));
+  }
+
+  #shopify-section-{{ sid }}.myed-hero--cta-style-solid .myed-btn{
+    background: #111;
+    color: #fff;
+    border-color: rgba(0,0,0,.16);
+  }
+
+  #shopify-section-{{ sid }}.myed-hero--cta-style-solid .myed-btn--ghost{
+    background: #fff;
+    color: #111;
+    border-color: rgba(0,0,0,.16);
+  }
+
+  #shopify-section-{{ sid }}.myed-hero--cta-style-ghost .myed-btn{
+    background: transparent;
+    color: var(--myed-text);
+    border-color: rgba(0,0,0,.32);
+  }
+
+  #shopify-section-{{ sid }}.myed-hero--cta-style-ghost .myed-btn:hover{
+    background: rgba(0,0,0,.06);
+  }
+
+  #shopify-section-{{ sid }}.myed-hero--cta-style-ghost .myed-btn--ghost{
+    background: rgba(255,255,255,.14);
+    color: var(--myed-text);
+    border-color: rgba(0,0,0,.20);
+  }
+
+  #shopify-section-{{ sid }}.myed-hero--cta-style-glass .myed-btn{
+    background: rgba(255,255,255,.28);
+    color: #111;
+    border-color: rgba(255,255,255,.40);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+  }
+
+  #shopify-section-{{ sid }}.myed-hero--cta-style-glass .myed-btn:hover{
+    background: rgba(255,255,255,.36);
+  }
+
+  #shopify-section-{{ sid }}.myed-hero--cta-style-glass .myed-btn--ghost{
+    background: rgba(255,255,255,.20);
+    color: #111;
+    border-color: rgba(255,255,255,.32);
+  }
 {% endstyle %}
 
-<section
+  <section
   class="myed-hero
     myed-hero--layout-{{ layout_balance }}
     myed-hero--cta-{{ cta_size }}
+    myed-hero--cta-style-{{ s.cta_style | default: 'solid' }}
     myed-hero--h1-{{ heading_size }}
     myed-hero--body-{{ body_size }}
     myed-hero--ratio-{{ media_ratio }}
-    myed-hero--panel-{{ panel_size }}"
+    myed-hero--panel-{{ panel_size }}
+    {% if s.right_glass_enable %}myed-hero--right-glass{% endif %}
+    {% if s.panel_glass_enable %}myed-hero--panel-glass{% endif %}
+    {% unless show_left %}is-no-left{% endunless %}
+    {% unless show_right %}is-no-right{% endunless %}
+    {% if show_left == false and show_right == false %}is-media-only{% endif %}"
   aria-label="Hero"
 >
   <div class="myed-hero__bg" aria-hidden="true">
@@ -238,6 +453,7 @@
     {%- endif -%}
 
     <div class="myed-hero__grid">
+      {%- if show_left -%}
       <div class="myed-left">
         {%- if s.kicker != blank -%}
           <div class="myed-kicker">{{ s.kicker }}</div>
@@ -250,31 +466,108 @@
         {%- endif -%}
 
         <div class="myed-cta">
-          {%- if s.primary_cta_label != blank and s.primary_cta_link != blank -%}
-            <a class="myed-btn"
-               href="{{ s.primary_cta_link }}"
-               data-myed-event="hero_cta_click"
-               data-myed-component="hero_premium"
-               data-myed-cta="primary"
-               data-myed-label="{{ s.primary_cta_label | escape }}"
-               data-myed-href="{{ s.primary_cta_link }}">
-               {{ s.primary_cta_label }}
-            </a>
-          {%- endif -%}
-          {%- if s.secondary_cta_label != blank and s.secondary_cta_link != blank -%}
-            <a class="myed-btn myed-btn--ghost"
-               href="{{ s.secondary_cta_link }}"
-               data-myed-event="hero_cta_click"
-               data-myed-component="hero_premium"
-               data-myed-cta="secondary"
-               data-myed-label="{{ s.secondary_cta_label | escape }}"
-               data-myed-href="{{ s.secondary_cta_link }}">
-               {{ s.secondary_cta_label }}
-            </a>
+          {%- if s.cta_mode == 'orbs' and orb_blocks.size > 0 -%}
+          <div class="myed-orbs myed-orbs--cta myed-orbs--m-{{ s.orb_wrap_mobile | default: 'scroll' }} myed-orbs--d-{{ s.orb_wrap_desktop | default: 'wrap' }}{% if s.orb_pulse %} myed-orbs--pulse{% endif %}" role="list" aria-label="Hero actions">
+              {%- for block in orb_blocks -%}
+              {%- assign orb_img = block.settings.orb_image -%}
+              {%- assign orb_label = block.settings.orb_label -%}
+              {%- assign orb_link = block.settings.orb_link -%}
+              {%- assign orb_newtab = block.settings.orb_newtab -%}
+              {%- assign orb_label_color = block.settings.orb_label_color -%}
+              {%- assign orb_label_bg = block.settings.orb_label_bg -%}
+              {%- assign orb_label_bg_opacity = block.settings.orb_label_bg_opacity | default: 100 -%}
+              {%- assign orb_label_style = '' -%}
+              {%- if orb_label_color != blank -%}
+                {%- assign orb_label_style = orb_label_style | append: '--myed-orb-label-c:' | append: orb_label_color | append: ';' -%}
+              {%- endif -%}
+              {%- if orb_label_bg != blank -%}
+                {%- assign orb_bg_alpha = orb_label_bg_opacity | default: 100 | times: 0.01 -%}
+                {%- assign orb_bg_rgba = orb_label_bg | color_modify: 'alpha', orb_bg_alpha -%}
+                {%- assign orb_label_style = orb_label_style | append: '--myed-orb-label-bg:' | append: orb_bg_rgba | append: ';' -%}
+              {%- endif -%}
+              {%- assign orb_style = '' -%}
+              {%- if orb_label_color != blank -%}
+                {%- assign orb_style = orb_style | append: '--myed-orb-label-color:' | append: orb_label_color | append: ';' -%}
+              {%- endif -%}
+              {%- if orb_label_bg != blank -%}
+                  {%- assign orb_bg_alpha = orb_label_bg_opacity | times: 0.01 -%}
+                  {%- assign orb_bg_rgba = orb_label_bg | color_modify: 'alpha', orb_bg_alpha -%}
+                  {%- assign orb_style = orb_style | append: '--myed-orb-label-bg:' | append: orb_bg_rgba | append: ';' -%}
+                {%- endif -%}
+                {%- if orb_link != blank -%}
+                  <a class="myed-orb-tile"
+                     href="{{ orb_link }}"
+                     role="listitem"
+                     data-myed-event="hero_orb_click"
+                     data-myed-component="hero_premium"
+                     data-myed-label="{{ orb_label | escape }}"
+                     data-myed-href="{{ orb_link }}"
+                     {{ block.shopify_attributes }}
+                     {% if orb_style != '' %}style="{{ orb_style }}"{% endif %}
+                     {% if orb_newtab %}target="_blank" rel="noopener noreferrer"{% endif %}>
+                {%- else -%}
+                  <div class="myed-orb-tile is-disabled" role="listitem" {{ block.shopify_attributes }} {% if orb_style != '' %}style="{{ orb_style }}"{% endif %}>
+                {%- endif -%}
+                    <span class="myed-orb">
+                      {%- if orb_img != blank -%}
+                        {%- assign orb_img_width = s.orb_size_desktop | default: 84 | times: 2 | at_most: 320 -%}
+                        {%- assign orb_img_2x = orb_img_width | times: 2 -%}
+                        {%- if orb_img_2x > 320 -%}{%- assign orb_img_2x = 320 -%}{%- endif -%}
+                        {%- assign orb_render_m = s.orb_size_mobile | default: 72 -%}
+                        {%- assign orb_render_d = s.orb_size_desktop | default: 84 -%}
+                        <img class="myed-orb__img"
+                             src="{{ orb_img | image_url: width: orb_img_width }}"
+                             srcset="
+                               {{ orb_img | image_url: width: orb_img_width }} {{ orb_img_width }}w,
+                               {{ orb_img | image_url: width: orb_img_2x }} {{ orb_img_2x }}w
+                             "
+                             sizes="(max-width: 989px) {{ orb_render_m }}px, {{ orb_render_d }}px"
+                             width="{{ orb_img_width }}"
+                             height="{{ orb_img_width }}"
+                             alt="{{ orb_label | default: 'Orb' | escape }}"
+                             loading="lazy"
+                             decoding="async">
+                      {%- endif -%}
+                    </span>
+                    {%- if orb_label != blank -%}
+                      <span class="myed-orb__label" {% if orb_label_style != '' %}style="{{ orb_label_style }}"{% endif %}>{{ orb_label }}</span>
+                    {%- endif -%}
+                {%- if orb_link != blank -%}
+                  </a>
+                {%- else -%}
+                  </div>
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
+          {%- else -%}
+            {%- if s.primary_cta_label != blank and s.primary_cta_link != blank -%}
+              <a class="myed-btn"
+                 href="{{ s.primary_cta_link }}"
+                 data-myed-event="hero_cta_click"
+                 data-myed-component="hero_premium"
+                 data-myed-cta="primary"
+                 data-myed-label="{{ s.primary_cta_label | escape }}"
+                 data-myed-href="{{ s.primary_cta_link }}">
+                 {{ s.primary_cta_label }}
+              </a>
+            {%- endif -%}
+            {%- if s.secondary_cta_label != blank and s.secondary_cta_link != blank -%}
+              <a class="myed-btn myed-btn--ghost"
+                 href="{{ s.secondary_cta_link }}"
+                 data-myed-event="hero_cta_click"
+                 data-myed-component="hero_premium"
+                 data-myed-cta="secondary"
+                 data-myed-label="{{ s.secondary_cta_label | escape }}"
+                 data-myed-href="{{ s.secondary_cta_link }}">
+                 {{ s.secondary_cta_label }}
+              </a>
+            {%- endif -%}
           {%- endif -%}
         </div>
       </div>
+      {%- endif -%}
 
+      {%- if show_right -%}
       <aside class="myed-right" aria-label="Hero card">
         <div class="myed-card__head">
           <h3 class="myed-card__title">{{ s.card_title }}</h3>
@@ -308,40 +601,115 @@
           </div>
         </div>
 
-        <div class="myed-panels" role="list" aria-label="Info panels">
-          {%- if section.blocks.size > 0 -%}
-            {%- for block in section.blocks -%}
-              {%- assign t = block.settings.title -%}
-              {%- assign d = block.settings.desc -%}
-              {%- assign u = block.settings.url -%}
-              {%- if t != blank or d != blank -%}
-                {%- if u != blank -%}
-                  <a class="myed-panel"
-                    href="{{ u }}"
-                    data-myed-event="hero_panel_click"
-                    data-myed-component="hero_premium"
-                    data-myed-panel-index="{{ forloop.index0 }}"
-                    data-myed-label="{{ t | escape }}"
-                    data-myed-href="{{ u }}"
-                    {{ block.shopify_attributes }}>
-                    {%- if t != blank -%}<div class="myed-panel__t">{{ t }}</div>{%- endif -%}
-                    {%- if d != blank -%}<div class="myed-panel__d">{{ d }}</div>{%- endif -%}
-                  </a>
-                {%- else -%}
-                  <div class="myed-panel"
-                       data-myed-component="hero_premium"
-                       data-myed-panel-index="{{ forloop.index0 }}"
-                       data-myed-label="{{ t | escape }}"
-                       {{ block.shopify_attributes }}>
-                    {%- if t != blank -%}<div class="myed-panel__t">{{ t }}</div>{%- endif -%}
-                    {%- if d != blank -%}<div class="myed-panel__d">{{ d }}</div>{%- endif -%}
-                  </div>
-                {%- endif -%}
+        {%- if s.right_panel_style == 'orbs' and panel_blocks.size > 0 -%}
+          <div class="myed-orbs myed-orbs--panel myed-orbs--m-{{ s.panel_orb_wrap_mobile | default: 'scroll' }} myed-orbs--d-{{ s.panel_orb_wrap_desktop | default: 'wrap' }}{% if s.panel_orb_pulse %} myed-orbs--pulse{% endif %}" role="list" aria-label="Hero quick links">
+            {%- for block in panel_blocks -%}
+              {%- assign orb_img = block.settings.panel_image -%}
+              {%- assign orb_label = block.settings.title -%}
+              {%- assign orb_link = block.settings.url -%}
+              {%- assign orb_label_color = block.settings.panel_label_color -%}
+              {%- assign orb_label_bg = block.settings.panel_label_bg -%}
+              {%- assign orb_label_bg_opacity = block.settings.panel_label_bg_opacity | default: 100 -%}
+              {%- assign orb_label_style = '' -%}
+              {%- if orb_label_color != blank -%}
+                {%- assign orb_label_style = orb_label_style | append: '--myed-orb-label-c:' | append: orb_label_color | append: ';' -%}
+              {%- endif -%}
+              {%- if orb_label_bg != blank -%}
+                {%- assign orb_bg_alpha = orb_label_bg_opacity | default: 100 | times: 0.01 -%}
+                {%- assign orb_bg_rgba = orb_label_bg | color_modify: 'alpha', orb_bg_alpha -%}
+                {%- assign orb_label_style = orb_label_style | append: '--myed-orb-label-bg:' | append: orb_bg_rgba | append: ';' -%}
+              {%- endif -%}
+              {%- assign orb_style = '' -%}
+              {%- if orb_label_color != blank -%}
+                {%- assign orb_style = orb_style | append: '--myed-orb-label-color:' | append: orb_label_color | append: ';' -%}
+              {%- endif -%}
+              {%- if orb_label_bg != blank -%}
+                {%- assign orb_bg_alpha = orb_label_bg_opacity | times: 0.01 -%}
+                {%- assign orb_bg_rgba = orb_label_bg | color_modify: 'alpha', orb_bg_alpha -%}
+                {%- assign orb_style = orb_style | append: '--myed-orb-label-bg:' | append: orb_bg_rgba | append: ';' -%}
+              {%- endif -%}
+              {%- if orb_link != blank -%}
+                <a class="myed-orb-tile"
+                   href="{{ orb_link }}"
+                   role="listitem"
+                   data-myed-event="hero_orb_click"
+                   data-myed-component="hero_premium"
+                   data-myed-label="{{ orb_label | default: 'Orb' | escape }}"
+                   data-myed-href="{{ orb_link }}"
+                   {{ block.shopify_attributes }}
+                   {% if orb_style != '' %}style="{{ orb_style }}"{% endif %}
+                   target="_blank" rel="noopener noreferrer">
+              {%- else -%}
+                <div class="myed-orb-tile is-disabled" role="listitem" {{ block.shopify_attributes }} {% if orb_style != '' %}style="{{ orb_style }}"{% endif %}>
+              {%- endif -%}
+                    <span class="myed-orb">
+                      {%- if orb_img != blank -%}
+                      {%- assign orb_img_width = s.orb_size_desktop | default: 84 | times: 2 | at_most: 320 -%}
+                      {%- assign orb_img_2x = orb_img_width | times: 2 -%}
+                      {%- if orb_img_2x > 320 -%}{%- assign orb_img_2x = 320 -%}{%- endif -%}
+                      {%- assign orb_render_m = s.panel_orb_size_mobile | default: s.orb_size_mobile | default: 72 -%}
+                      {%- assign orb_render_d = s.panel_orb_size_desktop | default: s.orb_size_desktop | default: 84 -%}
+                      <img class="myed-orb__img"
+                           src="{{ orb_img | image_url: width: orb_img_width }}"
+                           srcset="
+                             {{ orb_img | image_url: width: orb_img_width }} {{ orb_img_width }}w,
+                             {{ orb_img | image_url: width: orb_img_2x }} {{ orb_img_2x }}w
+                           "
+                           sizes="(max-width: 989px) {{ orb_render_m }}px, {{ orb_render_d }}px"
+                           width="{{ orb_img_width }}"
+                           height="{{ orb_img_width }}"
+                           alt="{{ orb_label | default: 'Orb' | escape }}"
+                           loading="lazy"
+                           decoding="async">
+                      {%- endif -%}
+                    </span>
+                  {%- if orb_label != blank -%}
+                    <span class="myed-orb__label" {% if orb_label_style != '' %}style="{{ orb_label_style }}"{% endif %}>{{ orb_label }}</span>
+                  {%- endif -%}
+              {%- if orb_link != blank -%}
+                </a>
+              {%- else -%}
+                </div>
               {%- endif -%}
             {%- endfor -%}
-          {%- endif -%}
-        </div>
+          </div>
+        {%- else -%}
+          <div class="myed-panels" role="list" aria-label="Info panels">
+            {%- if panel_blocks.size > 0 -%}
+              {%- for block in panel_blocks -%}
+                {%- assign t = block.settings.title -%}
+                {%- assign d = block.settings.desc -%}
+                {%- assign u = block.settings.url -%}
+                {%- if t != blank or d != blank -%}
+                  {%- if u != blank -%}
+                    <a class="myed-panel"
+                      href="{{ u }}"
+                      data-myed-event="hero_panel_click"
+                      data-myed-component="hero_premium"
+                      data-myed-panel-index="{{ forloop.index0 }}"
+                      data-myed-label="{{ t | escape }}"
+                      data-myed-href="{{ u }}"
+                      {{ block.shopify_attributes }}>
+                      {%- if t != blank -%}<div class="myed-panel__t">{{ t }}</div>{%- endif -%}
+                      {%- if d != blank -%}<div class="myed-panel__d">{{ d }}</div>{%- endif -%}
+                    </a>
+                  {%- else -%}
+                    <div class="myed-panel"
+                         data-myed-component="hero_premium"
+                         data-myed-panel-index="{{ forloop.index0 }}"
+                         data-myed-label="{{ t | escape }}"
+                         {{ block.shopify_attributes }}>
+                      {%- if t != blank -%}<div class="myed-panel__t">{{ t }}</div>{%- endif -%}
+                      {%- if d != blank -%}<div class="myed-panel__d">{{ d }}</div>{%- endif -%}
+                    </div>
+                  {%- endif -%}
+                {%- endif -%}
+              {%- endfor -%}
+            {%- endif -%}
+          </div>
+        {%- endif -%}
       </aside>
+      {%- endif -%}
     </div>
   </div>
 
@@ -431,6 +799,16 @@
       },
 
       { "type": "header", "content": "CTA Buttons" },
+      {
+        "type": "select",
+        "id": "cta_mode",
+        "label": "CTA display",
+        "default": "buttons",
+        "options": [
+          { "value": "buttons", "label": "Buttons (default)" },
+          { "value": "orbs", "label": "Orbs" }
+        ]
+      },
       { "type": "text", "id": "primary_cta_label", "label": "Primary CTA label", "default": "Ritual starten" },
       { "type": "url", "id": "primary_cta_link", "label": "Primary CTA link" },
       { "type": "text", "id": "secondary_cta_label", "label": "Secondary CTA label", "default": "Mehr erfahren" },
@@ -446,6 +824,17 @@
           { "value": "l", "label": "Large" }
         ]
       },
+      {
+        "type": "select",
+        "id": "cta_style",
+        "label": "CTA style",
+        "default": "solid",
+        "options": [
+          { "value": "solid", "label": "Solid (default)" },
+          { "value": "ghost", "label": "Ghost" },
+          { "value": "glass", "label": "Glass" }
+        ]
+      },
       { "type": "range", "id": "cta_gap_desktop", "label": "CTA gap (desktop)", "min": 6, "max": 20, "step": 1, "default": 10 },
       { "type": "range", "id": "cta_gap_mobile", "label": "CTA gap (mobile)", "min": 6, "max": 20, "step": 1, "default": 8 },
 
@@ -454,10 +843,22 @@
       { "type": "link_list", "id": "hero_menu", "label": "Hero menu" },
 
       { "type": "header", "content": "Cards & Colors" },
+      { "type": "header", "content": "Cards" },
+      { "type": "checkbox", "id": "show_left_card", "label": "Show left card", "default": true },
+      { "type": "checkbox", "id": "show_right_card", "label": "Show right card", "default": true },
       { "type": "color", "id": "card_bg", "label": "Right card background", "default": "#ffffff" },
       { "type": "color", "id": "text_color", "label": "Text color", "default": "#111111" },
       { "type": "color", "id": "muted_color", "label": "Muted color", "default": "#666666" },
       { "type": "range", "id": "radius", "label": "Global radius", "min": 14, "max": 30, "step": 1, "default": 22 },
+
+      { "type": "header", "content": "Text Colors" },
+      { "type": "color", "id": "kicker_text_color", "label": "Kicker text color", "default": "#666666" },
+      { "type": "color", "id": "title_text_color", "label": "Title text color", "default": "#111111" },
+      { "type": "color", "id": "subtitle_text_color", "label": "Subtitle text color", "default": "#666666" },
+      { "type": "color", "id": "card_title_color", "label": "Right card title color", "default": "#111111" },
+      { "type": "color", "id": "card_tag_color", "label": "Right card tag color", "default": "#111111" },
+      { "type": "color", "id": "panel_title_color", "label": "Panel title color", "default": "#111111" },
+      { "type": "color", "id": "panel_desc_color", "label": "Panel description color", "default": "#666666" },
 
       { "type": "header", "content": "Left Card (glass)" },
       { "type": "checkbox", "id": "left_glass", "label": "Enable glass blur", "default": true },
@@ -517,6 +918,20 @@
           { "value": "none", "label": "None" }
         ]
       },
+      {
+        "type": "select",
+        "id": "right_items",
+        "label": "Right card items",
+        "default": "panels",
+        "options": [
+          { "value": "panels", "label": "Panels (default)" },
+          { "value": "orbs", "label": "Orb links" }
+        ]
+      },
+      { "type": "header", "content": "Right Card Glass" },
+      { "type": "checkbox", "id": "right_glass_enable", "label": "Force glass on right card", "default": false },
+      { "type": "range", "id": "right_glass_opacity", "label": "Glass opacity (%)", "min": 40, "max": 90, "step": 1, "default": 65 },
+      { "type": "range", "id": "right_glass_blur", "label": "Glass blur (px)", "min": 0, "max": 16, "step": 1, "default": 12 },
 
       { "type": "header", "content": "Info Panels" },
       {
@@ -530,8 +945,101 @@
           { "value": "l", "label": "Large" }
         ]
       },
+      {
+        "type": "select",
+        "id": "right_panel_style",
+        "label": "Right panel style",
+        "default": "cards",
+        "options": [
+          { "value": "cards", "label": "Cards (default)" },
+          { "value": "orbs", "label": "Orbs" }
+        ]
+      },
       { "type": "range", "id": "panel_cols", "label": "Panel columns (desktop)", "min": 2, "max": 4, "step": 1, "default": 3 },
       { "type": "range", "id": "panel_min_h", "label": "Panel min height (px)", "min": 64, "max": 120, "step": 2, "default": 84 },
+      { "type": "checkbox", "id": "panel_glass_enable", "label": "Force glass on panels", "default": false },
+      { "type": "range", "id": "panel_glass_opacity", "label": "Panel glass opacity (%)", "min": 55, "max": 95, "step": 1, "default": 80 },
+      { "type": "range", "id": "panel_glass_blur", "label": "Panel glass blur (px)", "min": 0, "max": 16, "step": 1, "default": 10 },
+      { "type": "range", "id": "panel_hover_opacity", "label": "Panel hover opacity (%)", "min": 60, "max": 98, "step": 1, "default": 88 },
+
+      { "type": "header", "content": "Orb Links" },
+      { "type": "range", "id": "orb_size_mobile", "label": "Orb size (mobile, px)", "min": 50, "max": 110, "step": 1, "default": 68 },
+        { "type": "range", "id": "orb_size_desktop", "label": "Orb size (desktop, px)", "min": 56, "max": 120, "step": 1, "default": 84 },
+        { "type": "range", "id": "orb_gap_mobile", "label": "Orb gap (mobile, px)", "min": 0, "max": 48, "step": 1, "default": 14 },
+        { "type": "range", "id": "orb_gap_desktop", "label": "Orb gap (desktop, px)", "min": 0, "max": 64, "step": 1, "default": 16 },
+        { "type": "range", "id": "orb_blur", "label": "Orb blur (px)", "min": 0, "max": 18, "step": 1, "default": 10 },
+        { "type": "range", "id": "orb_bg_opacity", "label": "Orb background opacity (%)", "min": 40, "max": 95, "step": 1, "default": 70 },
+        { "type": "range", "id": "orb_ring_glow", "label": "Orb ring glow (0–100)", "min": 0, "max": 100, "step": 5, "default": 35 },
+        { "type": "range", "id": "orb_spin", "label": "Orb spin speed (seconds)", "min": 6, "max": 20, "step": 1, "default": 12 },
+      {
+        "type": "select",
+        "id": "orb_label_style",
+        "label": "Orb label style",
+        "default": "dark",
+        "options": [
+            { "value": "dark", "label": "Dark text" },
+            { "value": "light", "label": "Light text" }
+          ]
+        },
+      {
+        "type": "select",
+        "id": "orb_align_desktop",
+        "label": "Orb align (desktop)",
+        "default": "center",
+        "options": [
+            { "value": "left", "label": "Left" },
+            { "value": "center", "label": "Center" },
+            { "value": "space-between", "label": "Space between" },
+            { "value": "space-evenly", "label": "Space evenly" }
+          ]
+        },
+        {
+          "type": "select",
+          "id": "orb_align_mobile",
+          "label": "Orb align (mobile)",
+          "default": "center",
+          "options": [
+            { "value": "left", "label": "Left" },
+            { "value": "center", "label": "Center" },
+            { "value": "space-between", "label": "Space between" },
+            { "value": "space-evenly", "label": "Space evenly" }
+          ]
+        },
+        {
+          "type": "select",
+          "id": "orb_wrap_desktop",
+          "label": "Orb wrap (desktop)",
+          "default": "wrap",
+          "options": [
+            { "value": "wrap", "label": "Wrap (default)" },
+            { "value": "nowrap", "label": "No wrap" }
+          ]
+        },
+        {
+          "type": "select",
+          "id": "orb_wrap_mobile",
+          "label": "Orb wrap (mobile)",
+          "default": "scroll",
+          "options": [
+            { "value": "scroll", "label": "Horizontal scroll (default)" },
+            { "value": "wrap", "label": "Wrap" }
+        ]
+      },
+        { "type": "range", "id": "orb_limit_desktop", "label": "Orb limit (desktop, 0=all)", "min": 0, "max": 12, "step": 1, "default": 6 },
+        { "type": "range", "id": "orb_limit_mobile", "label": "Orb limit (mobile, 0=all)", "min": 0, "max": 12, "step": 1, "default": 3 },
+        { "type": "checkbox", "id": "orb_pulse", "label": "Pulse (CTA orbs)", "default": false },
+      { "type": "header", "content": "Panel Orb Links" },
+      { "type": "range", "id": "panel_orb_size_mobile", "label": "Panel orb size (mobile, px)", "min": 50, "max": 110, "step": 1, "default": 68 },
+      { "type": "range", "id": "panel_orb_size_desktop", "label": "Panel orb size (desktop, px)", "min": 56, "max": 120, "step": 1, "default": 84 },
+      { "type": "range", "id": "panel_orb_gap_mobile", "label": "Panel orb gap (mobile, px)", "min": 0, "max": 48, "step": 1, "default": 14 },
+      { "type": "range", "id": "panel_orb_gap_desktop", "label": "Panel orb gap (desktop, px)", "min": 0, "max": 64, "step": 1, "default": 16 },
+      { "type": "select", "id": "panel_orb_align_desktop", "label": "Panel orb align (desktop)", "default": "center", "options": [ { "value": "left", "label": "Left" }, { "value": "center", "label": "Center" }, { "value": "space-between", "label": "Space between" }, { "value": "space-evenly", "label": "Space evenly" } ] },
+      { "type": "select", "id": "panel_orb_align_mobile", "label": "Panel orb align (mobile)", "default": "center", "options": [ { "value": "left", "label": "Left" }, { "value": "center", "label": "Center" }, { "value": "space-between", "label": "Space between" }, { "value": "space-evenly", "label": "Space evenly" } ] },
+      { "type": "select", "id": "panel_orb_wrap_desktop", "label": "Panel orb wrap (desktop)", "default": "wrap", "options": [ { "value": "wrap", "label": "Wrap (default)" }, { "value": "nowrap", "label": "No wrap" } ] },
+        { "type": "select", "id": "panel_orb_wrap_mobile", "label": "Panel orb wrap (mobile)", "default": "scroll", "options": [ { "value": "scroll", "label": "Horizontal scroll (default)" }, { "value": "wrap", "label": "Wrap" } ] },
+        { "type": "range", "id": "panel_orb_limit_desktop", "label": "Panel orb limit (desktop, 0=all)", "min": 0, "max": 12, "step": 1, "default": 6 },
+        { "type": "range", "id": "panel_orb_limit_mobile", "label": "Panel orb limit (mobile, 0=all)", "min": 0, "max": 12, "step": 1, "default": 3 },
+        { "type": "checkbox", "id": "panel_orb_pulse", "label": "Pulse (Right panel orbs)", "default": false },
 
       { "type": "header", "content": "Performance (optional)" },
       {
@@ -552,7 +1060,24 @@
         "settings": [
           { "type": "text", "id": "title", "label": "Title", "default": "Klarer Ablauf" },
           { "type": "textarea", "id": "desc", "label": "Description", "default": "Morgen–Tag–Abend. Wiederholbar, realistisch." },
-          { "type": "url", "id": "url", "label": "Optional link" }
+          { "type": "image_picker", "id": "panel_image", "label": "Panel image (for orbs)" },
+          { "type": "url", "id": "url", "label": "Optional link" },
+          { "type": "color", "id": "panel_label_color", "label": "Orb label text color" },
+          { "type": "color", "id": "panel_label_bg", "label": "Orb label background color" },
+          { "type": "range", "id": "panel_label_bg_opacity", "label": "Orb label background opacity (%)", "min": 0, "max": 100, "step": 5, "default": 80 }
+        ]
+      },
+      {
+        "type": "orb_link",
+        "name": "Orb link",
+        "settings": [
+          { "type": "image_picker", "id": "orb_image", "label": "Orb image" },
+          { "type": "text", "id": "orb_label", "label": "Label", "default": "Comfort" },
+          { "type": "url", "id": "orb_link", "label": "Link" },
+          { "type": "checkbox", "id": "orb_newtab", "label": "Open in new tab", "default": false },
+          { "type": "color", "id": "orb_label_color", "label": "Orb label text color" },
+          { "type": "color", "id": "orb_label_bg", "label": "Orb label background color" },
+          { "type": "range", "id": "orb_label_bg_opacity", "label": "Orb label background opacity (%)", "min": 0, "max": 100, "step": 5, "default": 80 }
         ]
       }
     ],

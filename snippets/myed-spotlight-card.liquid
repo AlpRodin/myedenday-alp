@@ -1,14 +1,14 @@
 {%- comment -%}
   Minimal product card for MyED Spotlight.
-  Expects `product` object. Falls back gracefully when blank.
+  Expects `card_product` (or falls back to `product`). Defensive against blanks.
 {%- endcomment -%}
 
 {%- liquid
-  assign card_product = product
+  assign card_product = card_product | default: product
 -%}
 
 {%- if card_product == blank -%}
-  <div class="myed-spotlight__emptyHint">Add a product to show the spotlight card.</div>
+  <!-- MyED Spotlight: no product passed -->
 {%- else -%}
   {%- liquid
     assign card_url = card_product.url | default: '#'
@@ -18,7 +18,10 @@
       assign media = card_product.images.first
     endif
 
-    assign has_compare = card_product.compare_at_price > card_product.price
+    assign on_sale = false
+    if card_product.compare_at_price and card_product.compare_at_price > card_product.price
+      assign on_sale = true
+    endif
   -%}
 
   <article class="myed-spotlight-card" itemscope itemtype="https://schema.org/Product">
@@ -59,7 +62,7 @@
           <span class="myed-spotlight-card__priceNow">
             {{ card_product.price | money_with_currency }}
           </span>
-          {%- if has_compare -%}
+          {%- if on_sale -%}
             <span class="myed-spotlight-card__priceWas">
               {{ card_product.compare_at_price | money_with_currency }}
             </span>
@@ -68,7 +71,7 @@
 
         {%- if card_product.available == false -%}
           <span class="myed-spotlight-card__badge">Sold Out</span>
-        {%- elsif has_compare -%}
+        {%- elsif on_sale -%}
           <span class="myed-spotlight-card__badge">Save</span>
         {%- endif -%}
       </div>

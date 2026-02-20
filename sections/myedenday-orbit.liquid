@@ -44,6 +44,10 @@
     --bg: {{ section.settings.bg_color }};
     --text: {{ section.settings.text_color }};
     --muted: {{ section.settings.muted_color }};
+    --orbit-text: {{ section.settings.text_color }};
+    --orbit-muted: {{ section.settings.muted_color }};
+    --orbit-item-text: {{ section.settings.item_text_color | default: section.settings.text_color }};
+    --orbit-item-muted: var(--orbit-muted);
 
     {% if has_bg %}
       --orbit-bg-overlay: {{ section.settings.bg_overlay_color | color_modify: 'alpha', bg_overlay_a }};
@@ -74,10 +78,17 @@
     --center-bd: {{ section.settings.center_border | color_modify: 'alpha', c_bd_a }};
     --center-bw: {{ section.settings.center_border_w }}px;
     --center-shadow: {{ section.settings.center_shadow }}px;
+    --orbit-center-shadow: {{ section.settings.center_shadow }}px;
+    --orbit-border-alpha: {{ section.settings.center_border_alpha | times: 0.01 }};
+    --orbit-border-w: {{ section.settings.center_border_w }}px;
+    --orbit-border-color-hex: {{ section.settings.center_border }};
+    --orbit-border-color: {{ section.settings.center_border }};
 
-    --pulse-amt: {{ section.settings.pulse_amt }}%;
+    --orbit-pulse-amount: {{ section.settings.pulse_amt | default: 12 }};
+    --orbit-pulse-play: {% if section.settings.center_pulse %}running{% else %}paused{% endif %};
+    --orbit-pulse-on: {% if section.settings.center_pulse %}1{% else %}0{% endif %};
 
-    --center-img: {{ section.settings.center_image_size }}px;
+    --orbit-center-img: {{ section.settings.center_image_size }}px;
     --center-img-radius: {{ section.settings.center_image_radius }}px;
   "
 >
@@ -94,20 +105,23 @@
       <p class="{{ ns }}__sub">{{ section.settings.subheading | escape }}</p>
     {%- endif -%}
 
-    <div class="{{ ns }}__stage" aria-label="Orbit navigation">
-      <div class="{{ ns }}__center{% if section.settings.center_pulse %} is-pulse{% endif %}">
-        {%- if section.settings.center_image != blank -%}
-          {%- assign cimg = section.settings.center_image -%}
-          <img
-            class="{{ ns }}__centerImg"
-            src="{{ cimg | image_url: width: 240 }}"
-            alt="{{ section.settings.center_label | escape }}"
-            loading="lazy"
-            width="240"
-            height="240"
-          >
-        {%- else -%}
-          <span class="{{ ns }}__centerText">{{ section.settings.center_label | escape }}</span>
+      <div class="{{ ns }}__stage" aria-label="Orbit navigation">
+        <div class="{{ ns }}__center myed-orbit__glass{% if section.settings.center_pulse %} is-pulse{% endif %}">
+        <div class="myed-orbit__center-media">
+          {%- if section.settings.center_image != blank -%}
+            {%- assign cimg = section.settings.center_image -%}
+            <img
+              class="{{ ns }}__centerImg"
+              src="{{ cimg | image_url: width: 240 }}"
+              alt="{{ section.settings.center_label | escape }}"
+              loading="lazy"
+              width="240"
+              height="240"
+            >
+          {%- endif -%}
+        </div>
+        {%- if section.settings.center_label != blank -%}
+          <div class="myed-orbit__center-label">{{ section.settings.center_label }}</div>
         {%- endif -%}
       </div>
 
@@ -124,7 +138,7 @@
               {{ block.shopify_attributes }}
             >
               <a
-                class="{{ ns }}__card"
+                class="{{ ns }}__card myed-orbit__glass"
                 href="{{ block.settings.link | default: '#' }}"
                 {% if block.settings.link == blank %}aria-disabled="true"{% endif %}
                 aria-label="{{ block.settings.label | escape }}"
@@ -204,7 +218,7 @@
     }
     .{{ ns }}__kicker{
       margin: 0 0 10px;
-      color: var(--muted);
+      color: var(--orbit-muted, var(--muted));
       font-size: 13px;
       letter-spacing: .08em;
       text-transform: uppercase;
@@ -214,11 +228,12 @@
       font-size: 40px;
       line-height: 1.1;
       letter-spacing: -0.02em;
+      color: var(--orbit-text, var(--text));
     }
     .{{ ns }}__sub{
       margin: 12px auto 0;
       max-width: 720px;
-      color: var(--muted);
+      color: var(--orbit-muted, var(--muted));
       font-size: 16px;
       line-height: 1.5;
     }
@@ -254,32 +269,55 @@
       border: var(--center-bw) solid var(--center-bd);
       background: var(--center-bg);
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
+      gap: 8px;
+      text-align: center;
       z-index: 3;
-      box-shadow: 0 12px var(--center-shadow) rgba(0,0,0,.10);
+      box-shadow: 0 12px var(--orbit-center-shadow, var(--center-shadow)) rgba(0,0,0,.10);
       backdrop-filter: blur(8px);
+      animation: {{ ns }}-pulse 4.2s ease-in-out infinite;
+      animation-play-state: var(--orbit-pulse-play, running);
     }
     .{{ ns }}__centerText{
       font-size: 22px;
       letter-spacing: .01em;
       color: var(--center-text);
     }
+    .myed-orbit__center-label{
+      font-size: 13px;
+      line-height: 1.1;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: var(--orbit-center-text, var(--center-text));
+      opacity: .92;
+      margin-top: 2px;
+      white-space: nowrap;
+      text-align: center;
+    }
     .{{ ns }}__centerImg{
-      width: var(--center-img);
-      height: var(--center-img);
+      width: var(--orbit-center-img, 110px);
+      height: var(--orbit-center-img, 110px);
       border-radius: var(--center-img-radius);
       object-fit: contain;
       display:block;
       filter: saturate(var(--vib));
+      max-width: none;
+      max-height: none;
+    }
+    .myed-orbit__center-media{
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .{{ ns }}__center.is-pulse{
-      animation: {{ ns }}-pulse 4.2s ease-in-out infinite;
       transform-origin: center;
     }
     @keyframes {{ ns }}-pulse{
       0%,100% { transform: scale(1); }
-      50%     { transform: scale(calc(1 + (var(--pulse-amt) / 100))); }
+      50%     { transform: scale(calc(1 + (var(--orbit-pulse-amount, 12) / 100))); }
     }
 
     /* RING ROTATION */
@@ -330,6 +368,15 @@
     }
     .{{ ns }}__card[aria-disabled="true"]{ pointer-events:none; }
 
+    .myed-orbit__glass{
+      background: rgba(255,255,255,.10);
+      border: var(--orbit-border-w, 2px) solid color-mix(in srgb, var(--orbit-border-color-hex, #ffffff) calc(var(--orbit-border-alpha, .25) * 100%), transparent);
+      border-color: var(--orbit-border-color-hex, #ffffff);
+      -webkit-backdrop-filter: blur(18px);
+      backdrop-filter: blur(18px);
+      box-shadow: 0 12px 40px rgba(0,0,0,.28);
+    }
+
     /*
       TRUE UPRIGHT:
       - cancel static placement angle: rotate(-var(--a))
@@ -374,11 +421,11 @@
       border-radius: 999px;
       font-size: 13px;
       line-height: 1;
-      color: #fff;
-      background: rgba(0,0,0,.38);
+      color: var(--orbit-item-text, var(--orbit-text));
+      background: transparent;
       text-align: center;
-      backdrop-filter: blur(8px);
-      text-shadow: 0 1px 1px rgba(0,0,0,.22);
+      backdrop-filter: none;
+      text-shadow: none;
     }
 
     @media (hover:hover){
@@ -435,8 +482,8 @@
       .{{ ns }}__centerText{ font-size: 18px; }
       .{{ ns }}__label{ font-size: 12px; }
       .{{ ns }}__centerImg{
-        width: calc(var(--center-img) * 0.9);
-        height: calc(var(--center-img) * 0.9);
+        width: calc(var(--orbit-center-img, 110px) * 0.9);
+        height: calc(var(--orbit-center-img, 110px) * 0.9);
       }
     }
 
@@ -446,7 +493,17 @@
       .{{ ns }}.is-bg-drift, .{{ ns }}.is-bg-shimmer::before{
         animation: none !important;
       }
+      .{{ ns }}__center{
+        animation: none !important;
+      }
     }
+    {% if request.design_mode %}
+    /* Allow pulse preview in Theme Editor even if user has reduced motion */
+    .shopify-design-mode .{{ ns }}__center{
+      animation: {{ ns }}-pulse 4.2s ease-in-out infinite !important;
+      animation-play-state: var(--orbit-pulse-play, running) !important;
+    }
+    {% endif %}
   </style>
 </section>
 
@@ -486,7 +543,7 @@
 
     { "type": "text", "id": "center_label", "label": "Center label", "default": "Rituel" },
     { "type": "image_picker", "id": "center_image", "label": "Center image (favicon/logo)" },
-    { "type": "range", "id": "center_image_size", "min": 28, "max": 90, "step": 2, "label": "Center image size (px)", "default": 56 },
+    { "type": "range", "id": "center_image_size", "min": 28, "max": 180, "step": 2, "label": "Center image size (px)", "default": 110 },
     { "type": "range", "id": "center_image_radius", "min": 0, "max": 40, "step": 2, "label": "Center image radius (px)", "default": 14 },
 
     { "type": "checkbox", "id": "animate", "label": "Animate orbit", "default": true },
@@ -506,6 +563,7 @@
     { "type": "color", "id": "center_bg", "label": "Center bg", "default": "#ffffff" },
     { "type": "range", "id": "center_bg_alpha", "min": 40, "max": 100, "step": 5, "label": "Center bg (%)", "default": 70 },
     { "type": "color", "id": "center_text", "label": "Center text", "default": "#1f1f1f" },
+    { "type": "color", "id": "item_text_color", "label": "Item text", "default": "#F1F1F1" },
     { "type": "color", "id": "center_border", "label": "Center border", "default": "#000000" },
     { "type": "range", "id": "center_border_alpha", "min": 0, "max": 25, "step": 5, "label": "Border alpha (%)", "default": 10 },
     { "type": "range", "id": "center_border_w", "min": 0, "max": 2, "step": 1, "label": "Border width", "default": 1 },

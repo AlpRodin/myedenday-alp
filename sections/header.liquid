@@ -7,6 +7,7 @@
   media="print"
   onload="this.media='all'"
 >
+<link rel="stylesheet" href="{{ 'myed-header-glass.css' | asset_url }}" media="print" onload="this.media='all'">
 
 {%- if settings.predictive_search_enabled -%}
   <link rel="stylesheet" href="{{ 'component-price.css' | asset_url }}" media="print" onload="this.media='all'">
@@ -103,6 +104,25 @@
 <script src="{{ 'cart-notification.js' | asset_url }}" defer="defer"></script>
 
 {%- liquid
+  assign glass_header_enabled = section.settings.enable_glass_header
+  assign glass_opacity = section.settings.glass_opacity | default: 16 | times: 0.01
+  assign glass_blur = section.settings.glass_blur | default: 12
+  assign glass_border_opacity = section.settings.glass_border_opacity | default: 12 | times: 0.01
+  assign glass_base = '#ffffff'
+  if section.settings.use_color_scheme
+    assign glass_base = 'var(--color-background)'
+  endif
+
+  assign drawer_glass_enabled = section.settings.enable_glass_drawer
+  assign drawer_opacity = section.settings.drawer_opacity | default: 18 | times: 0.01
+  assign drawer_blur = section.settings.drawer_blur | default: 12
+
+  assign header_text_override_enabled = section.settings.enable_header_text_override
+  assign header_text_color = section.settings.header_text_color
+
+  assign drawer_text_override_enabled = section.settings.enable_drawer_text_override
+  assign drawer_text_color = section.settings.drawer_text_color
+
   for block in section.blocks
     if block.type == '@app'
       assign has_app_block = true
@@ -122,7 +142,15 @@
   {% if header_tag == 'sticky-header' %}
     data-sticky-type="{{ section.settings.sticky_header_type }}"
   {% endif %}
-  class="header-wrapper color-{{ section.settings.color_scheme }} gradient{% if section.settings.show_line_separator %} header-wrapper--border-bottom{% endif %}"
+  class="header-wrapper color-{{ section.settings.color_scheme }} gradient{% if section.settings.show_line_separator %} header-wrapper--border-bottom{% endif %}{% if glass_header_enabled %} myed-glass-header{% endif %}{% if drawer_glass_enabled %} myed-glass-drawer{% endif %}"
+  {% if glass_header_enabled or drawer_glass_enabled %}
+    style="
+      {% if glass_header_enabled %}--myed-glass-base: {{ glass_base }}; --myed-glass-opacity: {{ glass_opacity }}; --myed-glass-border-opacity: {{ glass_border_opacity }}; --myed-glass-blur: {{ glass_blur }}px;{% endif %}
+      {% if header_text_override_enabled %}--myed-header-text: {{ header_text_color }};{% endif %}
+      {% if drawer_glass_enabled %}--myed-drawer-opacity: {{ drawer_opacity }}; --myed-drawer-blur: {{ drawer_blur }}px;{% endif %}
+      {% if drawer_text_override_enabled %}--myed-drawer-text: {{ drawer_text_color }};{% endif %}
+    "
+  {% endif %}
 >
   {%- liquid
     assign social_links = false
@@ -563,6 +591,20 @@
       "default": "on-scroll-up",
       "label": "t:sections.header.settings.sticky_header_type.label"
     },
+    { "type": "header", "content": "Glass Header" },
+    { "type": "checkbox", "id": "enable_glass_header", "label": "Glass effect (header)", "default": false },
+    { "type": "range", "id": "glass_opacity", "label": "Glass opacity (%)", "min": 0, "max": 30, "step": 1, "default": 18 },
+    { "type": "range", "id": "glass_blur", "label": "Glass blur (px)", "min": 0, "max": 16, "step": 1, "default": 12 },
+    { "type": "range", "id": "glass_border_opacity", "label": "Border opacity (%)", "min": 0, "max": 30, "step": 1, "default": 12 },
+    { "type": "checkbox", "id": "use_color_scheme", "label": "Use color scheme background", "default": true },
+    { "type": "checkbox", "id": "enable_header_text_override", "label": "Override header text color", "default": false },
+    { "type": "color", "id": "header_text_color", "label": "Header text color", "default": "#111111" },
+    { "type": "header", "content": "Glass Drawer" },
+    { "type": "checkbox", "id": "enable_glass_drawer", "label": "Glass effect (drawer)", "default": false },
+    { "type": "range", "id": "drawer_opacity", "label": "Drawer opacity (%)", "min": 0, "max": 30, "step": 1, "default": 18 },
+    { "type": "range", "id": "drawer_blur", "label": "Drawer blur (px)", "min": 0, "max": 16, "step": 1, "default": 12 },
+    { "type": "checkbox", "id": "enable_drawer_text_override", "label": "Override drawer text color", "default": false },
+    { "type": "color", "id": "drawer_text_color", "label": "Drawer text color", "default": "#FFFFFF" },
     {
       "type": "checkbox",
       "id": "show_line_separator",

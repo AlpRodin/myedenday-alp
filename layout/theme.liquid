@@ -300,10 +300,30 @@
     </script>
   </head>
 
-  <body class="gradient{% if settings.animations_hover_elements != 'none' %} animate--hover-{{ settings.animations_hover_elements }}{% endif %}{% if settings.myed_bg_enable and settings.myed_bg_image != blank %} myed-has-site-bg{% endif %}">
-    {% if settings.myed_bg_enable and settings.myed_bg_image != blank %}
-      <div class="myed-site-bg" aria-hidden="true"></div>
-    {% endif %}
+  {% liquid
+    assign enable_id  = 'myed_bg_enable'
+    assign image_id   = 'myed_bg_image'
+    assign opacity_id = 'myed_bg_opacity'
+
+    assign bg_enabled = settings[enable_id]
+    assign bg_image   = settings[image_id]
+    assign bg_opacity = settings[opacity_id] | default: 18
+    assign bg_on      = bg_enabled and bg_image != blank
+
+    if bg_on
+      assign body_class_extra = ' myed-has-site-bg'
+    else
+      assign body_class_extra = ''
+    endif
+  %}
+  <body class="gradient{% if settings.animations_hover_elements != 'none' %} animate--hover-{{ settings.animations_hover_elements }}{% endif %}{{ body_class_extra }}">
+    <div class="myed-site-bg" aria-hidden="true"
+      style="
+        --myed-bg-enabled: {% if bg_on %}1{% else %}0{% endif %};
+        --myed-bg-opacity: {{ bg_opacity | divided_by: 100.0 }};
+        --myed-bg-image: {% if bg_image != blank %}url('{{ bg_image | image_url: width: 2400 }}'){% else %}none{% endif %};
+      ">
+    </div>
     <a class="skip-to-content-link button visually-hidden" href="#MainContent">
       {{ 'accessibility.skip_to_text' | t }}
     </a>

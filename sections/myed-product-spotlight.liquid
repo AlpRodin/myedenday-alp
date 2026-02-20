@@ -15,17 +15,11 @@
   assign bg_top = s.bg_top | default: 'rgba(0,0,0,0)'
   assign bg_bot = s.bg_bot | default: 'rgba(0,0,0,0)'
 
-  assign bg_img_url = ''
-  if s.bg_img != blank
-    assign bg_img_url = s.bg_img | image_url: width: 2400
-  endif
-
   assign tex_img_url = ''
   if s.tex_img != blank
     assign tex_img_url = s.tex_img | image_url: width: 2000
   endif
 
-  assign bg_img_op_f = s.bg_img_op | default: 0 | times: 0.01
   assign tex_op_f    = s.tex_op    | default: 0 | times: 0.01
 
   assign spot_a = s.spot | default: 0 | times: 0.01
@@ -127,25 +121,6 @@
 
   assign alt_text = heading | default: 'Spotlight'
   assign show_card = s.show_card
-
-  capture bg_style
-    echo "background-image: "
-    if bg_img_url != blank
-      echo "url('{{ bg_img_url }}');"
-    else
-      echo "none;"
-    endif
-    echo " background-position: center;"
-    echo " background-size: cover;"
-    echo " background-repeat: no-repeat;"
-    echo " opacity: "
-    if bg_img_url != blank
-      echo bg_img_op_f
-    else
-      echo 0
-    endif
-    echo ";"
-  endcapture
 -%}
 
 <section class="myed-spotlight" data-myed-spotlight>
@@ -161,9 +136,11 @@
       --myed-vig-a: {{ vig_a }};
       --myed-drift-speed: {{ drift_speed }}s;
       --myed-img-scale: {{ img_scale_f }};
+      --myed-left-kicker-c: {{ s.left_kicker_color | default: '#E7ECF3' }};
+      --myed-left-heading-c: {{ s.left_heading_color | default: '#F4F7FC' }};
+      --myed-left-body-c: {{ s.left_body_color | default: '#D7DEE8' }};
     "
   >
-    <div class="myed-spotlight__bg" aria-hidden="true" style="{{ bg_style | strip | strip_newlines }}"></div>
     <div class="myed-spotlight__tex" aria-hidden="true"></div>
 
     <div class="myed-spotlight__inner page-width">
@@ -199,7 +176,7 @@
         <!-- CENTER -->
         <div class="myed-spotlight__center">
           {%- if mode == 'product' and show_card and p != blank -%}
-            {% render 'myed-spotlight-card', product: p %}
+            {% render 'myed-spotlight-card', card_product: p %}
           {%- elsif img != blank -%}
             <div class="myed-spotlight__imageWrap" aria-hidden="true">
               {{
@@ -225,13 +202,39 @@
             {%- for block in section.blocks -%}
               {% case block.type %}
                 {% when 'set_item' %}
-                  <details class="spotlight-set-item"{% if block.settings.open %} open{% endif %} {{ block.shopify_attributes }}>
-                    <summary>{{ block.settings.label | escape }}</summary>
-                    {{ block.settings.content }}
+                  <details
+                    class="myed-spotlight__item spotlight-set-item"
+                    style="
+                      --myed-item-label-c: {{ block.settings.label_color | default: '#FFFFFF' }};
+                      --myed-item-content-c: {{ block.settings.content_color | default: '#C9D3E0' }};
+                      --myed-item-dot-c: {{ block.settings.dot_color | default: accent }};
+                      --myed-item-icon-c: {{ block.settings.icon_color | default: '#FFFFFF' }};
+                    "
+                    {% if block.settings.open %}open{% endif %}
+                    {{ block.shopify_attributes }}
+                  >
+                    <summary class="myed-spotlight__summary">
+                      <span class="myed-spotlight__dot" aria-hidden="true"></span>
+                      <span class="myed-spotlight__label">{{ block.settings.label | escape }}</span>
+                      <span class="myed-spotlight__chev" aria-hidden="true">+</span>
+                    </summary>
+                    <div class="myed-spotlight__content rte">
+                      {{ block.settings.content }}
+                    </div>
                   </details>
                 {% else %}
                   {%- if block.type == 'panel' or block.type == 'item' -%}
-                    <details class="myed-spotlight__item" {% if block.settings.open %}open{% endif %} {{ block.shopify_attributes }}>
+                    <details
+                      class="myed-spotlight__item"
+                      style="
+                        --myed-item-label-c: {{ block.settings.label_color | default: '#FFFFFF' }};
+                        --myed-item-content-c: {{ block.settings.content_color | default: '#C9D3E0' }};
+                        --myed-item-dot-c: {{ block.settings.dot_color | default: accent }};
+                        --myed-item-icon-c: {{ block.settings.icon_color | default: '#FFFFFF' }};
+                      "
+                      {% if block.settings.open %}open{% endif %}
+                      {{ block.shopify_attributes }}
+                    >
                       <summary class="myed-spotlight__summary">
                         <span class="myed-spotlight__dot" aria-hidden="true"></span>
                         <span class="myed-spotlight__label">{{ block.settings.label | escape }}</span>
@@ -277,6 +280,10 @@
     { "type": "text", "id": "kicker", "label": "Kicker", "default": "THE METHOD" },
     { "type": "text", "id": "heading", "label": "Heading", "default": "Daily Ritual, Elevated" },
     { "type": "richtext", "id": "body", "label": "Body", "default": "<p>Clinically crafted essentials designed for visible results, day after day.</p>" },
+    { "type": "header", "content": "Left text colors" },
+    { "type": "color", "id": "left_kicker_color", "label": "Kicker color", "default": "#E7ECF3" },
+    { "type": "color", "id": "left_heading_color", "label": "Heading color", "default": "#F4F7FC" },
+    { "type": "color", "id": "left_body_color", "label": "Body color", "default": "#D7DEE8" },
 
     { "type": "checkbox", "id": "show_cta", "label": "Show CTA", "default": true },
     { "type": "text", "id": "cta", "label": "CTA text", "default": "View" },
@@ -286,8 +293,6 @@
     { "type": "header", "content": "Background" },
     { "type": "color", "id": "bg_top", "label": "Top color", "default": "rgba(0,0,0,0)" },
     { "type": "color", "id": "bg_bot", "label": "Bottom color", "default": "rgba(0,0,0,0)" },
-    { "type": "image_picker", "id": "bg_img", "label": "Background image" },
-    { "type": "range", "id": "bg_img_op", "label": "Background image opacity", "min": 0, "max": 100, "step": 1, "unit": "%", "default": 70 },
 
     { "type": "image_picker", "id": "tex_img", "label": "Texture image" },
     { "type": "range", "id": "tex_op", "label": "Texture opacity", "min": 0, "max": 100, "step": 1, "unit": "%", "default": 12 },
@@ -308,6 +313,11 @@
       "settings": [
         { "type": "text", "id": "label", "label": "Label", "default": "Research" },
         { "type": "richtext", "id": "content", "label": "Content", "default": "<p>Evidence-backed actives and minimal routine philosophy.</p>" },
+        { "type": "header", "content": "Colors" },
+        { "type": "color", "id": "label_color", "label": "Label color", "default": "#FFFFFF" },
+        { "type": "color", "id": "content_color", "label": "Content color", "default": "#C9D3E0" },
+        { "type": "color", "id": "dot_color", "label": "Dot color", "default": "#8A9A5B" },
+        { "type": "color", "id": "icon_color", "label": "Plus icon color", "default": "#FFFFFF" },
         { "type": "checkbox", "id": "open", "label": "Open", "default": true }
       ]
     },
@@ -317,6 +327,11 @@
       "settings": [
         { "type": "text", "id": "label", "label": "Label", "default": "Ingredients" },
         { "type": "richtext", "id": "content", "label": "Content", "default": "<p>Transparent ingredient priorities.</p>" },
+        { "type": "header", "content": "Colors" },
+        { "type": "color", "id": "label_color", "label": "Label color", "default": "#FFFFFF" },
+        { "type": "color", "id": "content_color", "label": "Content color", "default": "#C9D3E0" },
+        { "type": "color", "id": "dot_color", "label": "Dot color", "default": "#8A9A5B" },
+        { "type": "color", "id": "icon_color", "label": "Plus icon color", "default": "#FFFFFF" },
         { "type": "checkbox", "id": "open", "label": "Open", "default": false }
       ]
     },
@@ -326,6 +341,11 @@
       "settings": [
         { "type": "text", "id": "label", "label": "Label", "default": "Item" },
         { "type": "richtext", "id": "content", "label": "Content", "default": "<p>...</p>" },
+        { "type": "header", "content": "Colors" },
+        { "type": "color", "id": "label_color", "label": "Label color", "default": "#FFFFFF" },
+        { "type": "color", "id": "content_color", "label": "Content color", "default": "#C9D3E0" },
+        { "type": "color", "id": "dot_color", "label": "Dot color", "default": "#8A9A5B" },
+        { "type": "color", "id": "icon_color", "label": "Plus icon color", "default": "#FFFFFF" },
         { "type": "checkbox", "id": "open", "label": "Open", "default": false }
       ]
     }

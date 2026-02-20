@@ -125,6 +125,17 @@
   </div>
 
   <style>
+    #{{ ns }}{
+      --fg-maxw: {{ section.settings.max_width }}px;
+      --fg-pad-y: {{ section.settings.padding_y }}px;
+      --fg-gap-y: {{ section.settings.gap }}px;
+      --fg-text-speed: {{ section.settings.top_marquee_speed }}s;
+      --fg-img-h: {{ section.settings.thumb_height }}px;
+      --fg-img-radius: {{ section.settings.thumb_radius }}px;
+      --fg-img-gap: {{ section.settings.thumb_gap }}px;
+      --fg-img-speed: {{ section.settings.thumb_speed }}s;
+    }
+
     .{{ ns }}{
       background: var(--myed-bg);
       color: var(--myed-text);
@@ -140,12 +151,12 @@
     }
 
     .{{ ns }}__wrap{
-      max-width: var(--myed-maxw);
+      max-width: var(--fg-maxw, 1200px);
       margin: 0 auto;
-      padding: var(--myed-py) 20px;
+      padding: var(--fg-pad-y, 60px) 20px;
       display: flex;
       flex-direction: column;
-      gap: var(--myed-gap);
+      gap: var(--fg-gap-y, 30px);
     }
 
     /* INTRO STYLES */
@@ -173,7 +184,7 @@
       display: flex;
       width: max-content;
       will-change: transform;
-      animation: {{ ns }}-move var(--myed-t-speed) linear infinite;
+      animation: {{ ns }}-move var(--fg-text-speed, 30s) linear infinite;
       animation-direction: alternate; /* Can be normal or reverse based on setting */
     }
     .{{ ns }}__tinner{
@@ -204,20 +215,20 @@
       display: flex;
       width: max-content;
       will-change: transform;
-      animation: {{ ns }}-move var(--myed-marquee-speed) linear infinite;
+      animation: {{ ns }}-move var(--fg-img-speed, 40s) linear infinite;
     }
     .{{ ns }}__thumbInner{
       display: flex;
       align-items: center;
-      gap: var(--myed-marquee-gap);
-      padding-right: var(--myed-marquee-gap);
+      gap: var(--fg-img-gap, 20px);
+      padding-right: var(--fg-img-gap, 20px);
     }
     .{{ ns }}__thumb{
       display: block;
-      height: var(--myed-marquee-h);
+      height: var(--fg-img-h, 120px);
       width: auto;
       max-width: var(--myed-thumb-w);
-      border-radius: var(--myed-marquee-radius);
+      border-radius: var(--fg-img-radius, 12px);
       overflow: hidden;
       transition: transform 0.3s ease;
     }
@@ -237,6 +248,23 @@
     /* Pause on Hover */
     .{{ ns }}:hover .{{ ns }}__thumbTrack,
     .{{ ns }}:hover .{{ ns }}__ttrack{ animation-play-state: paused; }
+
+    {% if section.settings.enable_mobile_overrides %}
+    @media (max-width: 749px){
+      #{{ ns }}{
+        --fg-maxw: {{ section.settings.max_width_mobile }}px;
+        --fg-pad-y: {{ section.settings.vertical_padding_mobile }}px;
+        --fg-gap-y: {{ section.settings.vertical_gap_mobile }}px;
+
+        --fg-text-speed: {{ section.settings.text_speed_mobile }}s;
+
+        --fg-img-h: {{ section.settings.image_height_mobile }}px;
+        --fg-img-radius: {{ section.settings.image_radius_mobile }}px;
+        --fg-img-gap: {{ section.settings.image_gap_mobile }}px;
+        --fg-img-speed: {{ section.settings.image_speed_mobile }}s;
+      }
+    }
+    {% endif %}
   </style>
 </section>
 
@@ -264,7 +292,18 @@
     { "type": "range", "id": "thumb_height", "min": 60, "max": 200, "step": 5, "label": "Image Height (px)", "default": 120 },
     { "type": "range", "id": "thumb_radius", "min": 0, "max": 40, "step": 2, "label": "Image Radius (px)", "default": 12 },
     { "type": "range", "id": "thumb_gap", "min": 10, "max": 50, "step": 2, "label": "Image Gap (px)", "default": 20 },
-    { "type": "range", "id": "thumb_speed", "min": 10, "max": 100, "step": 1, "label": "Image Speed (s)", "default": 40 }
+    { "type": "range", "id": "thumb_speed", "min": 10, "max": 100, "step": 1, "label": "Image Speed (s)", "default": 40 },
+
+    { "type": "header", "content": "Mobile Overrides" },
+    { "type": "checkbox", "id": "enable_mobile_overrides", "label": "Separate mobile settings", "default": false },
+    { "type": "range", "id": "max_width_mobile", "min": 320, "max": 1400, "step": 20, "label": "Max width (mobile)", "default": 1200 },
+    { "type": "range", "id": "vertical_padding_mobile", "min": 0, "max": 160, "step": 4, "label": "Vertical padding (mobile)", "default": 60 },
+    { "type": "range", "id": "vertical_gap_mobile", "min": 0, "max": 120, "step": 2, "label": "Vertical gap (mobile)", "default": 30 },
+    { "type": "range", "id": "text_speed_mobile", "min": 10, "max": 120, "step": 2, "label": "Text speed (mobile)", "default": 30 },
+    { "type": "range", "id": "image_height_mobile", "min": 40, "max": 220, "step": 2, "label": "Image height (mobile)", "default": 120 },
+    { "type": "range", "id": "image_radius_mobile", "min": 0, "max": 40, "step": 1, "label": "Image radius (mobile)", "default": 12 },
+    { "type": "range", "id": "image_gap_mobile", "min": 0, "max": 40, "step": 1, "label": "Image gap (mobile)", "default": 20 },
+    { "type": "range", "id": "image_speed_mobile", "min": 10, "max": 120, "step": 2, "label": "Image speed (mobile)", "default": 40 }
   ],
   "blocks": [
     {

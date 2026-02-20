@@ -1,45 +1,26 @@
-{% if settings.myed_bg_enable and settings.myed_bg_image != blank %}
-.myed-site-bg {
-  position: fixed;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  display: block;
-  z-index: 0;
-  background-image: var(--myed-bg-url);
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  opacity: {{ settings.myed_bg_opacity | divided_by: 100.0 }};
-}
+/* MyEdenDay — Site Background (stable) */
+html { background: transparent !important; }
 
 body.myed-has-site-bg,
 body.myed-has-site-bg.gradient {
-  --myed-bg-url: url('{{ settings.myed_bg_image | image_url: width: 1600 }}');
-  background: var(--myed-bg-url) center / cover no-repeat fixed !important;
+  background: transparent !important;
 }
 
-@media (max-width: 749px) {
-  body.myed-has-site-bg,
-  body.myed-has-site-bg.gradient {
-    --myed-bg-url: url('{{ settings.myed_bg_image | image_url: width: 900 }}');
-    background-attachment: scroll;
-  }
+.myed-site-bg{
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: -1;
 
-  .myed-site-bg {
-    background-attachment: scroll;
-  }
+  background: var(--myed-bg-image, none) center / cover no-repeat;
+  background-attachment: fixed;
+
+  opacity: calc(clamp(0, var(--myed-bg-opacity, 0.18), 1) * var(--myed-bg-enabled, 0));
 }
 
-body.myed-has-site-bg > header,
-body.myed-has-site-bg > main,
-body.myed-has-site-bg > footer {
-  position: relative;
-  z-index: 1;
+@media (max-width: 749px){
+  .myed-site-bg{ background-attachment: scroll; }
 }
-{% else %}
-.myed-site-bg {
-  background-image: none;
-}
-{% endif %}
+
