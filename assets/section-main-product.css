@@ -1492,3 +1492,527 @@ a.product__text {
     border: none;
   }
 }
+
+/* MYED — PDP Glass (scoped) */
+[id^="MainProduct-"] .product__info-wrapper{
+  background: rgba(10,14,22,.42);
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 18px;
+  box-shadow: 0 10px 28px rgba(0,0,0,.30);
+  padding: 20px;
+}
+
+@supports ((backdrop-filter: blur(1px))){
+  [id^="MainProduct-"] .product__info-wrapper{
+    backdrop-filter: blur(14px) saturate(120%);
+    -webkit-backdrop-filter: blur(14px) saturate(120%);
+  }
+}
+
+[id^="MainProduct-"] .product__title,
+[id^="MainProduct-"] .product__title h1{ color:#F5F7FA; }
+
+[id^="MainProduct-"] .price,
+[id^="MainProduct-"] .price-item{ color:#F0F4FA; }
+
+[id^="MainProduct-"] .product__description,
+[id^="MainProduct-"] .product__description p,
+[id^="MainProduct-"] .form__label{ color: rgba(225,233,244,.88); }
+
+[id^="MainProduct-"] .product-form__buttons .button,
+[id^="MainProduct-"] .product-form__buttons .shopify-payment-button__button{
+  background: rgba(8,12,20,.68);
+  border: 1px solid rgba(255,255,255,.24);
+  color:#fff;
+  border-radius: 12px;
+}
+
+@media (max-width: 989px){
+  @supports ((backdrop-filter: blur(1px))){
+    [id^="MainProduct-"] .product__info-wrapper{
+      backdrop-filter: blur(8px) saturate(110%);
+      -webkit-backdrop-filter: blur(8px) saturate(110%);
+    }
+  }
+}
+
+@supports not ((backdrop-filter: blur(1px))){
+  [id^="MainProduct-"] .product__info-wrapper{
+    background: rgba(10,14,22,.78);
+  }
+}
+
+/* MYED — PDP CTA Tuning (scoped) */
+[id^="MainProduct-"]{
+  /* Hızlı ayar noktaları */
+  --myed-cta-primary-bg: rgba(6,10,16,.88);
+  --myed-cta-primary-border: rgba(255,255,255,.34);
+  --myed-cta-primary-text: #F7FAFF;
+
+  --myed-cta-primary-hover-bg: rgba(10,15,24,.92);
+  --myed-cta-primary-hover-border: rgba(255,255,255,.46);
+
+  --myed-cta-secondary-bg: rgba(255,255,255,.04);
+  --myed-cta-secondary-border: rgba(255,255,255,.20);
+  --myed-cta-secondary-text: rgba(245,247,250,.90);
+}
+
+/* Primary CTA: Add to cart */
+[id^="MainProduct-"] .product-form__submit.button,
+[id^="MainProduct-"] .product-form__buttons .button--primary{
+  background: var(--myed-cta-primary-bg);
+  border: 1px solid var(--myed-cta-primary-border);
+  color: var(--myed-cta-primary-text);
+  border-radius: 14px;
+  min-height: 52px;
+  box-shadow: 0 10px 22px rgba(0,0,0,.20);
+}
+
+[id^="MainProduct-"] .product-form__submit.button:hover,
+[id^="MainProduct-"] .product-form__buttons .button--primary:hover{
+  background: var(--myed-cta-primary-hover-bg);
+  border-color: var(--myed-cta-primary-hover-border);
+}
+
+/* Secondary CTA: Dynamic checkout (unbranded) */
+[id^="MainProduct-"] .shopify-payment-button__button--unbranded{
+  background: var(--myed-cta-secondary-bg) !important;
+  border: 1px solid var(--myed-cta-secondary-border) !important;
+  color: var(--myed-cta-secondary-text) !important;
+  border-radius: 14px !important;
+  min-height: 52px;
+  box-shadow: none;
+}
+
+/* Branded buttons: sadece köşe + taşma kontrolü (renkleri çoğu zaman kilitli) */
+[id^="MainProduct-"] .shopify-payment-button{
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+/* Accessibility: focus görünürlüğü */
+[id^="MainProduct-"] .product-form__buttons .button:focus-visible,
+[id^="MainProduct-"] .shopify-payment-button__button:focus-visible{
+  outline: 2px solid rgba(245,247,250,.70);
+  outline-offset: 3px;
+}
+
+/* Disabled state */
+[id^="MainProduct-"] .product-form__buttons .button[disabled],
+[id^="MainProduct-"] .product-form__buttons .button:disabled{
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+/* MYED — PDP Variant Pills + Quantity Readability (scoped) */
+[id^="MainProduct-"] .product-form__input{
+  color: rgba(245,247,250,.92);
+}
+
+[id^="MainProduct-"] .product-form__input .form__label{
+  color: rgba(245,247,250,.78);
+}
+
+/* Pill / radio options */
+[id^="MainProduct-"] .product-form__input input[type="radio"] + label{
+  background: rgba(255,255,255,.06);
+  color: rgba(245,247,250,.92);
+  border: 1px solid rgba(255,255,255,.22);
+  border-radius: 999px;
+  padding: 10px 14px;
+  min-height: 40px;
+  line-height: 1;
+}
+
+[id^="MainProduct-"] .product-form__input input[type="radio"] + label:hover{
+  border-color: rgba(255,255,255,.34);
+  background: rgba(255,255,255,.08);
+}
+
+[id^="MainProduct-"] .product-form__input input[type="radio"]:checked + label{
+  background: rgba(6,10,16,.88);
+  color: #F7FAFF;
+  border-color: rgba(255,255,255,.46);
+  box-shadow: 0 10px 22px rgba(0,0,0,.18);
+}
+
+[id^="MainProduct-"] .product-form__input input[type="radio"]:focus-visible + label{
+  outline: 2px solid rgba(245,247,250,.70);
+  outline-offset: 3px;
+}
+
+/* Disabled pills */
+[id^="MainProduct-"] .product-form__input input[type="radio"]:disabled + label{
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+/* Select dropdowns (if any) */
+[id^="MainProduct-"] .product-form__input .select__select{
+  background: rgba(255,255,255,.06);
+  color: rgba(245,247,250,.92);
+  border: 1px solid rgba(255,255,255,.22);
+  border-radius: 12px;
+}
+
+/* Quantity */
+[id^="MainProduct-"] .quantity{
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.22);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+[id^="MainProduct-"] .quantity__input{
+  background: transparent;
+  color: rgba(245,247,250,.92);
+}
+
+[id^="MainProduct-"] .quantity__button{
+  background: rgba(255,255,255,.04);
+  color: rgba(245,247,250,.92);
+}
+
+[id^="MainProduct-"] .quantity__button:hover{
+  background: rgba(255,255,255,.08);
+}
+
+/* MYED — PDP MEDIA RECOVERY + GLASS ZOOM (scoped)
+   Fixes:
+   1) Gallery disappearing: undo absolute positioning on modal-opener/toggle
+   2) Black dot: force icon visibility + correct SVG stroke rendering
+   3) Perf: disable backdrop-filter on big media container; keep it only on small icon
+*/
+
+/* 1) CRITICAL: Modal opener MUST stay in-flow (wraps the whole media) */
+[id^="MainProduct-"] .product-media-container .product__modal-opener{
+  position: relative !important;
+  top: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  left: auto !important;
+  inset: auto !important;
+  z-index: auto !important;
+  width: 100% !important;
+  height: auto !important;
+  display: block !important;
+}
+
+/* Toggle/button must also stay in-flow and cover the media */
+[id^="MainProduct-"] .product-media-container .product__media-toggle{
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  inset: auto !important;
+
+  width: 100% !important;
+  height: auto !important;
+
+  background: transparent !important;
+  border: 0 !important;
+  padding: 0 !important;
+  color: inherit !important;
+}
+
+/* 2) PERF: do NOT blur the whole media container (expensive, can inflate LCP) */
+[id^="MainProduct-"] .product__media-wrapper .product-media-container{
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+/* 3) Glass zoom icon bubble (keep zoom working; icon itself is non-clickable) */
+[id^="MainProduct-"] .product__modal-opener--image .product__media-icon{
+  opacity: 1 !important;
+
+  width: 44px !important;
+  height: 44px !important;
+
+  left: 14px !important;
+  top: 14px !important;
+  right: auto !important;
+  bottom: auto !important;
+
+  border-radius: 999px !important;
+  border: 1px solid rgba(255,255,255,.18) !important;
+  background: rgba(10,14,22,.28) !important;
+
+  color: rgba(245,247,250,.96) !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  box-shadow: 0 10px 22px rgba(0,0,0,.18) !important;
+
+  /* click is handled by the button, not the icon bubble */
+  pointer-events: none !important;
+}
+
+/* Blur only on the small icon bubble (cheap enough) */
+@supports ((backdrop-filter: blur(1px))){
+  [id^="MainProduct-"] .product__modal-opener--image .product__media-icon{
+    -webkit-backdrop-filter: blur(10px) saturate(115%) !important;
+    backdrop-filter: blur(10px) saturate(115%) !important;
+  }
+}
+
+/* Ensure SVG actually renders (no “black dot” / invisible strokes) */
+[id^="MainProduct-"] .product__modal-opener--image .product__media-icon svg{
+  width: 18px !important;
+  height: 18px !important;
+  display: block !important;
+  opacity: 1 !important;
+}
+
+/* Zoom icon is stroke-based: keep it crisp and visible */
+[id^="MainProduct-"] .product__modal-opener--image .product__media-icon svg path,
+[id^="MainProduct-"] .product__modal-opener--image .product__media-icon svg circle,
+[id^="MainProduct-"] .product__modal-opener--image .product__media-icon svg line,
+[id^="MainProduct-"] .product__modal-opener--image .product__media-icon svg polyline{
+  stroke: currentColor !important;
+  fill: none !important;
+}
+
+/* Hover polish */
+[id^="MainProduct-"] .product__modal-opener--image:hover .product__media-icon{
+  border-color: rgba(255,255,255,.32) !important;
+  background: rgba(10,14,22,.36) !important;
+}
+
+  /* =========================================================
+     MYED — PDP MEDIA GLASS + ZOOM ICON FIX (SCOPED, SAFE)
+
+  /* ============================
+     MYED — PDP Media + Zoom Glass (SAFE, scoped)
+     Paste at VERY BOTTOM of assets/section-main-product.css
+     Keeps zoom/lightbox working. Fixes “black dot” + prevents gallery break.
+  ============================ */
+
+  /* 1) HARD RESET: Daha önce yanlışlıkla absolute/sizing verildiyse geri al */
+  [id^="MainProduct-"] .product__media-wrapper{
+    position: relative;
+  }
+
+  /* Modal opener (wrapper) default akışta kalsın */
+  [id^="MainProduct-"] .product__media-wrapper .product__modal-opener{
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    z-index: auto !important;
+  }
+
+  /* Toggle BUTON’a dokunma: hit-area (overlay) bozulmasın */
+  [id^="MainProduct-"] .product__media-wrapper .product__media-toggle{
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    display: flex !important;
+  }
+
+  /* Dawn’ın tıklama overlay’i (pseudo) kalsın */
+  [id^="MainProduct-"] .product__media-wrapper .product__media-toggle::after{
+    content: '' !important;
+    position: absolute !important;
+    top: calc(var(--border-width) * -1) !important;
+    right: calc(var(--border-width) * -1) !important;
+    bottom: calc(var(--border-width) * -1) !important;
+    left: calc(var(--border-width) * -1) !important;
+    z-index: 2 !important;
+  }
+
+  /* 2) “Siyah nokta” = .product__media-icon → cam balon yap */
+  [id^="MainProduct-"] .product__media-wrapper .product__media-icon{
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 999px !important;
+
+    background: rgba(10,14,22,.28) !important;
+    border: 1px solid rgba(255,255,255,.18) !important;
+    color: rgba(245,247,250,.92) !important;
+
+    box-shadow: 0 10px 22px rgba(0,0,0,.18) !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    pointer-events: none; /* tıklama butonda kalsın */
+  }
+
+  @supports ((backdrop-filter: blur(1px))){
+    [id^="MainProduct-"] .product__media-wrapper .product__media-icon{
+      backdrop-filter: blur(10px) saturate(115%);
+      -webkit-backdrop-filter: blur(10px) saturate(115%);
+    }
+  }
+
+  /* SVG görünürlüğü */
+  [id^="MainProduct-"] .product__media-wrapper .product__media-icon svg{
+    width: 18px !important;
+    height: 18px !important;
+    display: block !important;
+  }
+  [id^="MainProduct-"] .product__media-wrapper .product__media-icon svg *{
+    fill: currentColor !important;
+    stroke: currentColor !important;
+  }
+
+  /* Hover feedback */
+  @media (hover:hover){
+    [id^="MainProduct-"] .product__media-wrapper .product__media-toggle:hover .product__media-icon{
+      background: rgba(10,14,22,.36) !important;
+      border-color: rgba(255,255,255,.32) !important;
+    }
+  }
+
+  /* 3) Media’ları “ayrı ayrı cam çerçeve” gibi göster (LCP-safe: blur yok) */
+  [id^="MainProduct-"] .product__media-wrapper .product-media-container{
+    border: 1px solid rgba(255,255,255,.16);
+    border-radius: 18px;
+    overflow: hidden;
+    background: rgba(10,14,22,.14);
+    box-shadow: 0 10px 28px rgba(0,0,0,.22);
+  }
+  [id^="MainProduct-"] .product__media-wrapper .media{
+    background: transparent;
+  }
+
+  /* 4) Thumbnail’lar da cam kart olsun */
+  [id^="MainProduct-"] .thumbnail{
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,.18);
+    background: rgba(10,14,22,.14);
+    overflow: hidden;
+  }
+  [id^="MainProduct-"] .thumbnail[aria-current],
+  [id^="MainProduct-"] .thumbnail.is-active{
+    border-color: rgba(255,255,255,.38);
+    box-shadow: 0 10px 22px rgba(0,0,0,.16);
+  }
+
+  /* 5) Lightbox açılınca arka planı cam yap (LCP etkilemez: sadece [open]) */
+  .product-media-modal[open]{
+    background: rgba(10,14,22,.55);
+  }
+  @supports ((backdrop-filter: blur(1px))){
+    .product-media-modal[open]{
+      backdrop-filter: blur(14px) saturate(120%);
+      -webkit-backdrop-filter: blur(14px) saturate(120%);
+    }
+  }
+
+  /* Lightbox iç çerçeve (premium) */
+  .product-media-modal__dialog .global-media-settings{
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,.12);
+    background: rgba(10,14,22,.10);
+  }
+     - Zoom açık kalır
+     - Siyah nokta fix (SVG fill hatası)
+     - Media grid her görsel “cam çerçeve” içinde
+     ========================================================= */
+
+  /* 0) Daha önce eklenen "absolute modal-opener" vb. riskli override'ları geri al */
+  [id^="MainProduct-"] .product__media-wrapper .product__modal-opener{
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    z-index: auto !important;
+  }
+
+  /* 1) Dawn overlay click mantığını bozma: media-toggle'u normale yaklaştır */
+  [id^="MainProduct-"] .product__media-wrapper .product__media-toggle{
+    display: flex !important;
+    width: auto !important;
+    height: auto !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: 0 !important;
+    color: inherit !important;
+  }
+
+  /* 2) Zoom ikon balonu: cam görünüm + her zaman görünür */
+  [id^="MainProduct-"] .product__media-icon{
+    background: rgba(10,14,22,.28) !important;
+    border: 1px solid rgba(255,255,255,.18) !important;
+    color: rgba(245,247,250,.92) !important;
+    box-shadow: 0 10px 22px rgba(0,0,0,.18) !important;
+    backdrop-filter: blur(10px) saturate(115%);
+    -webkit-backdrop-filter: blur(10px) saturate(115%);
+  }
+
+  /* Dawn desktop'ta hover bekleyip opacity 0 yapıyor; biz sabit görünür yapıyoruz */
+  @media screen and (min-width: 990px){
+    [id^="MainProduct-"] .product__modal-opener .product__media-icon{
+      opacity: 1 !important;
+    }
+  }
+
+  /* 3) SİYAH NOKTA FIX:
+        Daha önce "fill: currentColor" verdiğin için zoom ikonunun içi doluyor.
+        Sadece zoom ikonunu stroke'a geri çeviriyoruz. */
+  [id^="MainProduct-"] .product__media-icon .icon-zoom,
+  [id^="MainProduct-"] .product__media-icon .icon-zoom *{
+    fill: none !important;
+    stroke: currentColor !important;
+  }
+
+  /* 4) Media grid: her görsel ayrı ayrı “cam çerçeve” içinde */
+  [id^="MainProduct-"] .product__media-item .product-media-container{
+    border: 1px solid rgba(255,255,255,.16);
+    border-radius: 18px;
+    overflow: hidden;
+    background: rgba(10,14,22,.18);
+    box-shadow: 0 12px 28px rgba(0,0,0,.22);
+    position: relative;
+  }
+
+  /* İç highlight (premium çerçeve hissi) */
+  [id^="MainProduct-"] .product__media-item .product-media-container::before{
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border-radius: 18px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+  }
+
+  /* 5) Thumbnail’ları da aynı dilde tut (hafif cam) */
+  [id^="MainProduct-"] .thumbnail{
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,.16);
+    background: rgba(10,14,22,.18);
+    overflow: hidden;
+  }
+
+  [id^="MainProduct-"] .thumbnail:hover{
+    border-color: rgba(255,255,255,.28);
+  }
+
+  [id^="MainProduct-"] .thumbnail[aria-current="true"],
+  [id^="MainProduct-"] .thumbnail.is-active{
+    border-color: rgba(255,255,255,.38);
+    box-shadow: 0 10px 22px rgba(0,0,0,.16);
+  }
+
+  /* 6) Lightbox modal (zoom açılınca) cam arka plan — LCP’yi etkilemez (click sonrası) */
+  [id^="MainProduct-"] .product-media-modal[open]{
+    background: rgba(10,14,22,.55);
+  }
+
+  @supports ((backdrop-filter: blur(1px))){
+    [id^="MainProduct-"] .product-media-modal[open]{
+      backdrop-filter: blur(14px) saturate(120%);
+      -webkit-backdrop-filter: blur(14px) saturate(120%);
+    }
+  }

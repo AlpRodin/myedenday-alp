@@ -1,7 +1,193 @@
+/* ==========================================================================
+   MyEdenDay — section-related-products.css (CLEAN FILE)
+   Scope: ONLY the related-products section output
+   Depends on: component-card.css + component-price.css (already included by section)
+   Goals:
+   - True grid (no 3+1 wrap)
+   - Equal left/right gutters (no “right clipped corner” feeling)
+   - Glass cards
+   - Mixed supplier imagery: object-fit: contain
+   ========================================================================== */
+
 .related-products {
+  /* Layout */
+  --myed-rp-gap: clamp(14px, 1.6vw, 24px);
+  --myed-rp-gutter: clamp(16px, 2.2vw, 40px);
+
+  /* Card look */
+  --myed-rp-radius: 22px;
+  --myed-rp-bg: rgba(10, 14, 22, 0.42);
+  --myed-rp-border: rgba(255, 255, 255, 0.16);
+  --myed-rp-shadow: 0 12px 30px rgba(0, 0, 0, 0.26);
+
+  /* Text */
+  --myed-rp-text: rgba(245, 247, 250, 0.92);
+  --myed-rp-muted: rgba(225, 233, 244, 0.78);
+
   display: block;
+  overflow: visible;
 }
 
+/* Heading */
 .related-products__heading {
-  margin: 0 0 3rem;
+  margin: 0 0 2rem;
+  color: var(--myed-rp-text);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+}
+
+/* Ensure equal gutters (fix “right side feels clipped”) */
+.related-products.page-width {
+  padding-left: var(--myed-rp-gutter);
+  padding-right: var(--myed-rp-gutter);
+}
+
+/* Kill Dawn flex grid behavior ONLY here -> real CSS Grid */
+.related-products .product-grid {
+  /* Read columns from Dawn classes via vars below */
+  --myed-cols-desktop: 4;
+  --myed-cols-mobile: 2;
+
+  display: grid !important;
+  grid-template-columns: repeat(var(--myed-cols-mobile), minmax(0, 1fr));
+  gap: var(--myed-rp-gap) !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+  list-style: none;
+
+  overflow: visible !important;
+}
+
+/* Map Dawn column utility classes to vars */
+.related-products .product-grid.grid--1-col-desktop { --myed-cols-desktop: 1; }
+.related-products .product-grid.grid--2-col-desktop { --myed-cols-desktop: 2; }
+.related-products .product-grid.grid--3-col-desktop { --myed-cols-desktop: 3; }
+.related-products .product-grid.grid--4-col-desktop { --myed-cols-desktop: 4; }
+.related-products .product-grid.grid--5-col-desktop { --myed-cols-desktop: 5; }
+.related-products .product-grid.grid--6-col-desktop { --myed-cols-desktop: 6; }
+
+.related-products .product-grid.grid--1-col-tablet-down { --myed-cols-mobile: 1; }
+.related-products .product-grid.grid--2-col-tablet-down { --myed-cols-mobile: 2; }
+
+@media (min-width: 990px) {
+  .related-products .product-grid {
+    grid-template-columns: repeat(var(--myed-cols-desktop), minmax(0, 1fr));
+  }
+}
+
+/* Reset li sizing coming from Dawn flex grid rules */
+.related-products .product-grid > .grid__item {
+  width: auto !important;
+  max-width: none !important;
+  min-width: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  flex: none !important;
+
+  overflow: visible;
+}
+
+/* Glass card wrapper */
+.related-products .card-wrapper {
+  border-radius: var(--myed-rp-radius);
+  overflow: hidden;
+
+  background: var(--myed-rp-bg);
+  border: 1px solid var(--myed-rp-border);
+  box-shadow: var(--myed-rp-shadow);
+
+  position: relative;
+}
+
+@supports ((backdrop-filter: blur(1px))) {
+  .related-products .card-wrapper {
+    backdrop-filter: blur(12px) saturate(120%);
+    -webkit-backdrop-filter: blur(12px) saturate(120%);
+  }
+}
+
+@supports not ((backdrop-filter: blur(1px))) {
+  .related-products .card-wrapper {
+    background: rgba(10, 14, 22, 0.62);
+  }
+}
+
+/* Keep internals transparent so wrapper shows */
+.related-products .card {
+  background: transparent !important;
+}
+
+/* Media frame inside card */
+.related-products .card__inner {
+  margin: 14px 14px 0 14px;
+  border-radius: calc(var(--myed-rp-radius) - 8px);
+  overflow: hidden;
+
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.related-products .card__media,
+.related-products .card__inner .media {
+  border-radius: inherit;
+  overflow: hidden;
+}
+
+/* Mixed supplier imagery: do NOT crop */
+.related-products .card__media img {
+  object-fit: contain !important;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* Content block (no forced full height -> prevents huge empty area) */
+.related-products .card__content {
+  padding: 14px 16px 18px;
+  background: linear-gradient(
+    to bottom,
+    rgba(10, 14, 22, 0.10) 0%,
+    rgba(10, 14, 22, 0.55) 60%,
+    rgba(10, 14, 22, 0.80) 100%
+  );
+  border-top: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+/* Title + link */
+.related-products .card__heading,
+.related-products .card__heading a {
+  color: var(--myed-rp-text) !important;
+}
+
+/* Clamp title for stability */
+.related-products .card__heading {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+/* Price */
+.related-products .price,
+.related-products .price-item {
+  color: var(--myed-rp-text) !important;
+}
+
+/* Subtext */
+.related-products .card-information,
+.related-products .card__information,
+.related-products .card-information * {
+  color: var(--myed-rp-muted) !important;
+}
+
+/* Mobile tweaks */
+@media (max-width: 749px) {
+  .related-products.page-width {
+    padding-left: clamp(14px, 4vw, 20px);
+    padding-right: clamp(14px, 4vw, 20px);
+  }
+  .related-products .card__inner {
+    margin: 12px 12px 0 12px;
+  }
+  .related-products .card__content {
+    padding: 12px 14px 14px;
+  }
 }
