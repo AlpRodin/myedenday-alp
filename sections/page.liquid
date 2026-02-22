@@ -14,8 +14,8 @@
   }
 {%- endstyle -%}
 
-<div class="color-{{ section.settings.color_scheme }} gradient">
-  <div class="page-width page-width--narrow section-{{ section.id }}-padding">
+<div class="color-{{ section.settings.color_scheme }} gradient myed-glass-wrapper{% if section.settings.myed_transparent_bg %} myed-glass-wrapper--transparent{% endif %}">
+  <div class="page-width page-width--narrow section-{{ section.id }}-padding myed-glass-surface">
     <h2 class="page-title {{ section.settings.heading_size }}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
       {%- if section.settings.page.title != blank -%}
         {{ section.settings.page.title | escape }}
@@ -82,6 +82,12 @@
       "id": "color_scheme",
       "label": "t:sections.all.colors.label",
       "default": "scheme-1"
+    },
+    {
+      "type": "checkbox",
+      "id": "myed_transparent_bg",
+      "label": "Transparent background (use paper texture behind glass)",
+      "default": true
     },
     {
       "type": "header",

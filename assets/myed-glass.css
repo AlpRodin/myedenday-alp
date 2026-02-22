@@ -1,0 +1,143 @@
+/* ==========================================================================
+  MyEdenDay — Global Frost Glass (CONTENT TEMPLATES ONLY)
+  Scope: policy + page + article (text surfaces)
+  ========================================================================== */
+
+:root{
+  --myed-glass-radius: 22px;
+  --myed-glass-pad-x-desktop: clamp(28px, 3vw, 44px);
+  --myed-glass-text-max: 70ch;
+
+  /* Visible dark glass on light backgrounds */
+  --myed-glass-bg: rgba(10, 14, 22, 0.55);
+  --myed-glass-frost: rgba(255, 255, 255, 0.06);
+  --myed-glass-border: rgba(255, 255, 255, 0.14);
+  --myed-glass-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
+
+  --myed-glass-text: rgba(245, 247, 250, 0.92);
+  --myed-glass-muted: rgba(225, 233, 244, 0.78);
+}
+
+main .myed-glass-wrapper--transparent{
+  background: transparent;
+  background-image: none;
+}
+
+/* Policy container is unique & reliable */
+.shopify-policy__container{
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+
+  border-radius: var(--myed-glass-radius);
+  background: var(--myed-glass-bg);
+  border: 1px solid var(--myed-glass-border);
+  box-shadow: var(--myed-glass-shadow);
+
+  color: var(--myed-glass-text);
+}
+
+/* Page default content wrapper from main-page.liquid hook */
+main .myed-glass-surface{
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+
+  border-radius: var(--myed-glass-radius);
+  background: var(--myed-glass-bg);
+  border: 1px solid var(--myed-glass-border);
+  box-shadow: var(--myed-glass-shadow);
+
+  color: var(--myed-glass-text);
+}
+
+/* Extra text sections (when pages are built from sections) */
+body.template-page main .rich-text__blocks,
+body.template-page main .collapsible-content__wrapper,
+body.template-article main .article-template__content{
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+
+  border-radius: var(--myed-glass-radius);
+  background: var(--myed-glass-bg);
+  border: 1px solid var(--myed-glass-border);
+  box-shadow: var(--myed-glass-shadow);
+
+  color: var(--myed-glass-text);
+}
+
+/* Frost layer */
+.shopify-policy__container::before,
+main .myed-glass-surface::before,
+body.template-page main .rich-text__blocks::before,
+body.template-page main .collapsible-content__wrapper::before,
+body.template-article main .article-template__content::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+  background: var(--myed-glass-frost);
+}
+
+@supports ((backdrop-filter: blur(1px))){
+  .shopify-policy__container::before,
+  main .myed-glass-surface::before,
+  body.template-page main .rich-text__blocks::before,
+  body.template-page main .collapsible-content__wrapper::before,
+  body.template-article main .article-template__content::before{
+    -webkit-backdrop-filter: blur(14px) saturate(120%);
+    backdrop-filter: blur(14px) saturate(120%);
+  }
+}
+
+.shopify-policy__container > *,
+main .myed-glass-surface > *,
+body.template-page main .rich-text__blocks > *,
+body.template-page main .collapsible-content__wrapper > *,
+body.template-article main .article-template__content > *{
+  position: relative;
+  z-index: 1;
+}
+
+/* Readability */
+.shopify-policy__container :is(h1,h2,h3,h4,h5,h6,p,li,span,strong,em,small,blockquote),
+main .myed-glass-surface :is(h1,h2,h3,h4,h5,h6,p,li,span,strong,em,small,blockquote),
+body.template-page main .rich-text__blocks :is(h1,h2,h3,h4,h5,h6,p,li,span,strong,em,small,blockquote),
+body.template-page main .collapsible-content__wrapper :is(h1,h2,h3,h4,h5,h6,p,li,span,strong,em,small,blockquote),
+body.template-article main .article-template__content :is(h1,h2,h3,h4,h5,h6,p,li,span,strong,em,small,blockquote){
+  color: var(--myed-glass-text);
+}
+
+.shopify-policy__container a,
+main .myed-glass-surface a,
+body.template-page main .rich-text__blocks a,
+body.template-page main .collapsible-content__wrapper a,
+body.template-article main .article-template__content a{
+  color: var(--myed-glass-text);
+  text-decoration-color: rgba(245, 247, 250, 0.45);
+}
+
+.shopify-policy__container a:hover,
+main .myed-glass-surface a:hover,
+body.template-page main .rich-text__blocks a:hover,
+body.template-page main .collapsible-content__wrapper a:hover,
+body.template-article main .article-template__content a:hover{
+  text-decoration-color: rgba(245, 247, 250, 0.75);
+}
+
+@media screen and (min-width: 750px) {
+  main .myed-glass-surface{
+    padding-left: var(--myed-glass-pad-x-desktop);
+    padding-right: var(--myed-glass-pad-x-desktop);
+  }
+
+  main .myed-glass-surface .page-title,
+  main .myed-glass-surface .main-page-title,
+  main .myed-glass-surface .rte{
+    max-width: var(--myed-glass-text-max);
+    margin-left: auto;
+    margin-right: auto;
+  }
+}

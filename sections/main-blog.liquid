@@ -1,6 +1,7 @@
 {{ 'component-article-card.css' | asset_url | stylesheet_tag }}
 {{ 'component-card.css' | asset_url | stylesheet_tag }}
 {{ 'section-main-blog.css' | asset_url | stylesheet_tag }}
+{{ 'myed-blog-glass.css' | asset_url | stylesheet_tag }}
 
 {%- style -%}
   .section-{{ section.id }}-padding {
@@ -17,7 +18,12 @@
 {%- endstyle -%}
 
 {%- paginate blog.articles by 6 -%}
-  <div class="main-blog page-width section-{{ section.id }}-padding">
+  <div
+    class="main-blog page-width section-{{ section.id }}-padding{% if section.settings.myed_glass_enable %} myed-blog-glass{% if section.settings.myed_hover_enable %} myed-blog-hover{% endif %}{% endif %}"
+    {% if section.settings.myed_glass_enable %}
+      style="--myed-glass-opacity: {{ section.settings.myed_glass_opacity }}; --myed-glass-blur: {{ section.settings.myed_glass_blur }}px; --myed-glass-border-opacity: {{ section.settings.myed_glass_border_opacity }};{% if section.settings.myed_glass_text_override %} --myed-glass-text: {{ section.settings.myed_glass_text_color }};{% endif %}"
+    {% endif %}
+  >
     <h1 class="title--primary{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}">
       {{ blog.title | escape }}
     </h1>
@@ -113,6 +119,64 @@
       "id": "show_author",
       "default": false,
       "label": "t:sections.main-blog.settings.show_author.label"
+    },
+    {
+      "type": "header",
+      "content": "MyED — Blog Glass"
+    },
+    {
+      "type": "checkbox",
+      "id": "myed_glass_enable",
+      "label": "Enable glass (blog cards)",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "myed_hover_enable",
+      "label": "Enable image hover motion",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "myed_glass_opacity",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "%",
+      "label": "Glass opacity",
+      "default": 22
+    },
+    {
+      "type": "range",
+      "id": "myed_glass_blur",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "label": "Glass blur",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "myed_glass_border_opacity",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "%",
+      "label": "Border opacity",
+      "default": 18
+    },
+    {
+      "type": "checkbox",
+      "id": "myed_glass_text_override",
+      "label": "Override text color",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "myed_glass_text_color",
+      "label": "Text color",
+      "default": "#111111"
     },
     {
       "type": "header",

@@ -54,6 +54,7 @@
       {{ body_font_bold_italic | font_face: font_display: 'swap' }}
       {{ settings.type_header_font | font_face: font_display: 'swap' }}
 
+      {% assign scheme_classes = '' %}
       {% for scheme in settings.color_schemes -%}
         {% assign scheme_classes = scheme_classes | append: ', .color-' | append: scheme.id %}
         {% if forloop.index == 1 -%}
@@ -298,6 +299,7 @@
         document.documentElement.classList.add('shopify-design-mode');
       }
     </script>
+    {{ 'myed-glass.css' | asset_url | stylesheet_tag }}
   </head>
 
   {% liquid
@@ -308,7 +310,10 @@
     assign bg_enabled = settings[enable_id]
     assign bg_image   = settings[image_id]
     assign bg_opacity = settings[opacity_id] | default: 18
-    assign bg_on      = bg_enabled and bg_image != blank
+    assign bg_on = false
+    if bg_enabled and bg_image != blank
+      assign bg_on = true
+    endif
 
     if bg_on
       assign body_class_extra = ' myed-has-site-bg'

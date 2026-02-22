@@ -1,0 +1,254 @@
+/* MyEdenDay — Blog + Article Glass (scoped)
+   Works only when .myed-blog-glass / .myed-article-glass exists.
+   No JS. No global overrides.
+*/
+
+/* =========================
+   Core variables
+========================= */
+.myed-blog-glass{
+  --myed-glass-opacity: 22;          /* 0–60 */
+  --myed-glass-blur: 12px;           /* 0–24px */
+  --myed-glass-border-opacity: 18;   /* 0–60 */
+  --myed-glass-radius: 16px;
+  --myed-glass-padding: 16px;
+  --myed-glass-text: inherit;
+}
+
+.myed-article-glass{
+  --myed-glass-opacity: 22;
+  --myed-glass-blur: 12px;
+  --myed-glass-border-opacity: 18;
+  --myed-glass-radius: 16px;
+  --myed-glass-text: inherit;
+}
+
+/* =========================
+   Blog cards — glass panel
+========================= */
+.myed-blog-glass .article-card-wrapper .card__information,
+.myed-blog-glass .article-card-wrapper .card__content .card__information{
+  background: rgba(var(--color-background), calc(var(--myed-glass-opacity) / 100));
+  border: 1px solid rgba(var(--color-foreground), calc(var(--myed-glass-border-opacity) / 100));
+  border-radius: var(--myed-glass-radius);
+  padding: var(--myed-glass-padding);
+  -webkit-backdrop-filter: blur(var(--myed-glass-blur));
+  backdrop-filter: blur(var(--myed-glass-blur));
+  color: var(--myed-glass-text);
+}
+
+/* Image ↔ text panel breathing room (desktop + mobile base) */
+.myed-blog-glass .article-card-wrapper .card__content{
+  margin-top: 12px;
+}
+
+/* Keep image crisp but card-like */
+.myed-blog-glass .article-card-wrapper .card__media,
+.myed-blog-glass .article-card-wrapper .article-card__image,
+.myed-blog-glass .article-card-wrapper .media{
+  border-radius: var(--myed-glass-radius);
+  overflow: hidden;
+}
+
+/* Ensure meta + text inherit glass text */
+.myed-blog-glass .article-card-wrapper .card__heading,
+.myed-blog-glass .article-card-wrapper .article-card__excerpt,
+.myed-blog-glass .article-card-wrapper .caption-with-letter-spacing,
+.myed-blog-glass .article-card-wrapper .circle-divider,
+.myed-blog-glass .article-card-wrapper time,
+.myed-blog-glass .article-card-wrapper .article-card__info,
+.myed-blog-glass .article-card-wrapper .article-card__footer{
+  color: inherit !important;
+}
+
+/* =========================
+   Hover motion (optional)
+========================= */
+.myed-blog-hover .article-card-wrapper .card__media img,
+.myed-blog-hover .article-card-wrapper .article-card__image img,
+.myed-blog-hover .article-card-wrapper .media img{
+  will-change: transform;
+  transition: transform 420ms ease;
+  transform: translateX(0) scale(1.02);
+}
+.myed-blog-hover .article-card-wrapper:hover .card__media img,
+.myed-blog-hover .article-card-wrapper:hover .article-card__image img,
+.myed-blog-hover .article-card-wrapper:hover .media img{
+  transform: translateX(8px) scale(1.06);
+}
+@media (prefers-reduced-motion: reduce){
+  .myed-blog-hover .article-card-wrapper .card__media img,
+  .myed-blog-hover .article-card-wrapper .article-card__image img,
+  .myed-blog-hover .article-card-wrapper .media img{
+    transition: none;
+    transform: none;
+  }
+}
+
+/* =========================
+   Article page — glass panels
+========================= */
+.myed-article-glass .myed-article-panel{
+  background: rgba(var(--color-background), calc(var(--myed-glass-opacity) / 100));
+  border: 1px solid rgba(var(--color-foreground), calc(var(--myed-glass-border-opacity) / 100));
+  border-radius: var(--myed-glass-radius);
+  padding: clamp(16px, 2vw, 24px);
+  -webkit-backdrop-filter: blur(var(--myed-glass-blur));
+  backdrop-filter: blur(var(--myed-glass-blur));
+  color: var(--myed-glass-text);
+}
+.myed-article-glass .myed-article-panel a,
+.myed-article-glass .myed-article-panel button,
+.myed-article-glass .myed-article-panel .caption-with-letter-spacing,
+.myed-article-glass .myed-article-panel .circle-divider{
+  color: inherit;
+}
+
+/* =========================
+   Heading pills (Featured + Main Blog)
+   - Wrapper: ONLY centering (no band)
+   - Pill: slim + single line + centered
+========================= */
+
+/* Featured blog heading wrapper */
+.myed-blog-glass .title-wrapper-with-link{
+  background: transparent !important;
+  border: 0 !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 0 18px;
+}
+
+/* Featured blog pill */
+.myed-blog-glass .title-wrapper-with-link .blog__title{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: auto;
+  max-width: calc(100% - 64px);
+  text-align: center;
+
+  white-space: nowrap;     /* tek satır */
+  overflow: visible;       /* kesme yok */
+  text-overflow: clip;
+
+  background: rgba(var(--color-background), calc(var(--myed-glass-opacity) / 100));
+  border: 1px solid rgba(var(--color-foreground), calc(var(--myed-glass-border-opacity) / 100));
+  border-radius: 18px;
+  padding: 10px 18px;
+
+  -webkit-backdrop-filter: blur(var(--myed-glass-blur));
+  backdrop-filter: blur(var(--myed-glass-blur));
+  color: var(--myed-glass-text);
+
+  font-size: clamp(24px, 2.2vw, 34px);
+  line-height: 1.1;
+}
+
+/* If heading is a link */
+.myed-blog-glass .title-wrapper-with-link a{
+  color: inherit;
+}
+
+/* Main blog page heading ("News") pill */
+.main-blog.myed-blog-glass .title--primary{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: auto;
+  max-width: calc(100% - 64px);
+  margin: 0 auto 18px;
+  text-align: center;
+
+  white-space: nowrap;
+  overflow: visible;
+  text-overflow: clip;
+
+  background: rgba(var(--color-background), calc(var(--myed-glass-opacity) / 100));
+  border: 1px solid rgba(var(--color-foreground), calc(var(--myed-glass-border-opacity) / 100));
+  border-radius: 18px;
+  padding: 10px 18px;
+
+  -webkit-backdrop-filter: blur(var(--myed-glass-blur));
+  backdrop-filter: blur(var(--myed-glass-blur));
+  color: var(--myed-glass-text);
+
+  font-size: clamp(24px, 2.2vw, 34px);
+  line-height: 1.1;
+}
+
+/* =========================
+   Mobile polish
+========================= */
+@media screen and (max-width: 749px){
+
+  /* Slightly tighter image↔panel gap on mobile */
+  .myed-blog-glass .article-card-wrapper .card__content{
+    margin-top: 10px;
+  }
+
+  /* Card panel */
+  .myed-blog-glass .article-card-wrapper .card__information,
+  .myed-blog-glass .article-card-wrapper .card__content .card__information{
+    padding: 14px;
+    line-height: 1.45;
+  }
+
+  /* Card title */
+  .myed-blog-glass .article-card-wrapper .card__heading{
+    margin: 0 0 10px;
+    line-height: 1.15;
+    font-size: clamp(18px, 5.2vw, 24px);
+  }
+
+  /* Featured + Main blog pills (mobile) */
+  .myed-blog-glass .title-wrapper-with-link{
+    margin: 0 0 14px;
+  }
+
+  .myed-blog-glass .title-wrapper-with-link .blog__title,
+  .main-blog.myed-blog-glass .title--primary{
+    max-width: calc(100% - 32px);
+    padding: 10px 16px;
+    font-size: clamp(20px, 6vw, 28px);
+  }
+
+  /* Article panel */
+  .myed-article-glass .myed-article-panel{
+    padding: 16px;
+    border-radius: 16px;
+    line-height: 1.5;
+  }
+  .myed-article-glass .article-template__title{
+    line-height: 1.1;
+    font-size: clamp(26px, 7vw, 38px);
+  }
+}
+/* Desktop alignment fix — heading pill aligns with image/text cards */
+@media screen and (min-width: 750px){
+  .myed-blog-glass .title-wrapper-with-link{
+    justify-content: flex-start !important;
+    text-align: left !important;
+  }
+
+  .myed-blog-glass .title-wrapper-with-link .blog__title{
+    align-self: flex-start;
+    margin: 0 0 16px 0 !important;
+    text-align: left !important;
+  }
+
+  .main-blog.myed-blog-glass .title--primary{
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    text-align: left !important;
+  }
+}

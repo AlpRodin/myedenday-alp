@@ -1518,7 +1518,7 @@ details[open] > .share-button__fallback {
 .share-button__fallback .field {
   border-radius: 0;
   min-width: auto;
-  min-height: auto;
+  min-height: initial;
   transition: none;
 }
 
@@ -1536,7 +1536,6 @@ details[open] > .share-button__fallback {
   overflow: hidden;
   filter: none;
   min-width: auto;
-  min-height: auto;
 }
 
 .share-button__fallback .field__input:hover {
@@ -1979,8 +1978,8 @@ input[type='checkbox'] {
 .quantity__input:-webkit-autofill,
 .quantity__input:-webkit-autofill:hover,
 .quantity__input:-webkit-autofill:active {
-  box-shadow: 0 0 0 10rem rgb(var(--color-background)) inset !important;
   -webkit-box-shadow: 0 0 0 10rem rgb(var(--color-background)) inset !important;
+  box-shadow: 0 0 0 10rem rgb(var(--color-background)) inset !important;
 }
 
 .quantity__input::-webkit-outer-spin-button,
@@ -1991,6 +1990,7 @@ input[type='checkbox'] {
 
 .quantity__input[type='number'] {
   -moz-appearance: textfield;
+  appearance: textfield;
 }
 
 .quantity__rules {

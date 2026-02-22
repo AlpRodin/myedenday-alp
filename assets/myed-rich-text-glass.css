@@ -1,0 +1,37 @@
+/* MyEdenDay — Rich Text Glass (scoped via section vars) */
+.myed-rt-surface .myed-rt-glass{
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--myed-rt-radius, 22px);
+  padding: clamp(16px, 2.4vw, 28px) clamp(18px, 3vw, 34px);
+  background: rgba(10,14,22,var(--myed-rt-bg-alpha,0.35));
+  border: 1px solid rgba(255,255,255,var(--myed-rt-border-alpha,0.14));
+  box-shadow: 0 18px 40px rgba(0,0,0,0.22);
+}
+
+.myed-rt-surface .myed-rt-glass::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  border-radius: inherit;
+  background: rgba(255,255,255,var(--myed-rt-frost-alpha,0.12));
+}
+
+@supports ((backdrop-filter: blur(1px))){
+  .myed-rt-surface .myed-rt-glass::before{
+    -webkit-backdrop-filter: blur(var(--myed-rt-blur,12px)) saturate(120%);
+    backdrop-filter: blur(var(--myed-rt-blur,12px)) saturate(120%);
+  }
+}
+
+.myed-rt-surface .myed-rt-glass > *{ position: relative; z-index: 1; }
+
+.myed-rt-surface .myed-rt-glass :is(.rich-text__heading, .rich-text__text, .rte, .rte *){
+  color: rgba(var(--myed-rt-text-rgb,245,247,250),0.92);
+}
+
+.myed-rt-surface .myed-rt-glass .rte a{
+  color: rgba(var(--myed-rt-text-rgb,245,247,250),0.92);
+  text-underline-offset: 0.2em;
+}

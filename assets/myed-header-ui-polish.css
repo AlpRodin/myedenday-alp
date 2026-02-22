@@ -1,0 +1,115 @@
+/* MyEdenDay — Header UI Polish (safe, header-scoped, no layout hijack)
+   Goals:
+   - Header ink color also applies to localization triggers (Deutschland / Deutsch)
+   - Drawer text color override works (no hard-coded #shopify-section-header)
+   - Search modal stays readable WITHOUT forcing fixed/inset layouts
+*/
+
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) {
+  --myed-h-ink: var(--myed-header-text, rgb(var(--color-foreground)));
+  --myed-drawer-ink: var(--myed-drawer-text, rgb(var(--color-foreground)));
+}
+
+/* 1) Header icons + localization triggers follow header ink */
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) :is(
+  .header__icon,
+  .header__icons a,
+  .header__icons summary,
+  .header__icons .disclosure__button,
+  .header__icons .localization-form__select,
+  .header__icons .localization-selector
+){
+  color: var(--myed-h-ink) !important;
+}
+
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) :is(
+  .header__icon svg,
+  .header__icons svg
+){
+  fill: currentColor !important;
+  stroke: currentColor !important;
+}
+
+/* 2) Localization dropdown panels: always readable (dark panel + light text) */
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) :is(
+  .disclosure__list-wrapper,
+  .disclosure__list,
+  .localization-form__dropdown,
+  .localization-form__popover
+){
+  background: rgba(10,14,22,0.92) !important;
+  border: 1px solid rgba(255,255,255,0.14) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 18px 40px rgba(0,0,0,0.35) !important;
+  color: rgba(245,247,250,0.92) !important;
+  color-scheme: dark;
+}
+
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) :is(
+  .disclosure__list-wrapper,
+  .disclosure__list,
+  .localization-form__dropdown,
+  .localization-form__popover
+) *{
+  color: rgba(245,247,250,0.92) !important;
+}
+
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) :is(
+  .disclosure__link:hover,
+  .disclosure__link:focus-visible,
+  .disclosure__item a:hover
+){
+  background: rgba(255,255,255,0.08) !important;
+}
+
+/* 3) Search modal: ONLY readability + stacking (no forced fixed/inset layout) */
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) details[open] .search-modal{
+  z-index: 9999 !important;
+}
+
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) .search-modal__overlay{
+  background: rgba(0,0,0,0.35) !important;
+}
+
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) .search-modal__content{
+  background: rgba(10,14,22,0.92) !important;
+  border: 1px solid rgba(255,255,255,0.14) !important;
+  border-radius: 22px !important;
+  box-shadow: 0 18px 40px rgba(0,0,0,0.45) !important;
+  color: rgba(245,247,250,0.92) !important;
+  color-scheme: dark;
+}
+
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) .search-modal__content,
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) .search-modal__content *{
+  color: rgba(245,247,250,0.92) !important;
+}
+
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) .search-modal__close-button{
+  pointer-events: auto !important;
+  z-index: 2 !important;
+}
+
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) :is(
+  .search-modal__form input::placeholder,
+  .search__input::placeholder
+){
+  color: rgba(245,247,250,0.55) !important;
+}
+
+/* 4) Drawer text override (works regardless of header section id) */
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) .menu-drawer{
+  color: var(--myed-drawer-ink) !important;
+}
+
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) .menu-drawer :is(
+  a, button, summary, span, p, li, h1, h2, h3, h4,
+  .list-menu__item, .menu-drawer__menu-item, .menu-drawer__utility-links a
+){
+  color: inherit !important;
+}
+
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) .menu-drawer svg{
+  fill: currentColor !important;
+  stroke: currentColor !important;
+}

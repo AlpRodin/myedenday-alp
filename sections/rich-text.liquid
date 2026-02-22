@@ -1,4 +1,5 @@
 {{ 'section-rich-text.css' | asset_url | stylesheet_tag }}
+{{ 'myed-rich-text-glass.css' | asset_url | stylesheet_tag }}
 
 {%- style -%}
   .section-{{ section.id }}-padding {
@@ -14,10 +15,23 @@
   }
 {%- endstyle -%}
 
+{%- if section.settings.myed_enable_glass -%}
+{%- style -%}
+  #shopify-section-{{ section.id }}{
+    --myed-rt-text-rgb: {{ section.settings.myed_rt_text_color | color_extract: 'red' }}, {{ section.settings.myed_rt_text_color | color_extract: 'green' }}, {{ section.settings.myed_rt_text_color | color_extract: 'blue' }};
+    --myed-rt-bg-alpha: {{ section.settings.myed_rt_bg_opacity | divided_by: 100.0 }};
+    --myed-rt-frost-alpha: {{ section.settings.myed_rt_frost_opacity | divided_by: 100.0 }};
+    --myed-rt-border-alpha: {{ section.settings.myed_rt_border_opacity | divided_by: 100.0 }};
+    --myed-rt-blur: {{ section.settings.myed_rt_blur }}px;
+    --myed-rt-radius: {{ section.settings.myed_rt_radius }}px;
+  }
+{%- endstyle -%}
+{%- endif -%}
+
 <div class="isolate{% unless section.settings.full_width %} page-width{% endunless %}">
-  <div class="rich-text content-container color-{{ section.settings.color_scheme }} gradient{% if section.settings.full_width %} rich-text--full-width content-container--full-width{% endif %} section-{{ section.id }}-padding">
+  <div class="rich-text content-container color-{{ section.settings.color_scheme }} gradient{% if section.settings.full_width %} rich-text--full-width content-container--full-width{% endif %} section-{{ section.id }}-padding{% if section.settings.myed_enable_glass %} myed-rt-surface{% endif %}">
     <div class="rich-text__wrapper rich-text__wrapper--{{ section.settings.desktop_content_position }}{% if section.settings.full_width %} page-width{% endif %}">
-      <div class="rich-text__blocks {{ section.settings.content_alignment }}">
+      <div class="rich-text__blocks {{ section.settings.content_alignment }}{% if section.settings.myed_enable_glass %} myed-rt-glass{% endif %}">
         {%- for block in section.blocks -%}
           {%- case block.type -%}
             {%- when 'heading' -%}
@@ -154,6 +168,72 @@
       "id": "full_width",
       "default": true,
       "label": "t:sections.rich-text.settings.full_width.label"
+    },
+    {
+      "type": "header",
+      "content": "MyEdenDay — Rich Text Glass Controls"
+    },
+    {
+      "type": "checkbox",
+      "id": "myed_enable_glass",
+      "default": false,
+      "label": "Enable glass"
+    },
+    {
+      "type": "color",
+      "id": "myed_rt_text_color",
+      "label": "Text color",
+      "default": "#F5F7FA"
+    },
+    {
+      "type": "range",
+      "id": "myed_rt_bg_opacity",
+      "min": 0,
+      "max": 80,
+      "step": 1,
+      "unit": "%",
+      "label": "Glass background opacity",
+      "default": 35
+    },
+    {
+      "type": "range",
+      "id": "myed_rt_frost_opacity",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "%",
+      "label": "Glass frost opacity",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "myed_rt_border_opacity",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "%",
+      "label": "Glass border opacity",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "myed_rt_blur",
+      "min": 0,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "label": "Glass blur",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "myed_rt_radius",
+      "min": 8,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "label": "Glass radius",
+      "default": 22
     },
     {
       "type": "header",

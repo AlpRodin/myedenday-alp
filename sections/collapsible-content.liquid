@@ -1,5 +1,6 @@
 {{ 'component-accordion.css' | asset_url | stylesheet_tag }}
 {{ 'collapsible-content.css' | asset_url | stylesheet_tag }}
+{{ 'myed-collapsible-glass.css' | asset_url | stylesheet_tag }}
 
 {%- style -%}
   .section-{{ section.id }}-padding {
@@ -15,9 +16,22 @@
   }
 {%- endstyle -%}
 
+{%- if section.settings.myed_enable_glass -%}
+{%- style -%}
+  #shopify-section-{{ section.id }}{
+    --myed-cc-text-rgb: {{ section.settings.myed_cc_text_color | color_extract: 'red' }}, {{ section.settings.myed_cc_text_color | color_extract: 'green' }}, {{ section.settings.myed_cc_text_color | color_extract: 'blue' }};
+    --myed-cc-bg-alpha: {{ section.settings.myed_cc_bg_opacity | divided_by: 100.0 }};
+    --myed-cc-frost-alpha: {{ section.settings.myed_cc_frost_opacity | divided_by: 100.0 }};
+    --myed-cc-border-alpha: {{ section.settings.myed_cc_border_opacity | divided_by: 100.0 }};
+    --myed-cc-blur: {{ section.settings.myed_cc_blur }}px;
+    --myed-cc-radius: {{ section.settings.myed_cc_radius }}px;
+  }
+{%- endstyle -%}
+{%- endif -%}
+
 <div class="color-{{ section.settings.color_scheme }} gradient">
-  <div class="collapsible-content collapsible-{{ section.settings.layout }}-layout isolate{% if section.settings.layout == 'section' %} page-width{% elsif section.settings.layout == 'none' %} content-container content-container--full-width{% endif %}">
-    <div class="collapsible-content__wrapper section-{{ section.id }}-padding{% if section.settings.layout == 'section' %} content-container color-{{ section.settings.container_color_scheme }} gradient{% endif %}">
+  <div class="collapsible-content collapsible-{{ section.settings.layout }}-layout isolate{% if section.settings.layout == 'section' %} page-width{% elsif section.settings.layout == 'none' %} content-container content-container--full-width{% endif %}{% if section.settings.myed_enable_glass %} myed-cc-surface{% endif %}">
+    <div class="collapsible-content__wrapper section-{{ section.id }}-padding{% if section.settings.layout == 'section' %} content-container color-{{ section.settings.container_color_scheme }} gradient{% endif %}{% if section.settings.myed_enable_glass %} myed-cc-glass{% endif %}">
       <div class="{% if section.settings.image == blank %}collapsible-content-wrapper-narrow{% else %}page-width{% endif %}">
         <div
           class="collapsible-content__header{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
@@ -40,7 +54,7 @@
           {%- if section.settings.image != blank -%}
             <div class="grid__item collapsible-content__grid-item">
               <div
-                class="collapsible-content__media collapsible-content__media--{{ section.settings.image_ratio }} media global-media-settings gradient"
+                class="collapsible-content__media collapsible-content__media--{{ section.settings.image_ratio }} media global-media-settings gradient{% if section.settings.myed_enable_glass %} myed-cc-image-glass{% endif %}"
                 {% if section.settings.image_ratio == 'adapt' %}
                   style="padding-bottom: {{ 1 | divided_by: section.settings.image.aspect_ratio | times: 100 }}%;"
                 {% endif %}
@@ -260,6 +274,72 @@
       ],
       "default": "image_second",
       "label": "t:sections.collapsible_content.settings.desktop_layout.label"
+    },
+    {
+      "type": "header",
+      "content": "MyEdenDay — Collapsible Glass Controls"
+    },
+    {
+      "type": "checkbox",
+      "id": "myed_enable_glass",
+      "default": false,
+      "label": "Enable glass"
+    },
+    {
+      "type": "color",
+      "id": "myed_cc_text_color",
+      "label": "Text color",
+      "default": "#F5F7FA"
+    },
+    {
+      "type": "range",
+      "id": "myed_cc_bg_opacity",
+      "min": 0,
+      "max": 80,
+      "step": 1,
+      "unit": "%",
+      "label": "Glass background opacity",
+      "default": 35
+    },
+    {
+      "type": "range",
+      "id": "myed_cc_frost_opacity",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "%",
+      "label": "Glass frost opacity",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "myed_cc_border_opacity",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "%",
+      "label": "Glass border opacity",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "myed_cc_blur",
+      "min": 0,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "label": "Glass blur",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "myed_cc_radius",
+      "min": 8,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "label": "Glass radius",
+      "default": 22
     },
     {
       "type": "header",

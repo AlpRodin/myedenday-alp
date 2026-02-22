@@ -1,6 +1,12 @@
 {{ 'section-blog-post.css' | asset_url | stylesheet_tag }}
+{{ 'myed-blog-glass.css' | asset_url | stylesheet_tag }}
 
-<article class="article-template">
+<article
+  class="article-template{% if section.settings.myed_glass_enable %} myed-article-glass{% endif %}"
+  {% if section.settings.myed_glass_enable %}
+    style="--myed-glass-opacity: {{ section.settings.myed_glass_opacity }}; --myed-glass-blur: {{ section.settings.myed_glass_blur }}px; --myed-glass-border-opacity: {{ section.settings.myed_glass_border_opacity }};{% if section.settings.myed_glass_text_override %} --myed-glass-text: {{ section.settings.myed_glass_text_color }};{% endif %}"
+  {% endif %}
+>
   {%- for block in section.blocks -%}
     {%- case block.type -%}
       {%- when '@app' -%}
@@ -43,7 +49,7 @@
 
       {%- when 'title' -%}
         <header
-          class="page-width page-width--narrow{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}"
+          class="page-width page-width--narrow{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}{% if section.settings.myed_glass_enable %} myed-article-panel{% endif %}"
           {{ block.shopify_attributes }}
         >
           <h1
@@ -65,7 +71,7 @@
 
       {%- when 'content' -%}
         <div
-          class="article-template__content page-width page-width--narrow rte{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+          class="article-template__content page-width page-width--narrow rte{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}{% if section.settings.myed_glass_enable %} myed-article-panel{% endif %}"
           {{ block.shopify_attributes }}
         >
           {{ article.content }}
@@ -73,7 +79,7 @@
 
       {%- when 'share' -%}
         <div
-          class="article-template__social-sharing page-width page-width--narrow{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+          class="article-template__social-sharing page-width page-width--narrow{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}{% if section.settings.myed_glass_enable %} myed-article-panel{% endif %}"
           {{ block.shopify_attributes }}
         >
           {% assign share_url = request.origin | append: article.url %}
@@ -82,7 +88,7 @@
     {%- endcase -%}
   {%- endfor -%}
 
-  <div class="article-template__back element-margin-top center{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
+  <div class="article-template__back element-margin-top center page-width page-width--narrow{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}{% if section.settings.myed_glass_enable %} myed-article-panel{% endif %}">
     <a href="{{ blog.url }}" class="article-template__link link animate-arrow">
       <span class="icon-wrap">
         <span class="svg-wrapper">
@@ -99,7 +105,7 @@
         class="page-width page-width--narrow{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
       >
         {%- if article.comments_count > 0 -%}
-          {%- assign anchorId = '#Comments-' | append: article.id -%}
+          {%- assign anchor_id = '#Comments-' | append: article.id -%}
 
           <h2 id="Comments-{{ article.id }}" tabindex="-1">
             {{ 'blogs.article.comments' | t: count: article.comments_count }}
@@ -126,7 +132,7 @@
                   </footer>
                 </article>
               {%- endfor -%}
-              {% render 'pagination', paginate: paginate, anchor: anchorId %}
+              {% render 'pagination', paginate: paginate, anchor: anchor_id %}
             </div>
           {% endpaginate %}
         {%- endif -%}
@@ -297,6 +303,15 @@
   "name": "t:sections.main-article.name",
   "tag": "section",
   "class": "section",
+  "settings": [
+    { "type": "header", "content": "MyED — Article Glass" },
+    { "type": "checkbox", "id": "myed_glass_enable", "label": "Enable glass (article)", "default": false },
+    { "type": "range", "id": "myed_glass_opacity", "min": 0, "max": 60, "step": 1, "unit": "%", "label": "Glass opacity", "default": 22 },
+    { "type": "range", "id": "myed_glass_blur", "min": 0, "max": 24, "step": 1, "unit": "px", "label": "Glass blur", "default": 12 },
+    { "type": "range", "id": "myed_glass_border_opacity", "min": 0, "max": 60, "step": 1, "unit": "%", "label": "Border opacity", "default": 18 },
+    { "type": "checkbox", "id": "myed_glass_text_override", "label": "Override text color", "default": false },
+    { "type": "color", "id": "myed_glass_text_color", "label": "Text color", "default": "#111111" }
+  ],
   "blocks": [
     {
       "type": "@app"

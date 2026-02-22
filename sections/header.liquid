@@ -101,6 +101,19 @@
   }
 {%- endstyle -%}
 
+{%- style -%}
+  {%- if section.settings.enable_header_text_override -%}
+  #shopify-section-{{ section.id }}{
+    --myed-header-text: {{ section.settings.header_text_color }};
+  }
+  {%- endif -%}
+  {%- if section.settings.enable_drawer_text_override -%}
+  #shopify-section-{{ section.id }}{
+    --myed-drawer-text: {{ section.settings.drawer_text_color }};
+  }
+  {%- endif -%}
+{%- endstyle -%}
+
 <script src="{{ 'cart-notification.js' | asset_url }}" defer="defer"></script>
 
 {%- liquid
@@ -142,8 +155,8 @@
   {% if header_tag == 'sticky-header' %}
     data-sticky-type="{{ section.settings.sticky_header_type }}"
   {% endif %}
-  class="header-wrapper color-{{ section.settings.color_scheme }} gradient{% if section.settings.show_line_separator %} header-wrapper--border-bottom{% endif %}{% if glass_header_enabled %} myed-glass-header{% endif %}{% if drawer_glass_enabled %} myed-glass-drawer{% endif %}"
-  {% if glass_header_enabled or drawer_glass_enabled %}
+  class="header-wrapper color-{{ section.settings.color_scheme }} gradient{% if section.settings.show_line_separator %} header-wrapper--border-bottom{% endif %}{% if glass_header_enabled %} myed-glass-header{% endif %}{% if drawer_glass_enabled %} myed-glass-drawer{% endif %}{% if drawer_text_override_enabled %} myed-drawer-text-override{% endif %}"
+  {% if glass_header_enabled or drawer_glass_enabled or header_text_override_enabled or drawer_text_override_enabled %}
     style="
       {% if glass_header_enabled %}--myed-glass-base: {{ glass_base }}; --myed-glass-opacity: {{ glass_opacity }}; --myed-glass-border-opacity: {{ glass_border_opacity }}; --myed-glass-blur: {{ glass_blur }}px;{% endif %}
       {% if header_text_override_enabled %}--myed-header-text: {{ header_text_color }};{% endif %}
