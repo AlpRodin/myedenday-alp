@@ -83,6 +83,15 @@
   --myed-loc-radius: 18px;
 }
 
+/* ---------- GLASS HEADER OVERRIDE (keep old look from myed-header-glass) ---------- */
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"])
+  .myed-glass-header :is(localization-form, .localization-form, .disclosure){
+  /* match previous dark popover used in glass.css */
+  --myed-loc-bg: rgba(10, 14, 22, 0.92);
+  --myed-loc-border: rgba(255, 255, 255, 0.14);
+  --myed-loc-radius: 14px;
+}
+
 /* Popover wrapper */
 :where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) :is(
   localization-form .disclosure__list-wrapper,

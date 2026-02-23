@@ -355,6 +355,15 @@
   font-size:12px;
   color: rgba(var(--edf-text-rgb,255,255,255), .88);
   appearance:none;
+  min-height: 40px;
+  line-height: 1.2;
+}
+
+/* Native select popup readability (footer localization only) */
+.edf-loc select option,
+.edf-loc select optgroup{
+  color: #111111;
+  background-color: #ffffff;
 }
 
 .edf-ok{

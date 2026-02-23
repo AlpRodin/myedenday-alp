@@ -153,97 +153,39 @@
   }
 }
 
-/* MYED — Header Popup Readability Fix (dropdown + search) */
-.myed-glass-header :is(
-  .disclosure__list-wrapper,
-  .disclosure__list,
-  .search-modal,
-  .search-modal__form,
-  .search__input,
-  .search-modal__form input
-) {
-  color: rgba(255,255,255,0.92);
-}
+/* ======================================================================
+   MYED - Header Popover Readability (SEARCH + SUBMENU + PREDICTIVE ONLY)
+   NOTE: Localization popovers are handled ONLY in myed-header-localization-glass.css
+====================================================================== */
 
-.myed-glass-header .localization-form .disclosure__list-wrapper,
-.myed-glass-header .localization-form .disclosure__list{
-  background: rgba(10,14,22,0.92);
-}
-
-.myed-glass-header :is(
-  .disclosure__link,
-  .localization-form__dropdown a,
-  .localization-form__popover a
-) {
-  color: rgba(255,255,255,0.92);
-}
-
-.myed-glass-header :is(
-  .search-modal__form input::placeholder,
-  .search__input::placeholder
-) {
-  color: rgba(255,255,255,0.65);
-}
-
-.myed-glass-header :is(
-  .disclosure__link:hover,
-  .disclosure__link:focus-visible
-) {
-  background: rgba(255,255,255,0.08);
-}
-
-.myed-glass-header :is(
-  .disclosure__link svg,
-  .localization-selector svg,
-  .localization-form svg,
-  .search-modal svg
-) {
-  fill: currentColor;
-  stroke: currentColor;
-}
-
-/* MYED — FIX: Header popovers/search must stay readable regardless of header text color */
-.myed-glass-header :is(
-  .disclosure__list-wrapper,
-  .localization-form__dropdown,
-  .localization-form__popover,
-  .header__submenu,
-  .search-modal,
-  .predictive-search
-){
+.myed-glass-header{
   --myed-h-popover-bg: rgba(10,14,22,0.92);
   --myed-h-popover-fg: rgba(255,255,255,0.92);
+  --myed-h-popover-border: rgba(255,255,255,0.14);
+  --myed-h-popover-radius: 14px;
+  --myed-h-popover-hover: rgba(255,255,255,0.08);
+}
+
+/* Apply readable fg only to non-localization popovers */
+.myed-glass-header :is(.search-modal, .predictive-search, .header__submenu){
   color: var(--myed-h-popover-fg);
 }
 
-.myed-glass-header :is(
-  .disclosure__list-wrapper,
-  .localization-form__dropdown,
-  .localization-form__popover,
-  .header__submenu
-){
+/* Background panels (submenu + predictive). Search modal handled separately below. */
+.myed-glass-header :is(.predictive-search, .header__submenu){
   background: var(--myed-h-popover-bg);
-  border: 1px solid rgba(255,255,255,0.14);
-  border-radius: 14px;
+  border: 1px solid var(--myed-h-popover-border);
+  border-radius: var(--myed-h-popover-radius);
 }
 
-/* Links + items inside popovers */
-.myed-glass-header :is(
-  .disclosure__link,
-  .localization-form__dropdown a,
-  .localization-form__popover a,
-  .header__submenu a
-){
+/* Predictive search text */
+.myed-glass-header .predictive-search :is(a, p, span, li, div){
   color: var(--myed-h-popover-fg);
 }
 
-.myed-glass-header :is(
-  .disclosure__link:hover,
-  .localization-form__dropdown a:hover,
-  .localization-form__popover a:hover,
-  .header__submenu a:hover
-){
-  background: rgba(255,255,255,0.08);
+/* Hover inside predictive + submenu */
+.myed-glass-header :is(.predictive-search a:hover, .header__submenu a:hover){
+  background: var(--myed-h-popover-hover);
 }
 
 /* Search modal: force readable input + placeholders + full viewport */
@@ -256,24 +198,12 @@
   color: var(--myed-h-popover-fg);
 }
 
-.myed-glass-header .search-modal :is(input, textarea, select),
-.myed-glass-header .search-modal :is(input[type="search"], .search__input){
+.myed-glass-header .search-modal :is(input, textarea, select, input[type="search"], .search__input){
   color: var(--myed-h-popover-fg);
 }
 
 .myed-glass-header .search-modal :is(input[type="search"], .search__input)::placeholder{
   color: rgba(255,255,255,0.62);
-}
-
-/* Predictive search results */
-.myed-glass-header .predictive-search{
-  z-index: 60;
-  background: var(--myed-h-popover-bg);
-  color: var(--myed-h-popover-fg);
-}
-
-.myed-glass-header .predictive-search :is(a, p, span, li, div){
-  color: var(--myed-h-popover-fg);
 }
 
 /* Icons follow text color */
