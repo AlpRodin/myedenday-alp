@@ -1,3 +1,8 @@
+.myed-glass-header.header-wrapper {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
 .myed-glass-header .header {
   position: relative;
   --myed-glass-opacity-c: clamp(0, var(--myed-glass-opacity, 0.18), 0.3);
@@ -152,9 +157,6 @@
 .myed-glass-header :is(
   .disclosure__list-wrapper,
   .disclosure__list,
-  .localization-form,
-  .localization-form__select,
-  .localization-selector,
   .search-modal,
   .search-modal__form,
   .search__input,
@@ -170,10 +172,8 @@
 
 .myed-glass-header :is(
   .disclosure__link,
-  .disclosure__button,
-  .localization-selector a,
-  .localization-selector button,
-  .localization-selector summary
+  .localization-form__dropdown a,
+  .localization-form__popover a
 ) {
   color: rgba(255,255,255,0.92);
 }
@@ -208,7 +208,6 @@
   .localization-form__dropdown,
   .localization-form__popover,
   .header__submenu,
-  .menu-drawer,
   .search-modal,
   .predictive-search
 ){
@@ -231,7 +230,6 @@
 /* Links + items inside popovers */
 .myed-glass-header :is(
   .disclosure__link,
-  .disclosure__button,
   .localization-form__dropdown a,
   .localization-form__popover a,
   .header__submenu a

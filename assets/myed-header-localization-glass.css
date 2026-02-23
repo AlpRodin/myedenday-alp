@@ -1,191 +1,148 @@
-/* ==========================================================================
-  MyEdenDay - Header Localization Glass (SCOPED)
-  Affects ONLY country/currency/language dropdowns in header
+﻿/* ==========================================================================
+  MyEdenDay - Header Localization Glass (FINAL, SINGLE SOURCE)
+  Fixes:
+  - Header triggers (Deutschland/EUR/Deutsch) + icons + hamburger share SAME color
+  - Popover dropdown is glass + white text (only inside popover)
+  - Scoped to header only, logo untouched
 ========================================================================== */
 
-.header .localization-form,
-.header localization-form,
-.header .disclosure {
-  /* tokens */
+/* Real header wrapper selector (Dawn): .shopify-section.section-header */
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) {
+  --myed-header-fg: var(--myed-header-text, rgb(var(--color-foreground, 17, 17, 17)));
+}
+
+/* ---------- HEADER CONTROLS: ONE COLOR ---------- */
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) :is(
+  .header__icons,
+  .header__icons a,
+  .header__icons button,
+  .header__icon,
+  .header__menu-item,
+  localization-form,
+  .localization-form,
+  .localization-selector,
+  .localization-form__select,
+  .disclosure__button
+){
+  color: var(--myed-header-fg) !important;
+  opacity: 1 !important;
+}
+
+/* Ensure trigger text/caret inside button inherits trigger color */
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) :is(
+  localization-form .disclosure__button,
+  .localization-form .disclosure__button,
+  .localization-form__select
+),
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) :is(
+  localization-form .disclosure__button *,
+  .localization-form .disclosure__button *,
+  .localization-form__select *
+){
+  color: inherit !important;
+}
+
+/* SVG icons follow currentColor */
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) :is(
+  .header__icons svg,
+  .header__icon svg,
+  localization-form svg,
+  .localization-form svg
+){
+  color: inherit !important;
+}
+
+/* SVG strokes/fills use currentColor */
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) :is(.header__icons, .header__icon, localization-form, .localization-form) svg [fill]:not([fill="none"]){
+  fill: currentColor !important;
+}
+
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) :is(.header__icons, .header__icon, localization-form, .localization-form) svg path,
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) :is(.header__icons, .header__icon, localization-form, .localization-form) svg circle,
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) :is(.header__icons, .header__icon, localization-form, .localization-form) svg rect,
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) :is(.header__icons, .header__icon, localization-form, .localization-form) svg line,
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) :is(.header__icons, .header__icon, localization-form, .localization-form) svg polyline,
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) :is(.header__icons, .header__icon, localization-form, .localization-form) svg polygon{
+  stroke: currentColor !important;
+}
+
+/* Caret / chevrons in localization triggers */
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) .icon-caret,
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) .icon-caret *{
+  stroke: currentColor !important;
+  fill: currentColor !important;
+}
+
+/* ---------- DROPDOWN POPOVER: GLASS + WHITE TEXT (only inside popover) ---------- */
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) :is(localization-form, .localization-form, .disclosure){
   --myed-loc-bg: rgba(10, 14, 22, 0.58);
   --myed-loc-border: rgba(255, 255, 255, 0.14);
   --myed-loc-text: rgba(255, 255, 255, 0.92);
-  --myed-loc-muted: rgba(255, 255, 255, 0.72);
   --myed-loc-hover: rgba(255, 255, 255, 0.08);
-  --myed-loc-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
+  --myed-loc-shadow: 0 18px 40px rgba(0,0,0,0.28);
   --myed-loc-radius: 18px;
 }
 
-/* Popover / list wrapper (Dawn disclosure pattern) */
-.header .localization-form .disclosure__list-wrapper,
-.header localization-form .disclosure__list-wrapper,
-.header .localization-form .localization-form__popover {
+/* Popover wrapper */
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) :is(
+  localization-form .disclosure__list-wrapper,
+  .localization-form .disclosure__list-wrapper,
+  .localization-form .localization-form__popover
+){
   background: var(--myed-loc-bg) !important;
   border: 1px solid var(--myed-loc-border) !important;
   border-radius: var(--myed-loc-radius) !important;
   box-shadow: var(--myed-loc-shadow) !important;
-  backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
   overflow: hidden;
 
-  /* prevent "giant box" */
   width: auto !important;
   min-width: 240px;
   max-width: min(360px, calc(100vw - 24px));
+
+  /* Popover text must be white */
+  color: var(--myed-loc-text) !important;
 }
 
-/* List padding */
-.header .localization-form .disclosure__list,
-.header localization-form .disclosure__list {
+/* List */
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) :is(
+  localization-form .disclosure__list,
+  .localization-form .disclosure__list
+){
   padding: 10px !important;
   margin: 0 !important;
   background: transparent !important;
 }
 
-/* Links / buttons inside */
-.header .localization-form .disclosure__link,
-.header .localization-form .disclosure__button,
-.header localization-form .disclosure__link,
-.header localization-form .disclosure__button {
-  color: var(--myed-loc-text) !important;
+/* Links inside popover (not trigger) */
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) :is(
+  localization-form .disclosure__list-wrapper .disclosure__link,
+  .localization-form .disclosure__list-wrapper .disclosure__link
+){
+  color: inherit !important;
 }
 
-/* Hover + focus */
-@media (hover:hover) {
-  .header .localization-form .disclosure__link:hover,
-  .header localization-form .disclosure__link:hover {
+@media (hover:hover){
+  :where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) :is(
+    localization-form .disclosure__list-wrapper .disclosure__link:hover,
+    .localization-form .disclosure__list-wrapper .disclosure__link:hover
+  ){
     background: var(--myed-loc-hover) !important;
   }
 }
 
-.header .localization-form .disclosure__link:focus-visible,
-.header localization-form .disclosure__link:focus-visible {
-  outline: 2px solid rgba(255, 255, 255, 0.35);
-  outline-offset: 2px;
-  border-radius: 10px;
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) :is(
+  localization-form .disclosure__list-wrapper .disclosure__link[aria-current="true"],
+  .localization-form .disclosure__list-wrapper .disclosure__link[aria-current="true"]
+){
+  background: rgba(255,255,255,0.12) !important;
 }
 
-/* Active item (selected) */
-.header .localization-form .disclosure__link[aria-current="true"],
-.header localization-form .disclosure__link[aria-current="true"] {
-  background: rgba(255, 255, 255, 0.12) !important;
-}
-
-/* Any incidental text nodes inside the popover */
-.header .localization-form .disclosure__list-wrapper *,
-.header localization-form .disclosure__list-wrapper * {
-  color: inherit;
-}
-
-/* ==========================================================================
-  MyEdenDay - Header Foreground Unifier (SCOPED)
-  Goal: hamburger + localization text + header icons all share ONE color token
-  IMPORTANT: Does NOT touch the logo/brand mark.
-========================================================================== */
-
-.shopify-section-header .header{
-  /* Header text color (theme) ile otomatik senkron */
-  --myed-header-fg: rgb(var(--color-foreground, 17, 17, 17));
-}
-
-/* Apply only to header controls (icons + localization), not the logo */
-.shopify-section-header .header .header__icons,
-.shopify-section-header .header .header__icons a,
-.shopify-section-header .header .header__icons button,
-.shopify-section-header .header .header__icons span,
-.shopify-section-header .header .header__icon,
-.shopify-section-header .header .header__menu-item,
-.shopify-section-header .header .localization-form,
-.shopify-section-header .header .localization-form__select,
-.shopify-section-header .header .disclosure__button{
-  color: var(--myed-header-fg) !important;
-  opacity: 1 !important;
-}
-
-/* SVG icons: keep outline icons outline (stroke), do not force fill */
-.shopify-section-header .header .header__icons svg,
-.shopify-section-header .header .header__icon svg,
-.shopify-section-header .header .localization-form svg{
-  color: var(--myed-header-fg) !important;
-}
-
-.shopify-section-header .header .header__icons svg [fill]:not([fill="none"]){ fill: currentColor !important; }
-
-.shopify-section-header .header .header__icons svg path,
-.shopify-section-header .header .header__icons svg circle,
-.shopify-section-header .header .header__icons svg rect,
-.shopify-section-header .header .header__icons svg line,
-.shopify-section-header .header .header__icons svg polyline,
-.shopify-section-header .header .header__icons svg polygon,
-.shopify-section-header .header .header__icon svg path,
-.shopify-section-header .header .localization-form svg path{
-  stroke: currentColor !important;
-}
-
-/* Caret / chevrons in dropdown triggers */
-.shopify-section-header .header .icon-caret,
-.shopify-section-header .header .icon-caret *{
-  stroke: currentColor !important;
-}
-
-/* ==========================================================================
-  HOTFIX — Header text color ile %100 senkron
-  - Trigger (Deutschland/EUR/Deutsch) artık popover white’a kilitlenmez
-  - Iconlar + hamburger + trigger tek renge bağlanır
-========================================================================== */
-
-.shopify-section-header .header{
-  /* bazı temalarda header text color buraya, bazılarında --color-foreground’a yazılır */
-  --myed-header-fg-raw: var(--header-text-color, var(--color-foreground));
-}
-
-/* 1) Trigger butonlarını HEADER rengine zorla (popover içi değil, sadece trigger) */
-.shopify-section-header .header .localization-form .disclosure__button,
-.shopify-section-header .header localization-form .disclosure__button,
-.shopify-section-header .header .localization-form__select,
-.shopify-section-header .header .disclosure__button{
-  color: rgb(var(--myed-header-fg-raw, 17, 17, 17)) !important;
-  color: var(--myed-header-fg-raw, #111111) !important;
-  opacity: 1 !important;
-}
-
-/* 2) Header kontrol ikonları + menu aynı renk */
-.shopify-section-header .header .header__icons,
-.shopify-section-header .header .header__icons a,
-.shopify-section-header .header .header__icons button,
-.shopify-section-header .header .header__icon,
-.shopify-section-header .header .header__menu-item{
-  color: rgb(var(--myed-header-fg-raw, 17, 17, 17)) !important;
-  color: var(--myed-header-fg-raw, #111111) !important;
-  opacity: 1 !important;
-}
-
-/* 3) SVG ikonlar: stroke/fill currentColor */
-.shopify-section-header .header .header__icons svg,
-.shopify-section-header .header .header__icon svg,
-.shopify-section-header .header .localization-form svg{
-  color: rgb(var(--myed-header-fg-raw, 17, 17, 17)) !important;
-  color: var(--myed-header-fg-raw, #111111) !important;
-}
-
-.shopify-section-header .header .header__icons svg [fill]:not([fill="none"]),
-.shopify-section-header .header .header__icon svg [fill]:not([fill="none"]),
-.shopify-section-header .header .localization-form svg [fill]:not([fill="none"]){
-  fill: currentColor !important;
-}
-
-.shopify-section-header .header .header__icons svg path,
-.shopify-section-header .header .header__icons svg circle,
-.shopify-section-header .header .header__icons svg rect,
-.shopify-section-header .header .header__icons svg line,
-.shopify-section-header .header .header__icons svg polyline,
-.shopify-section-header .header .header__icons svg polygon,
-.shopify-section-header .header .header__icon svg path,
-.shopify-section-header .header .localization-form svg path{
-  stroke: currentColor !important;
-}
-
-.shopify-section-header .header .icon-caret,
-.shopify-section-header .header .icon-caret *{
-  stroke: currentColor !important;
+/* Keep all text inside popover white */
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) :is(
+  localization-form .disclosure__list-wrapper *,
+  .localization-form .disclosure__list-wrapper *
+){
+  color: inherit !important;
 }

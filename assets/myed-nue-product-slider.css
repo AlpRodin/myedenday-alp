@@ -164,7 +164,7 @@
 
 .myed-nue__track {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   width: max-content;
   will-change: transform;
   transform: translate3d(0, 0, 0);
@@ -172,7 +172,7 @@
 
 .myed-nue__group {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   gap: var(--myed-gap, 20px);
 }
 
@@ -184,6 +184,10 @@
 @media (max-width: 749px) {
   .myed-nue__item {
     width: var(--myed-card-w-m, 180px);
+  }
+
+  .myed-nue__group {
+    gap: var(--myed-gap-m, var(--myed-gap, 20px));
   }
 }
 
@@ -247,10 +251,15 @@
   text-align: center;
   opacity: 0;
   transition: opacity 220ms ease;
-  color: var(--myed-product-title-color, var(--myed-title-color, #ffffff));
+  color: var(--myed-nue-title, var(--myed-product-title-color, var(--myed-title-color, #fff))) !important;
   max-width: var(--myed-title-max-w, 220px);
   margin-left: auto;
   margin-right: auto;
+}
+
+.myed-nue__muted,
+.myed-nue__desc {
+  color: var(--myed-nue-muted, var(--myed-muted-color, #6b6b6b)) !important;
 }
 
 @media (min-width: 750px) {
@@ -302,23 +311,5 @@
 }
 
 .myed-nue__stage {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-}
-
-.myed-nue__inner {
-  position: relative;
-  z-index: 2;
-}
-
-.myed-nue__viewport {
-  overflow: hidden;
-}
-
-.myed-nue__track {
-  display: flex;
-  width: max-content;
-  will-change: transform;
+  display: none;
 }

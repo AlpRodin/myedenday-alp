@@ -581,3 +581,61 @@
     margin: 12px 14px 14px;
   }
 }
+
+/* ===========================
+   Right Card: Desktop/Mobile controls (ACTIVE + NO WASTE)
+   =========================== */
+
+/* Base (custom açıkken): mobile % width + max-width + align */
+.myed-hero--right-custom .myed-right{
+  width: var(--myed-right-col-m, 100%);
+  max-width: var(--myed-right-max-m, 560px);
+  justify-self: var(--myed-right-align-m, center);
+}
+
+/* Mobile: keep same behavior (explicit, stable) */
+@media (max-width: 989px){
+  .myed-hero--right-custom .myed-right{
+    width: var(--myed-right-col-m, 100%);
+    max-width: var(--myed-right-max-m, 560px);
+    justify-self: var(--myed-right-align-m, center);
+  }
+
+  /* mobile order switch */
+  .myed-hero--right-first-m .myed-right{ order: 1; }
+  .myed-hero--right-first-m .myed-left{ order: 2; }
+}
+
+/* Desktop: column % works BUT also capped by right_max_desktop (prevents empty column feel) */
+@media (min-width: 990px){
+  .myed-hero--right-custom .myed-hero__grid{
+    grid-template-columns:
+      minmax(0, 1fr)
+      minmax(0, min(var(--myed-right-max-d, 760px), var(--myed-right-col-d, 48%)));
+  }
+
+  .myed-hero--right-custom .myed-right{
+    width: 100%;
+    max-width: 100%;
+    justify-self: var(--myed-right-align-d, end);
+  }
+}
+
+/* ===========================
+   Left Card: Desktop/Mobile controls
+   =========================== */
+
+/* Default safe: no change unless class enabled */
+.myed-hero--left-custom .myed-left{
+  width: 100%;
+  max-width: var(--myed-left-max-m, 680px);
+  justify-self: var(--myed-left-align-m, center);
+}
+
+/* Desktop overrides */
+@media (min-width: 990px){
+  .myed-hero--left-custom .myed-left{
+    max-width: var(--myed-left-max-d, 740px);
+    justify-self: var(--myed-left-align-d, start);
+  }
+}

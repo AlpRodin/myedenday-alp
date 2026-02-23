@@ -221,6 +221,10 @@
 
     --myed-left-alpha: {{ s.left_alpha | default: 70 | times: 0.01 }};
     --myed-left-blur: {{ s.left_blur | default: 10 }}px;
+    --myed-left-max-d: {{ s.left_max_desktop | default: 740 }}px;
+    --myed-left-max-m: {{ s.left_max_mobile | default: 680 }}px;
+    --myed-left-align-d: {{ s.left_align_desktop | default: 'start' }};
+    --myed-left-align-m: {{ s.left_align_mobile | default: 'center' }};
 
     --myed-cta-gap-d: {{ s.cta_gap_desktop | default: 10 }}px;
     --myed-cta-gap-m: {{ s.cta_gap_mobile | default: 8 }}px;
@@ -249,6 +253,12 @@
     --myed-right-bg: var(--myed-card);
     --myed-right-border: rgba(0,0,0,.08);
     --myed-right-blur-token: none;
+    --myed-right-col-d: {{ s.right_col_width_desktop | default: 48 }}%;
+    --myed-right-col-m: {{ s.right_col_width_mobile | default: 100 }}%;
+    --myed-right-max-d: {{ s.right_max_desktop | default: 760 }}px;
+    --myed-right-max-m: {{ s.right_max_mobile | default: 560 }}px;
+    --myed-right-align-d: {{ s.right_align_desktop | default: 'end' }};
+    --myed-right-align-m: {{ s.right_align_mobile | default: 'center' }};
     --myed-right-alpha-glass: {{ right_alpha_setting | times: 0.01 }};
     --myed-right-border-alpha-glass: {{ right_border_alpha_setting | times: 0.01 }};
     --myed-right-blur-glass: {{ s.right_glass_blur | default: 12 }}px;
@@ -409,6 +419,9 @@
     myed-hero--panel-{{ panel_size }}
     {% if s.right_glass_enable %}myed-hero--right-glass{% endif %}
     {% if s.panel_glass_enable %}myed-hero--panel-glass{% endif %}
+    {% if s.right_custom_enable %}myed-hero--right-custom{% endif %}
+    {% if s.left_custom_enable %}myed-hero--left-custom{% endif %}
+    {% if s.right_order_mobile == 'before' %}myed-hero--right-first-m{% endif %}
     {% unless show_left %}is-no-left{% endunless %}
     {% unless show_right %}is-no-right{% endunless %}
     {% if show_left == false and show_right == false %}is-media-only{% endif %}"
@@ -738,6 +751,44 @@
           { "value": "media", "label": "Media-focused" }
         ]
       },
+      { "type": "header", "content": "Right Card Layout (Desktop/Mobile)" },
+      { "type": "checkbox", "id": "right_custom_enable", "label": "Enable custom right sizing", "default": false },
+      { "type": "range", "id": "right_col_width_desktop", "label": "Right column width (desktop %)", "min": 35, "max": 65, "step": 1, "default": 48 },
+      { "type": "range", "id": "right_max_desktop", "label": "Right max width (desktop px)", "min": 360, "max": 980, "step": 20, "default": 760 },
+      {
+        "type": "select",
+        "id": "right_align_desktop",
+        "label": "Right align (desktop)",
+        "default": "end",
+        "options": [
+          { "value": "start", "label": "Left" },
+          { "value": "center", "label": "Center" },
+          { "value": "end", "label": "Right" }
+        ]
+      },
+      { "type": "range", "id": "right_col_width_mobile", "label": "Right width (mobile %)", "min": 90, "max": 100, "step": 1, "default": 100 },
+      { "type": "range", "id": "right_max_mobile", "label": "Right max width (mobile px)", "min": 280, "max": 720, "step": 20, "default": 560 },
+      {
+        "type": "select",
+        "id": "right_align_mobile",
+        "label": "Right align (mobile)",
+        "default": "center",
+        "options": [
+          { "value": "start", "label": "Left" },
+          { "value": "center", "label": "Center" },
+          { "value": "end", "label": "Right" }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "right_order_mobile",
+        "label": "Right order (mobile)",
+        "default": "after",
+        "options": [
+          { "value": "after", "label": "After text (default)" },
+          { "value": "before", "label": "Before text" }
+        ]
+      },
 
       { "type": "header", "content": "Background" },
       { "type": "color", "id": "bg_color", "label": "Background", "default": "#f6f4ef" },
@@ -866,6 +917,32 @@
       { "type": "range", "id": "left_blur", "label": "Left blur (px)", "min": 0, "max": 16, "step": 1, "default": 10 },
       { "type": "range", "id": "left_pad_mobile", "label": "Left padding (mobile)", "min": 14, "max": 28, "step": 1, "default": 18 },
       { "type": "range", "id": "left_pad_desktop", "label": "Left padding (desktop)", "min": 16, "max": 34, "step": 1, "default": 22 },
+      { "type": "header", "content": "Left Card Layout (Desktop/Mobile)" },
+      { "type": "checkbox", "id": "left_custom_enable", "label": "Enable custom left sizing", "default": false },
+      { "type": "range", "id": "left_max_desktop", "label": "Left max width (desktop px)", "min": 420, "max": 980, "step": 20, "default": 740 },
+      {
+        "type": "select",
+        "id": "left_align_desktop",
+        "label": "Left align (desktop)",
+        "default": "start",
+        "options": [
+          { "value": "start", "label": "Left" },
+          { "value": "center", "label": "Center" },
+          { "value": "end", "label": "Right" }
+        ]
+      },
+      { "type": "range", "id": "left_max_mobile", "label": "Left max width (mobile px)", "min": 280, "max": 760, "step": 20, "default": 680 },
+      {
+        "type": "select",
+        "id": "left_align_mobile",
+        "label": "Left align (mobile)",
+        "default": "center",
+        "options": [
+          { "value": "start", "label": "Left" },
+          { "value": "center", "label": "Center" },
+          { "value": "end", "label": "Right" }
+        ]
+      },
 
       { "type": "header", "content": "Right Card Media" },
       { "type": "text", "id": "card_title", "label": "Card title", "default": "Heute. Nicht „irgendwann“." },

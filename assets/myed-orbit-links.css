@@ -118,3 +118,101 @@
     gap: clamp(10px, 3vw, 14px);
   }
 }
+
+/* ==========================================================================
+  MyEdenDay - Orbit Links PRO controls (SCOPED by .myed-orbit-links)
+  Adds:
+  - Text variant (light/dark)
+  - Label readability (weight/size + optional pill bg)
+  - Pulse (toggle + speed + amount + stagger)
+  - Group spacing + heading spacing
+========================================================================== */
+
+.myed-orbit-links {
+  --myed-orbit-gap: 28px;
+  --myed-orbit-group-gap: 26px;
+  --myed-orbit-heading-gap: 14px;
+
+  --myed-orbit-label-size: 12px;
+  --myed-orbit-label-weight: 650;
+
+  --myed-orbit-fg: #111;
+  --myed-orbit-fg-light: #111;
+  --myed-orbit-fg-dark: #fff;
+
+  --myed-orbit-pill-bg: rgba(255, 255, 255, .55);
+  --myed-orbit-pill-bg-light: rgba(255, 255, 255, .55);
+  --myed-orbit-pill-bg-dark: rgba(0, 0, 0, .35);
+  --myed-orbit-pill-blur: 10px;
+
+  --myed-orbit-pulse: 0.045;
+  --myed-orbit-pulse-speed: 2.4s;
+  --myed-orbit-pulse-stagger: 0.10s;
+}
+
+/* text variant switch */
+.myed-orbit-links[data-tv="dark"] {
+  --myed-orbit-fg: var(--myed-orbit-fg-dark);
+  --myed-orbit-pill-bg: var(--myed-orbit-pill-bg-dark);
+}
+
+.myed-orbit-links[data-tv="light"] {
+  --myed-orbit-fg: var(--myed-orbit-fg-light);
+  --myed-orbit-pill-bg: var(--myed-orbit-pill-bg-light);
+}
+
+/* spacing hooks */
+.myed-orbit-links .myed-orbit-links__group {
+  margin-top: var(--myed-orbit-group-gap);
+}
+
+.myed-orbit-links .myed-orbit-links__group:first-child {
+  margin-top: 0;
+}
+
+.myed-orbit-links .myed-orbit-links__heading {
+  margin: 0 0 var(--myed-orbit-heading-gap);
+  color: var(--myed-orbit-fg);
+}
+
+/* label readability (works with data hook too) */
+.myed-orbit-links .myed-orbit-links__label,
+.myed-orbit-links [data-orbit-label] {
+  font-size: var(--myed-orbit-label-size);
+  font-weight: var(--myed-orbit-label-weight);
+  color: var(--myed-orbit-fg);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .18);
+}
+
+/* optional pill background */
+.myed-orbit-links.is-pill .myed-orbit-links__label,
+.myed-orbit-links.is-pill [data-orbit-label] {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--myed-orbit-pill-bg);
+  backdrop-filter: blur(var(--myed-orbit-pill-blur));
+  -webkit-backdrop-filter: blur(var(--myed-orbit-pill-blur));
+}
+
+/* pulse */
+@keyframes myedOrbitPulse {
+  0%,
+  100% {
+    transform: translateZ(0) scale(1);
+  }
+  50% {
+    transform: translateZ(0) scale(calc(1 + var(--myed-orbit-pulse)));
+  }
+}
+
+.myed-orbit-links.is-pulse [data-orbit-circle] {
+  animation: myedOrbitPulse var(--myed-orbit-pulse-speed) ease-in-out infinite;
+  animation-delay: calc(var(--i, 0) * var(--myed-orbit-pulse-stagger));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .myed-orbit-links.is-pulse [data-orbit-circle] {
+    animation: none !important;
+  }
+}

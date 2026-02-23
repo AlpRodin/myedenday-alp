@@ -22,12 +22,46 @@
   if aspect_m == blank
     assign aspect_m = aspect_d
   endif
+
+  assign tv = s.text_variant | default: 'dark'
+
+  assign title_on_light = s.title_color_on_light | default: s.title_color_light | default: '#111111'
+  assign title_on_dark = s.title_color_on_dark | default: s.title_color_dark | default: '#ffffff'
+  assign muted_on_light = s.muted_color_on_light | default: s.muted_color_light | default: '#6b6b6b'
+  assign muted_on_dark = s.muted_color_on_dark | default: s.muted_color_dark | default: 'rgba(255,255,255,0.75)'
+
+  assign on_light_bg = false
+  if tv == 'dark' or tv == 'dark_text' or tv contains 'Dark'
+    assign on_light_bg = true
+  elsif tv == 'light' or tv == 'light_text' or tv contains 'Light'
+    assign on_light_bg = false
+  elsif tv == 'auto'
+    comment
+      Auto sadece solid bg_color icin mantikli.
+      Background image varsa dark-side renklerini kullan.
+    endcomment
+    if s.bg_desktop == blank and s.bg_mobile == blank
+      assign b = s.bg_color | color_brightness
+      if b > 170
+        assign on_light_bg = true
+      else
+        assign on_light_bg = false
+      endif
+    endif
+  endif
+
+  assign title_color = title_on_dark
+  assign muted_color = muted_on_dark
+  if on_light_bg
+    assign title_color = title_on_light
+    assign muted_color = muted_on_light
+  endif
 -%}
 
 <section
   id="myed-nue-{{ section.id }}"
   class="myed-nue{% if s.orbit_enable %} has-orbit{% endif %}{% if s.show_title %} has-title{% endif %}"
-  style="background: {{ s.bg_color }}; --myed-heading-color: {{ s.heading_color }}; --nue-aspect-d: {{ aspect_d }}; --nue-aspect-m: {{ aspect_m }};"
+  style="background: {{ s.bg_color }}; --myed-heading-color: {{ s.heading_color }}; --nue-aspect-d: {{ aspect_d }}; --nue-aspect-m: {{ aspect_m }}; --myed-nue-title: {{ title_color }}; --myed-nue-muted: {{ muted_color }};"
   data-section-id="{{ section.id }}"
   data-myed-nue
 >
@@ -270,7 +304,8 @@
         lastTapLink: null,
         lastTapAt: 0,
         // center scale throttle
-        lastScaleAt: 0
+        lastScaleAt: 0,
+        inView: true
       };
       const dragThreshold = 8;
 
@@ -301,12 +336,17 @@
 
       function shouldRun() {
         if (prefersReduced()) return false;
+        if (state.inView === false) return false;
         if (state.dragging) return false;
         if (state.pausedHover) return false;
         if (state.pausedInteract) return false;
         if (getSpeed() <= 0) return false;
         return true;
       }
+
+      // Only run expensive center-scale when user is interacting/paused.
+      // This removes layout thrash while the ticker is running.
+      const shouldScaleNow = () => state.dragging || state.pausedHover || state.pausedInteract;
 
       function disableTabbingInGroupB() {
         const focusables = groupB.querySelectorAll('a, button, input, select, textarea, [tabindex]');
@@ -347,6 +387,7 @@
 
       function applyCenterScale(ts) {
         if (!settings.focusScalePct || settings.focusScalePct <= 0) return;
+        if (!shouldScaleNow()) return;
 
         // throttle (performance)
         if (ts && (ts - state.lastScaleAt) < 80) return;
@@ -541,6 +582,32 @@
       addCleanup(() => document.removeEventListener('shopify:section:load', onSectionLoad));
       addCleanup(() => document.removeEventListener('shopify:section:select', onSectionSelect));
 
+      // Pause when offscreen (perf) + rebuild when content size changes (stability)
+      let ro = null;
+      let io = null;
+
+      if ('IntersectionObserver' in window) {
+        io = new IntersectionObserver((entries) => {
+          const entry = entries && entries[0];
+          state.inView = !!(entry && entry.isIntersecting);
+        }, { threshold: 0.05 });
+        io.observe(root);
+        addCleanup(() => { try { io.disconnect(); } catch (err) {} });
+      }
+
+      if ('ResizeObserver' in window) {
+        ro = new ResizeObserver(() => {
+          if (state.resizeTimer) clearTimeout(state.resizeTimer);
+          state.resizeTimer = setTimeout(() => rebuildLoop(0), 100);
+        });
+        ro.observe(groupA);
+        addCleanup(() => { try { ro.disconnect(); } catch (err) {} });
+      }
+
+      const onLoadRebuild = () => rebuildLoop(0);
+      window.addEventListener('load', onLoadRebuild, { once: true });
+      addCleanup(() => window.removeEventListener('load', onLoadRebuild));
+
       // Init
       rebuildLoop(0);
       state.raf = requestAnimationFrame(tick);
@@ -568,6 +635,21 @@
   "settings": [
     { "type": "text", "id": "heading", "label": "Heading", "default": "Best sellers" },
     { "type": "color", "id": "heading_color", "label": "Heading color", "default": "#111111" },
+    {
+      "type": "select",
+      "id": "text_variant",
+      "label": "Text variant",
+      "default": "auto",
+      "options": [
+        { "value": "auto", "label": "Auto (solid bg only)" },
+        { "value": "dark", "label": "Dark text" },
+        { "value": "light", "label": "Light text" }
+      ]
+    },
+    { "type": "color", "id": "title_color_on_light", "label": "Title color (on light bg)", "default": "#111111" },
+    { "type": "color", "id": "title_color_on_dark", "label": "Title color (on dark bg)", "default": "#ffffff" },
+    { "type": "color", "id": "muted_color_on_light", "label": "Muted color (on light bg)", "default": "#6b6b6b" },
+    { "type": "color", "id": "muted_color_on_dark", "label": "Muted color (on dark bg)", "default": "rgba(255,255,255,0.75)" },
 
     {
       "type": "select",
