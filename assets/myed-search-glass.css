@@ -1,10 +1,11 @@
 /* ==========================================================================
-  MyEdenDay — Search Glass (CANONICAL v3) — SINGLE FILE
+  MyEdenDay — Search Glass (CANONICAL v3+v5) — SINGLE FILE
   File: assets/myed-search-glass.css
 
   Goals:
   - /search sayfasında predictive dropdown ASLA footer’ın arkasına düşmesin
   - Header search modal’ını etkilemesin (scope sadece /search)
+  - /search facets: tek uzun pill (filters + sort) + (aktif varsa) ikinci pill
 ========================================================================== */
 
 /* ==========================================================
@@ -64,6 +65,8 @@ body.template-search .template-search__header:focus-within{
   Uses section vars (from sections/main-search.liquid):
   - --myed-sg-fg-rgb
   - --myed-sg-bg-alpha, --myed-sg-frost-alpha, --myed-sg-border-alpha, --myed-sg-blur
+  - --myed-sg-bar-alpha, --myed-sg-bar-border-alpha
+  - --myed-sg-drawer-alpha, --myed-sg-drawer-overlay-alpha
 ========================================================================== */
 
 body.myed-has-site-bg .template-search{
@@ -157,12 +160,14 @@ body.myed-has-site-bg .template-search :is(
   color: rgba(var(--myed-sg-fg-rgb,245,247,250), 0.92);
 }
 
+/* IMPORTANT:
+   - Desktop’ta .facets__summary pill OLMAZ (tek container içinde segment olacak)
+   - Mobile’da .facets__summary pill olabilir
+*/
 body.myed-has-site-bg .template-search :is(
   .mobile-facets__open,
-  .facets__summary,
   .facet-filters__field .select__select,
-  .mobile-facets__sort .select__select,
-  .active-facets__button-inner
+  .mobile-facets__sort .select__select
 ){
   border-radius: var(--myed-sg-pill-radius);
   background: rgba(var(--myed-sg-bg-rgb), calc(var(--myed-sg-bg-alpha,0.55) * 0.90));
@@ -171,6 +176,19 @@ body.myed-has-site-bg .template-search :is(
   -webkit-backdrop-filter: blur(var(--myed-sg-blur,14px)) saturate(120%);
   backdrop-filter: blur(var(--myed-sg-blur,14px)) saturate(120%);
   color: rgba(var(--myed-sg-fg-rgb,245,247,250), 0.92);
+}
+
+/* Mobile: summary pill görünümü (<=749) */
+@media (max-width: 749px){
+  body.myed-has-site-bg .template-search .facets__summary{
+    border-radius: var(--myed-sg-pill-radius);
+    background: rgba(var(--myed-sg-bg-rgb), calc(var(--myed-sg-bg-alpha,0.55) * 0.90));
+    border: 1px solid rgba(255,255,255, 0.16);
+    box-shadow: var(--myed-sg-shadow);
+    -webkit-backdrop-filter: blur(var(--myed-sg-blur,14px)) saturate(120%);
+    backdrop-filter: blur(var(--myed-sg-blur,14px)) saturate(120%);
+    color: rgba(var(--myed-sg-fg-rgb,245,247,250), 0.92);
+  }
 }
 
 body.myed-has-site-bg .template-search :is(.mobile-facets__open, .facets__summary){
@@ -213,7 +231,7 @@ body.myed-has-site-bg .template-search .mobile-facets__wrapper{
 }
 body.myed-has-site-bg .template-search .mobile-facets__wrapper .disclosure-has-popup[open] > summary::before{
   z-index: 3999 !important;
-  background: rgba(0,0,0,0.58);
+  background: rgba(0,0,0, var(--myed-sg-drawer-overlay-alpha, 0.58));
 }
 body.myed-has-site-bg .template-search :is(
   .mobile-facets__inner,
@@ -221,7 +239,7 @@ body.myed-has-site-bg .template-search :is(
   .mobile-facets__submenu,
   .mobile-facets__footer
 ){
-  background: rgba(var(--myed-sg-bg-rgb), 0.92) !important;
+  background: rgba(var(--myed-sg-bg-rgb), var(--myed-sg-drawer-alpha, 0.92)) !important;
   background-image: none !important;
   color: rgba(var(--myed-sg-fg-rgb,245,247,250), 0.92);
 }
@@ -258,6 +276,164 @@ body.myed-has-site-bg .template-search .card > .card__content{
   box-shadow: var(--myed-sg-shadow);
 }
 
+/* ==========================================================
+   4) Search Facets — TRUE SINGLE CONTAINER (v5)
+   Desktop (>=750px): filters + sorting ONE pill
+   Active selections: second pill only if active
+========================================================== */
+@media (min-width: 750px){
+  /* TOP CONTROL BAR (filters + sorting) */
+  body.template-search .template-search .myed-sg-controlbar{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+
+    padding: 10px 16px;
+    min-height: 48px;
+
+    border-radius: var(--myed-sg-pill-radius, 999px);
+    background: rgba(var(--myed-sg-bg-rgb, 10,14,22), var(--myed-sg-bar-alpha, 0.55));
+    border: 1px solid rgba(255,255,255, var(--myed-sg-bar-border-alpha, 0.16));
+    box-shadow: var(--myed-sg-shadow, 0 18px 40px rgba(0,0,0,0.28));
+    -webkit-backdrop-filter: blur(var(--myed-sg-blur,14px)) saturate(120%);
+    backdrop-filter: blur(var(--myed-sg-blur,14px)) saturate(120%);
+
+    overflow: visible;
+  }
+
+  /* Left rail (Filter: + triggers) */
+  body.template-search .template-search .myed-sg-controlbar #FacetsWrapperDesktop.facets__wrapper{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    flex: 1 1 auto;
+    min-width: 0;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+  }
+  body.template-search .template-search .myed-sg-controlbar #FacetsWrapperDesktop.facets__wrapper::-webkit-scrollbar{
+    display: none;
+  }
+
+  body.template-search .template-search .myed-sg-controlbar #FacetsWrapperDesktop .facets__heading{
+    margin: 0;
+    white-space: nowrap;
+    opacity: 0.85;
+  }
+
+  body.template-search .template-search .myed-sg-controlbar #FacetsWrapperDesktop .facets__disclosure{
+    margin: 0;
+  }
+
+  /* Triggers become segments INSIDE the pill (NOT separate pills) */
+  body.template-search .template-search .myed-sg-controlbar #FacetsWrapperDesktop .facets__summary{
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+
+    padding: 6px 10px;
+    border-radius: 999px;
+  }
+  body.template-search .template-search .myed-sg-controlbar #FacetsWrapperDesktop .facets__summary:hover{
+    background: rgba(255,255,255, 0.06) !important;
+  }
+
+  /* Right rail (Sorting) */
+  body.template-search .template-search .myed-sg-controlbar .facet-filters.sorting{
+    flex: 0 0 auto;
+    margin: 0 !important;
+    padding: 0 !important;
+
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+  body.template-search .template-search .myed-sg-controlbar .facet-filters__field{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  body.template-search .template-search .myed-sg-controlbar .facet-filters__label{
+    margin: 0 !important;
+    white-space: nowrap;
+    opacity: 0.85;
+  }
+  /* IMPORTANT: sorting select must NOT look like a separate pill inside controlbar */
+  body.template-search .template-search .myed-sg-controlbar .facet-filters__field .select__select{
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+
+    border-radius: 999px;
+    padding: 6px 34px 6px 10px;
+  }
+
+  /* ACTIVE BAR (only rendered when active) */
+  body.template-search .template-search .myed-sg-activebar{
+    margin-top: 12px;
+
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: nowrap;
+
+    padding: 10px 16px;
+    min-height: 48px;
+
+    border-radius: var(--myed-sg-pill-radius, 999px);
+    background: rgba(var(--myed-sg-bg-rgb, 10,14,22), var(--myed-sg-bar-alpha, 0.55));
+    border: 1px solid rgba(255,255,255, var(--myed-sg-bar-border-alpha, 0.16));
+    box-shadow: var(--myed-sg-shadow, 0 18px 40px rgba(0,0,0,0.28));
+    -webkit-backdrop-filter: blur(var(--myed-sg-blur,14px)) saturate(120%);
+    backdrop-filter: blur(var(--myed-sg-blur,14px)) saturate(120%);
+
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+  }
+  body.template-search .template-search .myed-sg-activebar::-webkit-scrollbar{
+    display: none;
+  }
+
+  body.template-search .template-search .myed-sg-activebar facet-remove{
+    flex: 0 0 auto;
+    display: inline-flex;
+  }
+
+  /* Flatten chips inside active pill */
+  body.template-search .template-search .myed-sg-activebar .active-facets__button{
+    margin: 0;
+    padding: 0;
+  }
+  body.template-search .template-search .myed-sg-activebar .active-facets__button-inner{
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    min-height: 0 !important;
+  }
+  body.template-search .template-search .myed-sg-activebar .active-facets__button-wrapper{
+    margin-left: auto;
+    padding: 0;
+  }
+}
+
+/* keep your existing predictive tweak */
 @media (max-width: 989px){
   body.template-search .template-search__search .predictive-search--search-template{
     max-height: min(52vh, 40rem);

@@ -72,6 +72,10 @@
     --myed-sg-frost-alpha: {{ section.settings.myed_glass_frost_opacity | at_most: 35 | divided_by: 100.0 }};
     --myed-sg-border-alpha: {{ section.settings.myed_glass_border_opacity | at_most: 35 | divided_by: 100.0 }};
     --myed-sg-blur: {{ section.settings.myed_glass_blur | at_most: 18 }}px;
+    --myed-sg-bar-alpha: {{ section.settings.myed_bar_bg_opacity | at_most: 90 | divided_by: 100.0 }};
+    --myed-sg-bar-border-alpha: {{ section.settings.myed_bar_border_opacity | at_most: 40 | divided_by: 100.0 }};
+    --myed-sg-drawer-alpha: {{ section.settings.myed_drawer_bg_opacity | at_most: 98 | divided_by: 100.0 }};
+    --myed-sg-drawer-overlay-alpha: {{ section.settings.myed_drawer_overlay_opacity | at_most: 80 | divided_by: 100.0 }};
   }
 {%- endstyle -%}
 
@@ -584,6 +588,54 @@
       "unit": "px",
       "label": "Glass blur",
       "default": 14
+    },
+    {
+      "type": "header",
+      "content": "MyEdenDay — Facet Bar (Search)"
+    },
+    {
+      "type": "range",
+      "id": "myed_bar_bg_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "label": "Facet bar background opacity",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "myed_bar_border_opacity",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "%",
+      "label": "Facet bar border opacity",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "MyEdenDay — Mobile Drawer (Search)"
+    },
+    {
+      "type": "range",
+      "id": "myed_drawer_bg_opacity",
+      "min": 70,
+      "max": 98,
+      "step": 1,
+      "unit": "%",
+      "label": "Drawer background opacity",
+      "default": 90
+    },
+    {
+      "type": "range",
+      "id": "myed_drawer_overlay_opacity",
+      "min": 40,
+      "max": 80,
+      "step": 1,
+      "unit": "%",
+      "label": "Drawer overlay darkness",
+      "default": 58
     }
   ]
 }
