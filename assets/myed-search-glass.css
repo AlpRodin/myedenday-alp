@@ -1,22 +1,115 @@
 /* ==========================================================================
-  MyED — Search Template Glass (CANONICAL)
-  Scope: ONLY body.myed-has-site-bg .template-search
+  MyEdenDay — Search Glass (CANONICAL v3) — SINGLE FILE
+  File: assets/myed-search-glass.css
+
   Goals:
-  - Predictive dropdown never under product grid
-  - Mobile facets drawer never white/empty (kills gradient fallback)
-  - Consistent “glass pill” toolbar alignment
+  - /search sayfasında predictive dropdown ASLA footer’ın arkasına düşmesin
+  - Header search modal’ını etkilemesin (scope sadece /search)
+========================================================================== */
+
+/* ==========================================================
+   0) /search kısa/empty iken footer yukarı çıkmasın
+   (Predictive için yer ayırıyoruz)
+========================================================== */
+body.template-search .template-search.template-search--empty{
+  min-height: 100vh;
+  padding-bottom: min(60vh, 48rem);
+}
+@supports (height: 100dvh){
+  body.template-search .template-search.template-search--empty{
+    min-height: 100dvh;
+  }
+}
+
+/* ==========================================================
+   1) ROOT stacking: MainContent footer’ın üstünde kalsın (/search only)
+========================================================== */
+body.template-search #MainContent{
+  position: relative;
+  z-index: 10;
+  isolation: isolate;
+}
+body.template-search .shopify-section-group-footer-group{
+  position: relative;
+  z-index: 0;
+}
+
+/* ==========================================================
+   2) Dropdown’un container’lar tarafından kırpılmasını engelle
+========================================================== */
+body.template-search .template-search__header,
+body.template-search .template-search__search,
+body.template-search .template-search__search .field{
+  overflow: visible !important;
+}
+
+/* ==========================================================
+   3) /search predictive dropdown: template içinde her şeyin üstünde
+   NOT: Header arama modalını etkilemez (scope = .template-search__search)
+========================================================== */
+body.template-search .template-search__search predictive-search{
+  position: relative;
+  z-index: 5000;
+}
+body.template-search .template-search__search .predictive-search--search-template{
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 10px);
+  z-index: 6000 !important;
+
+  max-height: min(60vh, 48rem);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+/* ==========================================================
+   4) (Opsiyonel) /search sayfasında site header glass’ı sabitle
+========================================================== */
+body.myed-has-site-bg.template-search .header-wrapper{
+  background: rgba(var(--myed-glass-bg-rgb), var(--myed-glass-opacity)) !important;
+  -webkit-backdrop-filter: blur(var(--myed-glass-blur)) !important;
+  backdrop-filter: blur(var(--myed-glass-blur)) !important;
+
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 7000 !important;
+}
+body.myed-has-site-bg.template-search .header-wrapper::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background-image: var(--myed-glass-grain);
+  opacity: var(--myed-glass-grain-opacity);
+  pointer-events:none;
+  z-index:1;
+}
+body.myed-has-site-bg.template-search .header-wrapper > *{
+  position: relative;
+  z-index:2;
+}
+
+/* ==========================================================================
+  MyED — Search Template Glass (visuals)
+  Scope: ONLY body.myed-has-site-bg .template-search
+  Uses section vars (from sections/main-search.liquid):
+  - --myed-sg-fg-rgb
+  - --myed-sg-bg-alpha, --myed-sg-frost-alpha, --myed-sg-border-alpha, --myed-sg-blur
 ========================================================================== */
 
 body.myed-has-site-bg .template-search{
-  --myed-sg-bg: 10, 14, 22;
-  --myed-sg-fg: 245, 247, 250;
-  --myed-sg-border: rgba(255,255,255,0.14);
-  --myed-sg-shadow: 0 18px 40px rgba(0,0,0,0.28);
+  --myed-sg-bg-rgb: 10,14,22;
   --myed-sg-radius: 22px;
   --myed-sg-pill-radius: 999px;
-
+  --myed-sg-shadow: 0 18px 40px rgba(0,0,0,0.28);
   position: relative;
   z-index: 0;
+}
+
+/* Space separation: header vs facets */
+body.myed-has-site-bg .template-search .facets-wrapper{
+  margin-top: 18px;
 }
 
 /* Header/search card */
@@ -24,12 +117,17 @@ body.myed-has-site-bg .template-search__header.page-width{
   position: relative;
   z-index: 20;
 
-  background: rgba(var(--myed-sg-bg), 0.55);
-  border: 1px solid var(--myed-sg-border);
+  background: rgba(var(--myed-sg-bg-rgb), var(--myed-sg-bg-alpha, 0.55));
+  border: 1px solid rgba(255,255,255, var(--myed-sg-border-alpha, 0.14));
   border-radius: var(--myed-sg-radius);
-  -webkit-backdrop-filter: blur(14px);
-  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(var(--myed-sg-blur,14px)) saturate(120%);
+  backdrop-filter: blur(var(--myed-sg-blur,14px)) saturate(120%);
   padding: 22px;
+
+  color: rgba(var(--myed-sg-fg-rgb,245,247,250), 0.92);
+}
+body.myed-has-site-bg .template-search__header.page-width :is(h1,h2,h3,p,span,small,label,a){
+  color: rgba(var(--myed-sg-fg-rgb,245,247,250), 0.92);
 }
 
 /* Search input */
@@ -37,32 +135,41 @@ body.myed-has-site-bg .template-search__search{
   position: relative;
   z-index: 30;
 }
-
 body.myed-has-site-bg .template-search__search .field{
   position: relative;
-
-  background: rgba(var(--myed-sg-bg), 0.62);
-  border: 1px solid rgba(255,255,255,0.16);
+  background: rgba(var(--myed-sg-bg-rgb), calc(var(--myed-sg-bg-alpha,0.55) + 0.07));
+  border: 1px solid rgba(255,255,255, 0.16);
   border-radius: 14px;
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(var(--myed-sg-blur,14px)) saturate(120%);
+  backdrop-filter: blur(var(--myed-sg-blur,14px)) saturate(120%);
 }
-
 body.myed-has-site-bg .template-search__search .field__input{
   background: transparent;
-  color: rgba(var(--myed-sg-fg), 0.92);
+  color: rgba(var(--myed-sg-fg-rgb,245,247,250), 0.92);
 }
-
 body.myed-has-site-bg .template-search__search .field__label{
-  color: rgba(var(--myed-sg-fg), 0.65);
+  color: rgba(var(--myed-sg-fg-rgb,245,247,250), 0.65);
 }
-
 body.myed-has-site-bg .template-search__search :is(.reset__button, .search__button){
-  color: rgba(var(--myed-sg-fg), 0.85);
+  color: rgba(var(--myed-sg-fg-rgb,245,247,250), 0.85);
 }
 body.myed-has-site-bg .template-search__search :is(.reset__button, .search__button) :is(svg, .icon){
   fill: currentColor;
   stroke: currentColor;
+}
+
+/* Predictive dropdown visuals */
+body.myed-has-site-bg .template-search__search .predictive-search--search-template{
+  background: rgba(var(--myed-sg-bg-rgb), 0.97);
+  border: 1px solid rgba(255,255,255, var(--myed-sg-border-alpha, 0.14));
+  border-radius: 14px;
+  box-shadow: var(--myed-sg-shadow);
+  -webkit-backdrop-filter: blur(var(--myed-sg-blur,14px)) saturate(120%);
+  backdrop-filter: blur(var(--myed-sg-blur,14px)) saturate(120%);
+  color: rgba(var(--myed-sg-fg-rgb,245,247,250), 0.92);
+}
+body.myed-has-site-bg .template-search .predictive-search :is(a,p,span,small,strong,li,div){
+  color: rgba(var(--myed-sg-fg-rgb,245,247,250), 0.92);
 }
 
 /* Product grid stays underneath overlays */
@@ -71,60 +178,15 @@ body.myed-has-site-bg .template-search :is(.product-grid-container, .template-se
   z-index: 1;
 }
 
-/* ==========================================================
-   Predictive dropdown (search template)
-   Dawn default z-index is 3 — we must win inside search template.
-========================================================== */
-body.myed-has-site-bg .template-search__search predictive-search{
-  position: relative;
-  z-index: 140;
-}
-
-body.myed-has-site-bg .template-search__search .predictive-search{
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: calc(100% + 10px);
-  z-index: 150;
-
-  width: 100%;
-  max-height: min(60vh, 48rem);
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior: contain;
-
-  background: rgba(var(--myed-sg-bg), 0.97);
-  border: 1px solid var(--myed-sg-border);
-  border-radius: 14px;
-  box-shadow: var(--myed-sg-shadow);
-  -webkit-backdrop-filter: blur(14px);
-  backdrop-filter: blur(14px);
-
-  color: rgba(var(--myed-sg-fg), 0.92);
-}
-
-body.myed-has-site-bg .template-search .predictive-search :is(a,p,span,small,strong,li,div){
-  color: rgba(var(--myed-sg-fg), 0.92);
-}
-
-/* ==========================================================
-   Facets toolbar (glass pills)
-========================================================== */
-body.myed-has-site-bg .template-search :is(.facets-container, .facets, .facet-filters, .active-facets){
-  position: relative;
-  z-index: 15;
-}
-
-body.myed-has-site-bg .template-search :is(.facets__wrapper, .facet-filters, .active-facets){
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-/* Sort to the right when present */
-body.myed-has-site-bg .template-search .facet-filters{
-  margin-left: auto;
+/* Facets: readability only */
+body.myed-has-site-bg .template-search :is(
+  .facets__heading,
+  .facets__label,
+  .facets__summary,
+  .facet-filters__label,
+  .product-count__text
+){
+  color: rgba(var(--myed-sg-fg-rgb,245,247,250), 0.92);
 }
 
 body.myed-has-site-bg .template-search :is(
@@ -134,14 +196,13 @@ body.myed-has-site-bg .template-search :is(
   .mobile-facets__sort .select__select,
   .active-facets__button-inner
 ){
-  min-height: 44px;
   border-radius: var(--myed-sg-pill-radius);
-  background: rgba(var(--myed-sg-bg), 0.55);
-  border: 1px solid rgba(255,255,255,0.16);
+  background: rgba(var(--myed-sg-bg-rgb), calc(var(--myed-sg-bg-alpha,0.55) * 0.90));
+  border: 1px solid rgba(255,255,255, 0.16);
   box-shadow: var(--myed-sg-shadow);
-  -webkit-backdrop-filter: blur(14px);
-  backdrop-filter: blur(14px);
-  color: rgba(var(--myed-sg-fg), 0.92);
+  -webkit-backdrop-filter: blur(var(--myed-sg-blur,14px)) saturate(120%);
+  backdrop-filter: blur(var(--myed-sg-blur,14px)) saturate(120%);
+  color: rgba(var(--myed-sg-fg-rgb,245,247,250), 0.92);
 }
 
 body.myed-has-site-bg .template-search :is(.mobile-facets__open, .facets__summary){
@@ -149,106 +210,88 @@ body.myed-has-site-bg .template-search :is(.mobile-facets__open, .facets__summar
   align-items: center;
   padding: 8px 14px;
 }
-
 body.myed-has-site-bg .template-search :is(.facet-filters__field .select__select, .mobile-facets__sort .select__select){
   padding-inline: 14px 38px;
 }
 
-/* Desktop disclosure panels (if used) */
+/* Desktop disclosure panels */
 body.myed-has-site-bg .template-search :is(.facets__disclosure, .facets__disclosure-vertical)[open]{
   position: relative;
   z-index: 70;
 }
-
 body.myed-has-site-bg .template-search :is(
   .facets__disclosure[open] .facets__display,
   .facets__disclosure-vertical[open] .facets__display-vertical
 ){
-  background: rgba(var(--myed-sg-bg), 0.92);
-  border: 1px solid var(--myed-sg-border);
+  background: rgba(var(--myed-sg-bg-rgb), 0.92);
+  border: 1px solid rgba(255,255,255, var(--myed-sg-border-alpha, 0.14));
   border-radius: 16px;
   box-shadow: var(--myed-sg-shadow);
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
-  color: rgba(var(--myed-sg-fg), 0.92);
+  -webkit-backdrop-filter: blur(var(--myed-sg-blur,14px)) saturate(120%);
+  backdrop-filter: blur(var(--myed-sg-blur,14px)) saturate(120%);
+  color: rgba(var(--myed-sg-fg-rgb,245,247,250), 0.92);
 }
 
-/* ==========================================================
-   Mobile facets drawer (fix “white/empty panel”)
-   Dawn sets:
-   - .mobile-facets__inner background-color: rgb(var(--color-background))
-   - .mobile-facets__footer background: var(--gradient-background)
-========================================================== */
+/* Mobile facets drawer */
+body.myed-has-site-bg .template-search .mobile-facets{
+  z-index: 4000 !important;
+}
+body.myed-has-site-bg .template-search .mobile-facets__close{
+  z-index: 4001 !important;
+}
 body.myed-has-site-bg .template-search .mobile-facets__wrapper{
   position: relative;
-  z-index: 220;
+  z-index: 4002 !important;
 }
-
-/* Overlay dim */
 body.myed-has-site-bg .template-search .mobile-facets__wrapper .disclosure-has-popup[open] > summary::before{
-  z-index: 219;
+  z-index: 3999 !important;
   background: rgba(0,0,0,0.58);
 }
-
-/* Force all drawer layers dark (NOT only inner) */
 body.myed-has-site-bg .template-search :is(
   .mobile-facets__inner,
   .mobile-facets__main,
   .mobile-facets__submenu,
   .mobile-facets__footer
 ){
-  background-color: rgba(var(--myed-sg-bg), 0.92) !important;
-  background: rgba(var(--myed-sg-bg), 0.92) !important;
+  background: rgba(var(--myed-sg-bg-rgb), 0.92) !important;
   background-image: none !important;
-  color: rgba(var(--myed-sg-fg), 0.92);
+  color: rgba(var(--myed-sg-fg-rgb,245,247,250), 0.92);
 }
-
 body.myed-has-site-bg .template-search .mobile-facets__inner{
-  border-left: 1px solid rgba(255,255,255,0.16);
+  border-left: 1px solid rgba(255,255,255, 0.16);
   box-shadow: var(--myed-sg-shadow);
-  -webkit-backdrop-filter: blur(18px);
-  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(var(--myed-sg-blur,14px)) saturate(120%);
+  backdrop-filter: blur(var(--myed-sg-blur,14px)) saturate(120%);
 }
-
 body.myed-has-site-bg .template-search .mobile-facets__footer{
-  border-top: 1px solid rgba(255,255,255,0.14);
+  border-top: 1px solid rgba(255,255,255, var(--myed-sg-border-alpha, 0.14));
 }
-
 body.myed-has-site-bg .template-search .mobile-facets__submenu{
-  border-left: 1px solid rgba(255,255,255,0.14);
+  border-left: 1px solid rgba(255,255,255, var(--myed-sg-border-alpha, 0.14));
 }
-
-/* Prevent “white pills” inside labels */
 body.myed-has-site-bg .template-search .mobile-facets__label > svg{
   background-color: transparent !important;
 }
-
-/* Highlight on selection */
 body.myed-has-site-bg .template-search .mobile-facets__highlight{
-  background-color: rgba(255,255,255,0.10);
+  background-color: rgba(255,255,255, 0.10);
 }
-
-/* Readability inside facets */
-body.myed-has-site-bg .template-search :is(
-  .facets__heading,
-  .facets__label,
-  .facets__reset,
-  .active-facets__button-remove,
-  .facet-filters__label,
-  .mobile-facets__heading,
-  .mobile-facets__summary,
-  .mobile-facets__inner :is(a,button,label,span,p,h2,h3,input)
-){
-  color: rgba(var(--myed-sg-fg), 0.92);
+body.myed-has-site-bg .template-search .mobile-facets__inner :is(a,button,label,span,p,h2,h3,input){
+  color: rgba(var(--myed-sg-fg-rgb,245,247,250), 0.92);
 }
 
 /* Product card readability (search template only) */
 body.myed-has-site-bg .template-search :is(.card__heading, .price, .price-item){
-  color: rgba(var(--myed-sg-fg), 0.92);
+  color: rgba(var(--myed-sg-fg-rgb,245,247,250), 0.92);
+}
+body.myed-has-site-bg .template-search .card > .card__content{
+  background: rgba(var(--myed-sg-bg-rgb), var(--myed-sg-bg-alpha, 0.55));
+  border: 1px solid rgba(255,255,255, var(--myed-sg-border-alpha, 0.14));
+  border-radius: 0 0 var(--myed-sg-radius) var(--myed-sg-radius);
+  box-shadow: var(--myed-sg-shadow);
 }
 
 @media (max-width: 989px){
-  body.myed-has-site-bg .template-search__search .predictive-search{
+  body.template-search .template-search__search .predictive-search--search-template{
     max-height: min(52vh, 40rem);
   }
 }

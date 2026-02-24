@@ -1,0 +1,5 @@
+{
+  "name": "Search (MyED LAB)",
+  "sections": { "main": { "type": "myed-main-search-lab", "settings": {} } },
+  "order": ["main"]
+}

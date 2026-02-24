@@ -1,0 +1,35 @@
+/* ==========================================================
+   MyED LAB: Search predictive footer cakisma fix'i
+   Yontem: dropdown gorunurken sayfaya alt bosluk ekle (focus-within)
+   Scope: ONLY /search template (body.template-search)
+========================================================== */
+
+/* Dropdown absolute kalsin ama asla kirpilmasin */
+body.template-search .template-search__header,
+body.template-search .template-search__search,
+body.template-search .template-search__search .field{
+  overflow: visible !important;
+}
+
+/* Kullanici input'a odaklaninca (dropdown acildigi an), footer ile cakismayacak kadar bosluk ac */
+body.template-search .template-search__header:focus-within{
+  padding-bottom: min(60vh, 48rem);
+}
+
+/* Dropdown'in kendi maksimum yuksekligi */
+body.template-search .template-search__search .predictive-search--search-template{
+  max-height: min(60vh, 48rem);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+/* (Opsiyonel) Sayfa cok kisa ise footer yukari tirmanmasin */
+body.template-search .template-search.template-search--empty{
+  min-height: 100vh;
+}
+@supports (height: 100dvh){
+  body.template-search .template-search.template-search--empty{
+    min-height: 100dvh;
+  }
+}
