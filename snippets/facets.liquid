@@ -40,6 +40,11 @@
       endif
     endif
   endfor
+
+  assign myed_is_search_horizontal = false
+  if filter_type == 'horizontal' and request.page_type == 'search'
+    assign myed_is_search_horizontal = true
+  endif
 -%}
 
 <div class="facets-container{% if filter_type == 'drawer' %} facets-container-drawer{% endif %}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}">
@@ -404,6 +409,10 @@
 
         {%- if filter_type == 'horizontal' -%}
           {% comment %} Sorting and product count are the last elements when filter type is horizontal {% endcomment %}
+          {%- if myed_is_search_horizontal -%}
+            <div class="myed-sg-right" data-myed="sg-right">
+          {%- endif -%}
+
           {%- if enable_sorting -%}
             <div class="facet-filters sorting caption">
               <div class="facet-filters__field">
@@ -434,6 +443,24 @@
                   </span>
                 </div>
               </div>
+            </div>
+          {%- endif -%}
+
+          {%- if myed_is_search_horizontal -%}
+            <div class="product-count light myed-sg-count" role="status">
+              <h2 class="product-count__text text-body">
+                <span id="ProductCount">
+                  {%- if results.results_count -%}
+                    {{ 'templates.search.results_with_count' | t: terms: results.terms, count: results.results_count }}
+                  {%- elsif results.products_count == results.all_products_count -%}
+                    {{ 'products.facets.product_count_simple' | t: count: results.products_count }}
+                  {%- else -%}
+                    {{ 'products.facets.product_count' | t: product_count: results.products_count, count: results.all_products_count }}
+                  {%- endif -%}
+                </span>
+              </h2>
+              {%- render 'loading-spinner' -%}
+            </div>
             </div>
           {%- endif -%}
         {%- endif -%}
@@ -489,26 +516,28 @@
         {%- endif -%}
       </form>
 
-      <div
-        class="product-count light{% if filter_type == 'vertical' %} medium-hide large-up-hide{% endif %}"
-        role="status"
-      >
-        <h2 class="product-count__text text-body">
-          <span id="ProductCount">
-            {%- if results.results_count -%}
-              {{ 'templates.search.results_with_count' | t: terms: results.terms, count: results.results_count }}
-            {%- elsif results.products_count == results.all_products_count -%}
-              {{ 'products.facets.product_count_simple' | t: count: results.products_count }}
-            {%- else -%}
-              {{
-                'products.facets.product_count'
-                | t: product_count: results.products_count, count: results.all_products_count
-              }}
-            {%- endif -%}
-          </span>
-        </h2>
-        {%- render 'loading-spinner' -%}
-      </div>
+      {%- unless myed_is_search_horizontal -%}
+        <div
+          class="product-count light{% if filter_type == 'vertical' %} medium-hide large-up-hide{% endif %}"
+          role="status"
+        >
+          <h2 class="product-count__text text-body">
+            <span id="ProductCount">
+              {%- if results.results_count -%}
+                {{ 'templates.search.results_with_count' | t: terms: results.terms, count: results.results_count }}
+              {%- elsif results.products_count == results.all_products_count -%}
+                {{ 'products.facets.product_count_simple' | t: count: results.products_count }}
+              {%- else -%}
+                {{
+                  'products.facets.product_count'
+                  | t: product_count: results.products_count, count: results.all_products_count
+                }}
+              {%- endif -%}
+            </span>
+          </h2>
+          {%- render 'loading-spinner' -%}
+        </div>
+      {%- endunless -%}
     </facet-filters-form>
   {%- endif -%}
 
@@ -902,7 +931,7 @@
 
   {% comment %} Sort, product count and filter pills at the end when filter is type of Drawer for the correct tabbing order {% endcomment %}
   {%- if filter_type == 'drawer' -%}
-    <facet-filters-form class="facets small-hide">
+    <facet-filters-form class="facets small-hide myed-sg-drawer-right">
       <form id="FacetSortDrawerForm" class="facets__form">
         {%- if enable_sorting -%}
           <div class="facet-filters sorting caption small-hide">

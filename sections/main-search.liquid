@@ -66,7 +66,7 @@
 {%- endstyle -%}
 
 {%- style -%}
-  #shopify-section-{{ section.id }}{
+  body.template-search{
     --myed-sg-fg-rgb: {{ section.settings.myed_text_color | color_extract: 'red' }}, {{ section.settings.myed_text_color | color_extract: 'green' }}, {{ section.settings.myed_text_color | color_extract: 'blue' }};
     --myed-sg-bg-alpha: {{ section.settings.myed_glass_bg_opacity | at_most: 75 | divided_by: 100.0 }};
     --myed-sg-frost-alpha: {{ section.settings.myed_glass_frost_opacity | at_most: 35 | divided_by: 100.0 }};
@@ -478,19 +478,11 @@
       "id": "filter_type",
       "options": [
         {
-          "value": "horizontal",
-          "label": "t:sections.main-collection-product-grid.settings.filter_type.options__1.label"
-        },
-        {
-          "value": "vertical",
-          "label": "t:sections.main-collection-product-grid.settings.filter_type.options__2.label"
-        },
-        {
           "value": "drawer",
           "label": "t:sections.main-collection-product-grid.settings.filter_type.options__3.label"
         }
       ],
-      "default": "horizontal",
+      "default": "drawer",
       "label": "t:sections.main-collection-product-grid.settings.filter_type.label"
     },
     {
