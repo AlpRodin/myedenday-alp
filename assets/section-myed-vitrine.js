@@ -1,245 +1,288 @@
-/* ==========================================================================
-  MyEdenDay — Vitrine (Minimal JS)
-  - Carousel arrows: scrollBy
-  - Quick panel: open/close
-========================================================================== */
+(() => {
+  const ROOT_SELECTOR = '[data-myed-vitrine]';
+  const TRIGGER_SELECTOR = '[data-vitrine-trigger], [data-myed-vt-open]';
+  const DESKTOP_QUERY = '(min-width: 990px)';
+  const SCROLL_LOCK_CLASS = 'myed-vitrine-sheet-open';
+  const instances = new WeakMap();
 
-(function () {
-  function closest(el, sel) {
-    while (el && el.nodeType === 1) {
-      if (el.matches(sel)) return el;
-      el = el.parentElement;
-    }
-    return null;
+  function collectRoots(container) {
+    if (!container) return [];
+    if (container.matches && container.matches(ROOT_SELECTOR)) return [container];
+    if (!container.querySelectorAll) return [];
+    return Array.from(container.querySelectorAll(ROOT_SELECTOR));
   }
 
-  function initVitrine(root) {
-    const list = root.querySelector('[data-myed-vt-list]');
-    const panel = root.querySelector('[data-myed-vt-panel]');
-    if (!list || !panel) return;
+  function readTriggerData(trigger) {
+    return {
+      title: trigger.dataset.title || '',
+      description: trigger.dataset.description || '',
+      price: trigger.dataset.price || '',
+      compareAt: trigger.dataset.compareAt || '',
+      image: trigger.dataset.image || '',
+      imageAlt: trigger.dataset.imageAlt || trigger.dataset.title || '',
+      url: trigger.dataset.url || '#',
+      kicker: trigger.dataset.kicker || ''
+    };
+  }
 
-    const btnPrev = root.querySelector('[data-myed-vt-prev]');
-    const btnNext = root.querySelector('[data-myed-vt-next]');
+  class VitrineSection {
+    constructor(root) {
+      this.root = root;
+      this.panel = root.querySelector('[data-myed-vt-panel]');
+      this.panelDialog = root.querySelector('.myed-vt-panel__dialog');
+      this.sheet = root.querySelector('[data-myed-vt-sheet]');
+      this.sheetPanel = root.querySelector('.myed-vitrine__sheet-panel');
 
-    if (btnPrev && btnNext) {
-      const step = () => Math.max(220, Math.floor(list.clientWidth * 0.6));
-      btnPrev.addEventListener('click', () => list.scrollBy({ left: -step(), behavior: 'smooth' }));
-      btnNext.addEventListener('click', () => list.scrollBy({ left: step(), behavior: 'smooth' }));
+      this.lastTrigger = null;
+      this.initialized = false;
+
+      this.boundClick = this.onClick.bind(this);
+      this.boundKeyDown = this.onKeyDown.bind(this);
+      this.boundResize = this.onResize.bind(this);
     }
 
-    const galleryEl = panel.querySelector('[data-myed-vt-gallery]');
-    const titleEl = panel.querySelector('[data-myed-vt-panel-title]');
-    const priceEl = panel.querySelector('[data-myed-vt-panel-price]');
-    const compareEl = panel.querySelector('[data-myed-vt-panel-compare]');
-    const descEl = panel.querySelector('[data-myed-vt-panel-desc]');
-    const urlEl = panel.querySelector('[data-myed-vt-panel-url]');
-    const dialog = panel.querySelector('.myed-vt-panel__dialog');
-    const sheet = root.querySelector('.myed-vitrine__sheet');
+    init() {
+      if (this.initialized) return;
+      this.root.addEventListener('click', this.boundClick);
+      document.addEventListener('keydown', this.boundKeyDown);
+      window.addEventListener('resize', this.boundResize);
+      this.initialized = true;
 
-    function openPanel(data) {
-      panel.classList.add('is-open');
-      panel.setAttribute('aria-hidden', 'false');
-
-      if (galleryEl) {
-        galleryEl.innerHTML = '';
-        const raw = data.gallery || '';
-        const urls = raw.split('|').map(s => s.trim()).filter(Boolean);
-        urls.forEach((src) => {
-          const slide = document.createElement('div');
-          slide.className = 'myed-vt-gallery__slide';
-          const img = document.createElement('img');
-          img.className = 'myed-vt-gallery__img';
-          img.loading = 'lazy';
-          img.alt = data.title || '';
-          img.src = src;
-          slide.appendChild(img);
-          galleryEl.appendChild(slide);
-        });
-      }
-      if (titleEl) titleEl.textContent = data.title || '';
-      if (priceEl) priceEl.textContent = data.price || '';
-      if (compareEl) {
-        compareEl.textContent = data.compare || '';
-        compareEl.style.display = data.compare ? 'inline' : 'none';
-      }
-      if (descEl) descEl.textContent = data.desc || '';
-      if (urlEl) urlEl.href = data.url || '#';
-
-      if (dialog) dialog.focus({ preventScroll: true });
-    }
-
-    function closePanel() {
-      panel.classList.remove('is-open');
-      panel.setAttribute('aria-hidden', 'true');
-    }
-
-    if (sheet) {
-      const sheetImg = sheet.querySelector('.myed-vitrine__sheet-img');
-      const sheetTitle = sheet.querySelector('[data-sheet-title]');
-      const sheetPrice = sheet.querySelector('[data-sheet-price]');
-      const sheetKicker = sheet.querySelector('[data-sheet-kicker]');
-      const sheetItemsWrap = sheet.querySelector('[data-sheet-items]');
-      const sheetCta = sheet.querySelector('[data-sheet-url]');
-      const sheetLink = sheet.querySelector('[data-sheet-url-secondary]');
-
-      const openSheet = () => {
-        sheet.hidden = false;
-        document.documentElement.classList.add('myed-sheet-open');
-      };
-      const closeSheet = () => {
-        sheet.hidden = true;
-        document.documentElement.classList.remove('myed-sheet-open');
-      };
-
-      sheet.addEventListener('click', (e) => {
-        if (e.target.matches('[data-sheet-close]')) closeSheet();
-      });
-
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && !sheet.hidden) closeSheet();
-      });
-
-      let tappables = root.querySelectorAll('.myed-vt-card__btn[data-title][data-url], .myed-vitrine__item, .myed-vitrine__product');
-      if (!tappables.length) tappables = root.querySelectorAll('[data-title][data-url]');
-
-      // --- Swipe state (mobile sheet) ---
-      const items = Array.from(tappables);
-      let currentIndex = -1;
-
-      function renderSheetFromEl(el) {
-        if (sheetTitle) sheetTitle.textContent = el.dataset.title || '';
-        if (sheetPrice) sheetPrice.textContent = el.dataset.price || '';
-        if (sheetKicker) sheetKicker.textContent = el.dataset.kicker || '';
-
-        if (sheetImg) {
-          sheetImg.alt = el.dataset.title || '';
-          const image = el.dataset.image || el.dataset.img || '';
-          if (image) {
-            sheetImg.src = image;
-          } else {
-            sheetImg.removeAttribute('src');
-          }
+      // Default selection on desktop: open panel with first product
+      if (this.isDesktop() && this.panel && (this.panel.hidden || !this.panel.classList.contains('is-active'))) {
+        const first = this.root.querySelector(TRIGGER_SELECTOR);
+        if (first) {
+          const productData = readTriggerData(first);
+          if (!productData.kicker) productData.kicker = 'Ausgewählt';
+          this.lastTrigger = first;
+          this.setSelectedTrigger(first);
+          this.updatePanel(productData);
+          this.panel.hidden = false;
+          this.panel.classList.add('is-active');
         }
-
-        const url = el.dataset.url || '#';
-        if (sheetCta) sheetCta.href = url;
-        if (sheetLink) sheetLink.href = url;
-
-        // Spotlight items (1..5)
-        let anyItem = false;
-
-        for (let i = 1; i <= 5; i++) {
-          const t = (el.dataset['i' + i + 't'] || '').trim();
-          const b = (el.dataset['i' + i + 'b'] || '').trim();
-
-          const item = sheet.querySelector('[data-sheet-item="' + i + '"]');
-          const title = sheet.querySelector('[data-sheet-item-title="' + i + '"]');
-          const body = sheet.querySelector('[data-sheet-item-body="' + i + '"]');
-
-          if (!item || !title || !body) continue;
-
-          if (t && b) {
-            anyItem = true;
-            item.hidden = false;
-            item.open = false;
-            title.textContent = t;
-            body.textContent = b;
-          } else {
-            item.hidden = true;
-            item.open = false;
-            title.textContent = '';
-            body.textContent = '';
-          }
-        }
-
-        if (sheetItemsWrap) sheetItemsWrap.hidden = !anyItem;
       }
-
-      function openSheetForIndex(i) {
-        if (!items.length) return;
-        // wrap
-        if (i < 0) i = items.length - 1;
-        if (i >= items.length) i = 0;
-
-        currentIndex = i;
-        const el = items[currentIndex];
-        renderSheetFromEl(el);
-        openSheet();
-      }
-
-      // --- Swipe handlers (only when sheet open) ---
-      const sheetPanel = sheet.querySelector('.myed-vitrine__sheet-panel');
-      let startX = 0;
-      let startY = 0;
-
-      function go(delta) {
-        if (currentIndex === -1) return;
-        openSheetForIndex(currentIndex + delta);
-      }
-
-      if (sheetPanel) {
-        sheetPanel.addEventListener('touchstart', (e) => {
-          const t = e.touches && e.touches[0];
-          if (!t) return;
-          startX = t.clientX;
-          startY = t.clientY;
-        }, { passive: true });
-
-        sheetPanel.addEventListener('touchend', (e) => {
-          if (sheet.hidden) return;
-          const t = e.changedTouches && e.changedTouches[0];
-          if (!t) return;
-
-          const dx = t.clientX - startX;
-          const dy = t.clientY - startY;
-
-          // Yatay swipe değilse ignore (scroll ile çakışmasın)
-          if (Math.abs(dx) < 45) return;
-          if (Math.abs(dy) > Math.abs(dx) * 0.7) return;
-
-          if (dx < 0) go(+1); // swipe left -> next
-          else go(-1); // swipe right -> prev
-        }, { passive: true });
-      }
-
-      tappables.forEach((el, idx) => {
-        el.addEventListener('click', () => {
-          if (!window.matchMedia('(max-width: 749px)').matches) return;
-          openSheetForIndex(idx);
-        });
-      });
     }
 
-    root.addEventListener('click', (e) => {
-      const openBtn = closest(e.target, '[data-myed-vt-open]');
-      if (openBtn) {
-        if (window.matchMedia('(max-width: 749px)').matches) return;
+    destroy() {
+      if (!this.initialized) return;
+      this.closeSheet({ restoreFocus: false });
+      this.root.removeEventListener('click', this.boundClick);
+      document.removeEventListener('keydown', this.boundKeyDown);
+      window.removeEventListener('resize', this.boundResize);
+      this.initialized = false;
+    }
 
-        // GUARD: ürün datası yoksa panel açma
-        if (!openBtn.dataset || !openBtn.dataset.url || !openBtn.dataset.title) return;
+    isDesktop() {
+      return window.matchMedia(DESKTOP_QUERY).matches;
+    }
 
-        openPanel({
-          title: openBtn.dataset.title,
-          price: openBtn.dataset.price,
-          compare: openBtn.dataset.compare,
-          url: openBtn.dataset.url,
-          img: openBtn.dataset.img,
-          gallery: openBtn.dataset.gallery,
-          desc: openBtn.dataset.desc
-        });
+    setScrollLock(locked) {
+      document.documentElement.classList.toggle(SCROLL_LOCK_CLASS, locked);
+      document.body.classList.toggle(SCROLL_LOCK_CLASS, locked);
+    }
+
+    restoreFocus() {
+      if (this.lastTrigger && document.contains(this.lastTrigger)) {
+        this.lastTrigger.focus({ preventScroll: true });
+      }
+    }
+
+    updatePanel(data) {
+      if (!this.panel) return;
+
+      const image = this.panel.querySelector('[data-myed-vt-panel-image]');
+      const kicker = this.panel.querySelector('[data-myed-vt-panel-kicker]');
+      const title = this.panel.querySelector('[data-myed-vt-panel-title]');
+      const desc = this.panel.querySelector('[data-myed-vt-panel-desc]');
+      const price = this.panel.querySelector('[data-myed-vt-panel-price]');
+      const compare = this.panel.querySelector('[data-myed-vt-panel-compare]');
+      const urlPrimary = this.panel.querySelector('[data-myed-vt-panel-url]');
+      const urlSecondary = this.panel.querySelector('[data-myed-vt-panel-url-secondary]');
+
+      if (image) {
+        if (data.image) {
+          image.src = data.image;
+          image.alt = data.imageAlt;
+        } else {
+          image.removeAttribute('src');
+          image.alt = '';
+        }
+      }
+      if (kicker) kicker.textContent = data.kicker;
+      if (title) title.textContent = data.title;
+      if (desc) desc.textContent = data.description;
+      if (price) price.textContent = data.price;
+      if (compare) {
+        compare.textContent = data.compareAt;
+        compare.hidden = !data.compareAt;
+      }
+      if (urlPrimary) urlPrimary.href = data.url;
+      if (urlSecondary) urlSecondary.href = data.url;
+    }
+
+    updateSheet(data) {
+      if (!this.sheet) return;
+
+      const image = this.sheet.querySelector('[data-sheet-image]');
+      const kicker = this.sheet.querySelector('[data-sheet-kicker]');
+      const title = this.sheet.querySelector('[data-sheet-title]');
+      const desc = this.sheet.querySelector('[data-sheet-desc]');
+      const price = this.sheet.querySelector('[data-sheet-price]');
+      const compare = this.sheet.querySelector('[data-sheet-compare]');
+      const urlPrimary = this.sheet.querySelector('[data-sheet-url]');
+      const urlSecondary = this.sheet.querySelector('[data-sheet-url-secondary]');
+
+      if (image) {
+        if (data.image) {
+          image.src = data.image;
+          image.alt = data.imageAlt;
+        } else {
+          image.removeAttribute('src');
+          image.alt = '';
+        }
+      }
+      if (kicker) kicker.textContent = data.kicker;
+      if (title) title.textContent = data.title;
+      if (desc) desc.textContent = data.description;
+      if (price) price.textContent = data.price;
+      if (compare) {
+        compare.textContent = data.compareAt;
+        compare.hidden = !data.compareAt;
+      }
+      if (urlPrimary) urlPrimary.href = data.url;
+      if (urlSecondary) urlSecondary.href = data.url;
+    }
+
+    setSelectedTrigger(trigger) {
+      this.root.querySelectorAll(TRIGGER_SELECTOR).forEach((item) => {
+        item.classList.remove('is-selected');
+      });
+
+      if (trigger && this.root.contains(trigger)) {
+        trigger.classList.add('is-selected');
+      }
+    }
+
+    openPanel(data, trigger) {
+      if (!this.panel) return;
+      this.lastTrigger = trigger;
+      this.setSelectedTrigger(trigger);
+      this.updatePanel(data);
+      this.panel.classList.add('is-active');
+      if (this.panelDialog) this.panelDialog.focus({ preventScroll: true });
+    }
+
+    closePanel(options = {}) {
+      if (!this.panel) return;
+      const isActive = this.panel.classList.contains('is-active');
+      this.panel.classList.remove('is-active');
+      if (isActive && options.restoreFocus !== false) {
+        this.restoreFocus();
+      }
+    }
+
+    openSheet(data, trigger) {
+      if (!this.sheet) return;
+      this.lastTrigger = trigger;
+      this.setSelectedTrigger(trigger);
+      this.updateSheet(data);
+      this.sheet.hidden = false;
+      this.setScrollLock(true);
+      if (this.sheetPanel) this.sheetPanel.focus({ preventScroll: true });
+    }
+
+    closeSheet(options = {}) {
+      if (!this.sheet) return;
+      const wasOpen = !this.sheet.hidden;
+      this.sheet.hidden = true;
+      this.setScrollLock(false);
+      if (wasOpen && options.restoreFocus !== false) {
+        this.restoreFocus();
+      }
+    }
+
+    onClick(event) {
+      const trigger = event.target.closest(TRIGGER_SELECTOR);
+      if (trigger && this.root.contains(trigger)) {
+        event.preventDefault();
+        const data = readTriggerData(trigger);
+        if (this.isDesktop()) {
+          this.openPanel(data, trigger);
+        } else {
+          this.openSheet(data, trigger);
+        }
         return;
       }
-      if (closest(e.target, '[data-myed-vt-close]')) {
-        closePanel();
-      }
-    });
 
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && panel.classList.contains('is-open')) closePanel();
+      if (event.target.closest('[data-sheet-close]')) {
+        event.preventDefault();
+        this.closeSheet();
+        return;
+      }
+
+      if (event.target.closest('[data-myed-vt-close]')) {
+        event.preventDefault();
+        this.closePanel();
+        return;
+      }
+
+      if (this.isDesktop() && this.panel && this.panel.classList.contains('is-active')) {
+        const clickedInsidePanel = event.target.closest('.myed-vt-panel__dialog');
+        if (!clickedInsidePanel) {
+          this.closePanel();
+        }
+      }
+    }
+
+    onKeyDown(event) {
+      if (event.key !== 'Escape') return;
+
+      if (this.sheet && !this.sheet.hidden) {
+        this.closeSheet();
+        return;
+      }
+
+      if (this.panel && this.panel.classList.contains('is-active')) {
+        this.closePanel();
+      }
+    }
+
+    onResize() {
+      if (this.isDesktop() && this.sheet && !this.sheet.hidden) {
+        this.closeSheet({ restoreFocus: false });
+      }
+    }
+  }
+
+  function initWithin(container) {
+    collectRoots(container).forEach((root) => {
+      if (instances.has(root)) return;
+      const instance = new VitrineSection(root);
+      instance.init();
+      instances.set(root, instance);
     });
   }
 
-  document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('.myed-vitrine').forEach(initVitrine);
+  function destroyWithin(container) {
+    collectRoots(container).forEach((root) => {
+      const instance = instances.get(root);
+      if (!instance) return;
+      instance.destroy();
+      instances.delete(root);
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => initWithin(document));
+  } else {
+    initWithin(document);
+  }
+
+  document.addEventListener('shopify:section:load', (event) => {
+    initWithin(event.target);
+  });
+
+  document.addEventListener('shopify:section:unload', (event) => {
+    destroyWithin(event.target);
   });
 })();

@@ -1,195 +1,246 @@
-{%- comment -%}
-  Section: MyEdenDay — Vitrine
-  Fix: ensure collection/products resolve correctly in Theme Editor
-{%- endcomment -%}
-
 {{ 'section-myed-vitrine.css' | asset_url | stylesheet_tag }}
-<script src="{{ 'section-myed-vitrine.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'section-myed-vitrine.js' | asset_url }}" defer></script>
 
-{%- assign c = section.settings.collection -%}
-{%- assign limit = section.settings.limit | default: 8 -%}
+{% liquid
+  assign selected_collection = section.settings.collection
+  assign limit = section.settings.limit | default: 8
+  assign desktop_items = section.settings.desktop_items | default: 4
+  assign tablet_items = section.settings.tablet_items | default: 3
+  assign mobile_items = section.settings.mobile_items | default: 2
+
+  assign col_count = 0
+  if selected_collection != blank
+    assign col_count = selected_collection.products_count | at_most: limit
+  endif
+
+  assign desktop_real = desktop_items
+  assign tablet_real = tablet_items
+  assign mobile_real = mobile_items
+  if col_count > 0
+    assign desktop_real = desktop_items | at_most: col_count
+    assign tablet_real = tablet_items | at_most: col_count
+    assign mobile_real = mobile_items | at_most: col_count
+  endif
+
+  assign max_items = desktop_real
+  if tablet_real > max_items
+    assign max_items = tablet_real
+  endif
+  if mobile_real > max_items
+    assign max_items = mobile_real
+  endif
+  if max_items < 1
+    assign max_items = 1
+  endif
+%}
+
+{% capture vitrine_items_panel %}
+  {% if section.blocks.size > 0 %}
+    <div class="myed-vt-acc" aria-label="{{ section.settings.items_heading | escape }}">
+      {% if section.settings.items_heading != blank %}
+        <h4 class="myed-vt-acc__heading">{{ section.settings.items_heading }}</h4>
+      {% endif %}
+      {% for block in section.blocks %}
+        <details class="myed-vt-acc__item" {{ block.shopify_attributes }}>
+          <summary class="myed-vt-acc__sum">
+            <span class="myed-vt-acc__t">{{ block.settings.title }}</span>
+            <span class="myed-vt-acc__icon">+</span>
+          </summary>
+          <div class="myed-vt-acc__body rte">{{ block.settings.content }}</div>
+        </details>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endcapture %}
+
+{% capture vitrine_items_sheet %}
+  {% if section.blocks.size > 0 %}
+    <div class="myed-vt-acc" aria-label="{{ section.settings.items_heading | escape }}">
+      {% if section.settings.items_heading != blank %}
+        <h4 class="myed-vt-acc__heading">{{ section.settings.items_heading }}</h4>
+      {% endif %}
+      {% for block in section.blocks %}
+        <details class="myed-vt-acc__item">
+          <summary class="myed-vt-acc__sum">
+            <span class="myed-vt-acc__t">{{ block.settings.title }}</span>
+            <span class="myed-vt-acc__icon">+</span>
+          </summary>
+          <div class="myed-vt-acc__body rte">{{ block.settings.content }}</div>
+        </details>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endcapture %}
 
 <section
   class="myed-vitrine"
+  data-myed-vitrine
   data-section-id="{{ section.id }}"
-  data-layout="{{ section.settings.layout }}"
-  data-meta-style="{{ section.settings.meta_style }}"
-  data-panel-side="{{ section.settings.panel_side }}"
   style="
     --myed-vt-overlay: {{ section.settings.overlay | divided_by: 100.0 }};
     --myed-vt-shelf-y: {{ section.settings.shelf_y }}%;
     --myed-vt-media-h: {{ section.settings.media_h }}px;
   "
 >
-  <div class="myed-vt-bg">
-    {%- if section.settings.bg_image -%}
-      {{ section.settings.bg_image | image_url: width: 2400 | image_tag:
-        class: 'myed-vt-bg__img',
-        loading: 'lazy',
-        widths: '960,1200,1600,2000,2400',
-        sizes: '100vw',
-        alt: section.settings.heading
-      }}
-    {%- endif -%}
-    <div class="myed-vt-bg__overlay" aria-hidden="true"></div>
-  </div>
+  <div class="myed-vt-bg" aria-hidden="true"></div>
+  <span class="myed-vt-spot myed-vt-spot--l" aria-hidden="true"></span>
+  <span class="myed-vt-spot myed-vt-spot--r" aria-hidden="true"></span>
 
   <div class="page-width myed-vt-inner">
     <header class="myed-vt-head">
-      {%- if section.settings.kicker != blank -%}
-        <div class="myed-vt-kicker">{{ section.settings.kicker }}</div>
-      {%- endif -%}
-      {%- if section.settings.heading != blank -%}
-        <h2 class="myed-vt-title">{{ section.settings.heading }}</h2>
-      {%- endif -%}
-      {%- if section.settings.subheading != blank -%}
-        <p class="myed-vt-sub">{{ section.settings.subheading }}</p>
-      {%- endif -%}
+      {% if section.settings.overline != blank %}
+        <p class="myed-vt-kicker">{{ section.settings.overline }}</p>
+      {% endif %}
+      {% if section.settings.title != blank %}
+        <h2 class="myed-vt-title">{{ section.settings.title }}</h2>
+      {% endif %}
+      {% if section.settings.subtitle != blank %}
+        <p class="myed-vt-sub">{{ section.settings.subtitle }}</p>
+      {% endif %}
     </header>
 
-    <div class="myed-vt-stage" data-myed-vt-stage>
-      <div class="myed-vt-shelf" aria-hidden="true"></div>
+    <div class="myed-vt-showroom">
+      <div class="myed-vt-stage" data-myed-vt-stage>
+        <div class="myed-vt-shelf" aria-hidden="true"></div>
+        <div class="myed-vt-floor" aria-hidden="true"></div>
 
-      {%- if section.settings.layout == 'carousel' -%}
-        <div class="myed-vt-nav">
-          <button class="myed-vt-nav__btn" type="button" data-myed-vt-prev aria-label="Previous">‹</button>
-          <button class="myed-vt-nav__btn" type="button" data-myed-vt-next aria-label="Next">›</button>
+        <div
+          class="myed-vt-list"
+          data-myed-vt-list
+          role="list"
+          style="--myed-desktop-items: {{ desktop_real }}; --myed-tablet-items: {{ tablet_real }}; --myed-mobile-items: {{ mobile_real }};"
+        >
+          {% if selected_collection != blank and selected_collection.products_count > 0 %}
+            {% for product in selected_collection.products limit: max_items %}
+              <div class="myed-vt-product-wrap" role="listitem">
+                {% render 'myed-vitrine-card', product: product, index: forloop.index %}
+              </div>
+            {% endfor %}
+          {% else %}
+            <div class="myed-vt-empty">{{ section.settings.empty_text }}</div>
+          {% endif %}
         </div>
-      {%- endif -%}
-
-      <div class="myed-vt-list myed-vt-list--{{ section.settings.layout }}" data-myed-vt-list>
-        {%- if c != blank and c.products_count > 0 -%}
-          {%- for p in c.products limit: limit -%}
-            {%- render 'myed-vitrine-card', product: p -%}
-          {%- endfor -%}
-        {%- else -%}
-          <div class="myed-vt-empty">Keine Kollektion gewählt oder keine Produkte vorhanden.</div>
-        {%- endif -%}
       </div>
 
-      {%- if section.settings.reflection -%}
-        <div class="myed-vt-reflection" aria-hidden="true"></div>
-      {%- endif -%}
-    </div>
-  </div>
+      <aside class="myed-vt-panel" data-myed-vt-panel>
+        <div class="myed-vt-panel__dialog" role="region" aria-label="Produktdetails" tabindex="-1">
+          <button class="myed-vt-panel__close" type="button" data-myed-vt-close aria-label="Panel schließen">&times;</button>
 
-  <!-- Quick Panel -->
-  <div class="myed-vt-panel" data-myed-vt-panel aria-hidden="true">
-    <div class="myed-vt-panel__backdrop" data-myed-vt-close></div>
+          <div class="myed-vt-panel__media">
+            <img class="myed-vt-panel__img" data-myed-vt-panel-image alt="" loading="lazy" width="1200" height="1200">
+          </div>
 
-    <div class="myed-vt-panel__dialog" role="dialog" aria-modal="true" aria-label="Product details" tabindex="-1">
-      <button class="myed-vt-panel__close" type="button" data-myed-vt-close aria-label="Close">×</button>
-
-      <div class="myed-vt-panel__grid">
-        <div class="myed-vt-panel__media">
-          <div class="myed-vt-gallery" data-myed-vt-gallery></div>
-        </div>
-
-        <div class="myed-vt-panel__content">
-          <div class="myed-vt-panel__title" data-myed-vt-panel-title></div>
+          <div class="myed-vt-panel__kicker" data-myed-vt-panel-kicker>{{ section.settings.default_kicker }}</div>
+          <h3 class="myed-vt-panel__title" data-myed-vt-panel-title>{{ section.settings.default_title }}</h3>
+          <p class="myed-vt-panel__desc" data-myed-vt-panel-desc>{{ section.settings.default_text }}</p>
 
           <div class="myed-vt-panel__price">
-            <span data-myed-vt-panel-price></span>
-            <span class="myed-vt-panel__compare" data-myed-vt-panel-compare></span>
+            <span data-myed-vt-panel-price>{{ section.settings.default_price }}</span>
+            <span class="myed-vt-panel__compare" data-myed-vt-panel-compare hidden></span>
           </div>
-
-          <div class="myed-vt-panel__desc" data-myed-vt-panel-desc></div>
 
           <div class="myed-vt-panel__actions">
-            <a class="myed-vt-btn myed-vt-btn--primary" data-myed-vt-panel-url href="#">Produkt ansehen</a>
+            <a class="myed-vt-btn myed-vt-btn--primary" data-myed-vt-panel-url href="#">{{ section.settings.cta_label }}</a>
+            <a class="myed-vt-btn myed-vt-btn--ghost" data-myed-vt-panel-url-secondary href="#">{{ section.settings.details_label }}</a>
           </div>
+
+          {{ vitrine_items_panel }}
+
+          {% if section.settings.quick_note != blank %}
+            <p class="myed-vt-panel__note">{{ section.settings.quick_note }}</p>
+          {% endif %}
         </div>
-      </div>
+      </aside>
     </div>
   </div>
 
-  <div class="myed-vitrine__sheet" hidden>
+  <div class="myed-vitrine__sheet" data-myed-vt-sheet hidden>
     <div class="myed-vitrine__sheet-backdrop" data-sheet-close></div>
 
-    <div class="myed-vitrine__sheet-panel" role="dialog" aria-modal="true" aria-label="Product details">
-      <button class="myed-vitrine__sheet-close" type="button" aria-label="Close" data-sheet-close>×</button>
+    <div class="myed-vitrine__sheet-panel" role="dialog" aria-modal="true" aria-label="Produktdetails" tabindex="-1">
+      <button class="myed-vitrine__sheet-close" type="button" data-sheet-close aria-label="Ansicht schließen">&times;</button>
 
       <div class="myed-vitrine__sheet-media">
-        <img class="myed-vitrine__sheet-img" alt="" loading="lazy">
+        <img class="myed-vitrine__sheet-img" data-sheet-image alt="" loading="lazy" width="1200" height="1200">
       </div>
 
       <div class="myed-vitrine__sheet-body">
-        <div class="myed-vitrine__sheet-title" data-sheet-title></div>
-        <div class="myed-vitrine__sheet-price" data-sheet-price></div>
+        <div class="myed-vitrine__sheet-kicker" data-sheet-kicker>{{ section.settings.default_kicker }}</div>
+        <h3 class="myed-vitrine__sheet-title" data-sheet-title>{{ section.settings.default_title }}</h3>
+        <p class="myed-vitrine__sheet-desc" data-sheet-desc>{{ section.settings.default_text }}</p>
 
-        <div class="myed-vitrine__sheet-kicker" data-sheet-kicker></div>
-
-        <div class="myed-vitrine__sheet-items" data-sheet-items hidden>
-          {% for i in (1..5) %}
-            <details class="myed-vitrine__sheet-item" data-sheet-item="{{ i }}" hidden>
-              <summary class="myed-vitrine__sheet-itemsum">
-                <span data-sheet-item-title="{{ i }}"></span>
-                <span class="myed-vitrine__sheet-itemicon">+</span>
-              </summary>
-              <div class="myed-vitrine__sheet-itembody" data-sheet-item-body="{{ i }}"></div>
-            </details>
-          {% endfor %}
+        <div class="myed-vitrine__sheet-price">
+          <span data-sheet-price>{{ section.settings.default_price }}</span>
+          <span data-sheet-compare hidden></span>
         </div>
 
         <div class="myed-vitrine__sheet-actions">
-          <a class="myed-vitrine__sheet-cta button" href="#" data-sheet-url>In den Warenkorb</a>
-          <a class="myed-vitrine__sheet-link" href="#" data-sheet-url-secondary>Details</a>
+          <a class="myed-vitrine__sheet-cta button" data-sheet-url href="#">{{ section.settings.cta_label }}</a>
+          <a class="myed-vitrine__sheet-link" data-sheet-url-secondary href="#">{{ section.settings.details_label }}</a>
         </div>
+
+        {{ vitrine_items_sheet }}
+
+        {% if section.settings.swipe_hint != blank %}
+          <p class="myed-vitrine__sheet-hint">{{ section.settings.swipe_hint }}</p>
+        {% endif %}
       </div>
     </div>
   </div>
-
 </section>
 
 {% schema %}
 {
-  "name": "MyEdenDay — Vitrine",
+  "name": "MyED Vitrine Cave",
+  "tag": "section",
+  "class": "section",
   "settings": [
-    { "type": "image_picker", "id": "bg_image", "label": "Background image" },
+    { "type": "collection", "id": "collection", "label": "Kollektion" },
+
+    { "type": "text", "id": "overline", "label": "Vortitel", "default": "MyEdenDay Vitrine" },
+    { "type": "text", "id": "title", "label": "Überschrift", "default": "Ihre Morgenroutine" },
+    { "type": "text", "id": "subtitle", "label": "Untertitel", "default": "Wählen Sie Ihre Essentials für einen starken Start in den Tag." },
+
+    { "type": "range", "id": "desktop_items", "label": "Produkte Desktop", "min": 3, "max": 6, "step": 1, "default": 4 },
+    { "type": "range", "id": "tablet_items", "label": "Produkte Tablet", "min": 2, "max": 4, "step": 1, "default": 3 },
+    { "type": "range", "id": "mobile_items", "label": "Produkte Mobil", "min": 1, "max": 3, "step": 1, "default": 2 },
+
+    { "type": "range", "id": "limit", "label": "Max. Produkte", "min": 3, "max": 12, "step": 1, "default": 8 },
     { "type": "range", "id": "overlay", "label": "Overlay (%)", "min": 0, "max": 70, "step": 5, "default": 35 },
+    { "type": "range", "id": "shelf_y", "label": "Regal-Position (%)", "min": 55, "max": 85, "step": 1, "default": 72 },
+    { "type": "range", "id": "media_h", "label": "Produkt-Höhe (px)", "min": 160, "max": 420, "step": 10, "default": 280 },
 
-    { "type": "text", "id": "kicker", "label": "Kicker", "default": "MYEDENDAY VITRINE" },
-    { "type": "text", "id": "heading", "label": "Heading", "default": "IHRE MORGENROUTINE" },
-    { "type": "text", "id": "subheading", "label": "Subheading", "default": "Wählen Sie Ihre Routine für einen klaren Start in den Tag" },
+    { "type": "text", "id": "default_kicker", "label": "Standard-Kicker", "default": "Ausgewählt" },
+    { "type": "text", "id": "default_title", "label": "Standardtitel", "default": "Produkt auswählen" },
+    { "type": "textarea", "id": "default_text", "label": "Standardtext", "default": "Klicken Sie auf ein Produkt, um die Schnellansicht zu öffnen." },
+    { "type": "text", "id": "default_price", "label": "Standardpreis", "default": "ab 0,00 €" },
 
-    { "type": "collection", "id": "collection", "label": "Collection" },
-    { "type": "range", "id": "limit", "label": "Max products", "min": 3, "max": 12, "step": 1, "default": 8 },
-    { "type": "range", "id": "shelf_y", "label": "Shelf vertical position (%)", "min": 55, "max": 85, "step": 1, "default": 72 },
-    { "type": "range", "id": "media_h", "label": "Product media height (px)", "min": 140, "max": 320, "step": 10, "default": 240 },
-    {
-      "type": "select",
-      "id": "meta_style",
-      "label": "Meta style",
-      "default": "compact",
-      "options": [
-        { "value": "compact", "label": "Compact" },
-        { "value": "wide", "label": "Wide" }
-      ]
-    },
-    {
-      "type": "select",
-      "id": "panel_side",
-      "label": "Panel side",
-      "default": "right",
-      "options": [
-        { "value": "right", "label": "Right" },
-        { "value": "left", "label": "Left" }
-      ]
-    },
-
-    {
-      "type": "select",
-      "id": "layout",
-      "label": "Layout",
-      "default": "carousel",
-      "options": [
-        { "value": "carousel", "label": "Carousel (scroll-snap)" },
-        { "value": "grid", "label": "Grid" }
-      ]
-    },
-
-    { "type": "checkbox", "id": "reflection", "label": "Enable floor reflection", "default": true }
+    { "type": "text", "id": "cta_label", "label": "CTA-Label", "default": "Zum Produkt" },
+    { "type": "text", "id": "details_label", "label": "Details-Link", "default": "Details ansehen" },
+    { "type": "text", "id": "items_heading", "label": "Items-Titel", "default": "Artikelinformationen" },
+    { "type": "text", "id": "quick_note", "label": "Hinweis (Desktop)", "default": "Klicken Sie auf ein Produkt für die Schnellansicht." },
+    { "type": "text", "id": "swipe_hint", "label": "Hinweis (Mobil)", "default": "Tippen Sie auf ein Produkt, um Details zu sehen." },
+    { "type": "text", "id": "empty_text", "label": "Leerzustand", "default": "Keine Kollektion gewählt oder keine Produkte vorhanden." }
   ],
-  "presets": [{ "name": "MyEdenDay — Vitrine" }]
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Item",
+      "limit": 6,
+      "settings": [
+        { "type": "text", "id": "title", "label": "Titel", "default": "Produktvorteil" },
+        { "type": "richtext", "id": "content", "label": "Inhalt", "default": "<p>Beschreiben Sie hier einen Vorteil oder ein Highlight dieses Sortiments.</p>" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "MyED Vitrine Cave",
+      "blocks": [
+        { "type": "item" },
+        { "type": "item" }
+      ]
+    }
+  ]
 }
 {% endschema %}
