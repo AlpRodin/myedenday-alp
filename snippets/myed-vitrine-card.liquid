@@ -1,0 +1,95 @@
+{%- comment -%} myed-vitrine-card {%- endcomment -%}
+{%- if product != blank -%}
+
+{%- assign p = product -%}
+{%- assign img1 = p.featured_image -%}
+{%- assign img2 = blank -%}
+{%- for m in p.media -%}
+  {%- if m.media_type == 'image' and m.preview_image and img1 and m.preview_image.id != img1.id -%}
+    {%- assign img2 = m.preview_image -%}
+    {%- break -%}
+  {%- endif -%}
+{%- endfor -%}
+{%- assign price = p.price | money -%}
+{%- assign compare = p.compare_at_price | money -%}
+{%- assign vt_kicker = p.metafields.custom.kicker -%}
+
+<article
+  class="myed-vt-card"
+  data-myed-vt-card
+  data-title="{{ p.title | escape }}"
+  data-url="{{ p.url }}"
+  data-price="{{ p.price | money }}"
+  data-image="{% if p.featured_media %}{{ p.featured_media | image_url: width: 1200 }}{% endif %}"
+  data-kicker="{% if vt_kicker != blank %}{{ vt_kicker | strip_html | escape | truncate: 140 }}{% endif %}"
+>
+  <button
+    type="button"
+    class="myed-vt-card__btn"
+    data-myed-vt-open
+    aria-haspopup="dialog"
+    aria-label="{{ p.title | escape }}"
+    data-title="{{ p.title | escape }}"
+    data-price="{{ price | escape }}"
+    data-compare="{% if p.compare_at_price > p.price %}{{ compare | escape }}{% endif %}"
+    data-url="{{ p.url }}"
+    data-img="{% if img1 %}{{ img1 | image_url: width: 900 }}{% endif %}"
+    data-kicker="{% if vt_kicker != blank %}{{ vt_kicker | strip_html | escape | truncate: 140 }}{% endif %}"
+    data-i1t="{% if p.metafields.custom.vt_item_1_title != blank %}{{ p.metafields.custom.vt_item_1_title | escape }}{% endif %}"
+    data-i1b="{% if p.metafields.custom.vt_item_1_body  != blank %}{{ p.metafields.custom.vt_item_1_body  | strip_html | escape }}{% endif %}"
+    data-i2t="{% if p.metafields.custom.vt_item_2_title != blank %}{{ p.metafields.custom.vt_item_2_title | escape }}{% endif %}"
+    data-i2b="{% if p.metafields.custom.vt_item_2_body  != blank %}{{ p.metafields.custom.vt_item_2_body  | strip_html | escape }}{% endif %}"
+    data-i3t="{% if p.metafields.custom.vt_item_3_title != blank %}{{ p.metafields.custom.vt_item_3_title | escape }}{% endif %}"
+    data-i3b="{% if p.metafields.custom.vt_item_3_body  != blank %}{{ p.metafields.custom.vt_item_3_body  | strip_html | escape }}{% endif %}"
+    data-i4t="{% if p.metafields.custom.vt_item_4_title != blank %}{{ p.metafields.custom.vt_item_4_title | escape }}{% endif %}"
+    data-i4b="{% if p.metafields.custom.vt_item_4_body  != blank %}{{ p.metafields.custom.vt_item_4_body  | strip_html | escape }}{% endif %}"
+    data-i5t="{% if p.metafields.custom.vt_item_5_title != blank %}{{ p.metafields.custom.vt_item_5_title | escape }}{% endif %}"
+    data-i5b="{% if p.metafields.custom.vt_item_5_body  != blank %}{{ p.metafields.custom.vt_item_5_body  | strip_html | escape }}{% endif %}"
+    {%- capture g -%}
+      {%- assign count = 0 -%}
+      {%- for m in p.media -%}
+        {%- if m.media_type == 'image' -%}
+          {%- if count > 0 -%}|{%- endif -%}{{ m | image_url: width: 900 }}
+          {%- assign count = count | plus: 1 -%}
+          {%- if count == 4 -%}{%- break -%}{%- endif -%}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endcapture -%}
+    data-gallery="{{ g | strip | escape }}"
+  >
+    <div class="myed-vt-card__media">
+      {%- if img1 -%}
+        {{ img1 | image_url: width: 640 | image_tag:
+          loading: 'lazy',
+          widths: '240,320,480,640,900',
+          sizes: '(max-width: 749px) 46vw, (max-width: 989px) 24vw, 220px',
+          class: 'myed-vt-card__img myed-vt-card__img--a',
+          alt: p.title
+        }}
+      {%- else -%}
+        <div class="myed-vt-card__img myed-vt-card__img--placeholder" aria-hidden="true"></div>
+      {%- endif -%}
+
+      {%- if img2 -%}
+        {{ img2 | image_url: width: 640 | image_tag:
+          loading: 'lazy',
+          widths: '240,320,480,640,900',
+          sizes: '(max-width: 749px) 46vw, (max-width: 989px) 24vw, 220px',
+          class: 'myed-vt-card__img myed-vt-card__img--b',
+          alt: p.title
+        }}
+      {%- endif -%}
+    </div>
+
+    <div class="myed-vt-card__meta">
+      <div class="myed-vt-card__title">{{ p.title }}</div>
+      <div class="myed-vt-card__price">
+        <span class="myed-vt-card__price-now">{{ price }}</span>
+        {%- if p.compare_at_price > p.price -%}
+          <span class="myed-vt-card__price-was">{{ compare }}</span>
+        {%- endif -%}
+      </div>
+    </div>
+  </button>
+</article>
+{%- endif -%}
