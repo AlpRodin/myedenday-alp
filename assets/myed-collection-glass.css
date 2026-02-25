@@ -1,122 +1,108 @@
 /* ==========================================================================
-  MyEdenDay — Collection Template Glass (Scoped)
-  Scope: only .myed-ct-surface
+  MyEdenDay — Collection Glass (CANONICAL SINGLE v1)
+  Scope: ONLY collection surface + collection facets drawer
+  Goals:
+  - Top bar: Filter + Sort + Count same line, readable on dark bg
+  - Drawer: clickable (overlay never steals clicks), never under header
+  - Active facets: price chip text WHITE + "Alle entfernen" becomes a pill
+  - Drawer inner texts/labels/inputs follow "Text color" control
 ========================================================================== */
+
 :root{
   --myed-ct-radius: 22px;
   --myed-ct-chip-radius: 999px;
-  --myed-ct-glass-shadow: 0 18px 40px rgba(0,0,0,0.28);
+  --myed-ct-shadow: 0 18px 40px rgba(0,0,0,0.28);
 }
 
 body.template-collection{
+  /* Theme editor control maps to this rgb (fallback: off-white) */
   --myed-ct-text-rgb: var(--myed-collection-foreground, 245, 247, 250);
 }
 
-.myed-ct-surface{
-  --myed-ct-text: rgba(var(--myed-ct-text-rgb,245,247,250),0.92);
-  --myed-ct-muted: rgba(var(--myed-ct-text-rgb,245,247,250),0.78);
-  --myed-ct-glass-bg: rgba(10,14,22,var(--myed-ct-bg-alpha,0.55));
-  --myed-ct-glass-frost: rgba(255,255,255,var(--myed-ct-frost-alpha,0.06));
-  --myed-ct-glass-border: rgba(255,255,255,var(--myed-ct-border-alpha,0.14));
-  --myed-ct-chip-bg: rgba(10,14,22,calc(var(--myed-ct-bg-alpha,0.55)*0.85));
-  --myed-ct-glass-shadow: 0 18px 40px rgba(0,0,0,0.28);
+body.template-collection .myed-ct-surface{
+  /* Base tokens */
+  --myed-ct-bg-rgb: 10,14,22;
+
+  --myed-ct-text: rgba(var(--myed-ct-text-rgb,245,247,250), 0.92);
+  --myed-ct-muted: rgba(var(--myed-ct-text-rgb,245,247,250), 0.78);
+
+  --myed-ct-glass-bg: rgba(10,14,22, var(--myed-ct-bg-alpha,0.55));
+  --myed-ct-glass-frost: rgba(255,255,255, var(--myed-ct-frost-alpha,0.06));
+  --myed-ct-glass-border: rgba(255,255,255, var(--myed-ct-border-alpha,0.14));
+  --myed-ct-chip-bg: rgba(10,14,22, calc(var(--myed-ct-bg-alpha,0.55) * 0.85));
+
+  color: var(--myed-ct-text);
+  color-scheme: dark;
 }
 
-.myed-ct-surface :is([class^="color-"], [class*=" color-"], .gradient){
+/* Ensure Dawn foreground becomes our off-white inside the collection surface */
+body.template-collection .myed-ct-surface :is([class^="color-"], [class*=" color-"], .gradient){
   --color-foreground: var(--myed-ct-text-rgb);
 }
 
-/* Top controls bar */
-.myed-ct-surface .myed-ct-toolbar{
+/* ==========================================================================
+   1) TOP TOOLBAR / CONTAINERS (one glass surface)
+========================================================================== */
+
+body.template-collection .myed-ct-surface .myed-ct-toolbar,
+body.template-collection .myed-ct-surface .facets-container{
   position: relative;
   overflow: hidden;
   isolation: isolate;
+
   border-radius: var(--myed-ct-radius);
   background: var(--myed-ct-glass-bg);
   border: 1px solid var(--myed-ct-glass-border);
-  box-shadow: var(--myed-ct-glass-shadow);
+  box-shadow: var(--myed-ct-shadow);
+
   padding: 14px 18px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
 }
-.myed-ct-surface .myed-ct-toolbar::before{
+
+body.template-collection .myed-ct-surface .myed-ct-toolbar::before,
+body.template-collection .myed-ct-surface .facets-container::before{
   content:"";
   position:absolute;
   inset:0;
   pointer-events:none;
   background: var(--myed-ct-glass-frost);
 }
+
 @supports ((backdrop-filter: blur(1px))){
-  .myed-ct-surface .myed-ct-toolbar::before{
+  body.template-collection .myed-ct-surface .myed-ct-toolbar::before,
+  body.template-collection .myed-ct-surface .facets-container::before{
     -webkit-backdrop-filter: blur(var(--myed-ct-blur,14px)) saturate(120%);
     backdrop-filter: blur(var(--myed-ct-blur,14px)) saturate(120%);
   }
 }
-.myed-ct-surface .myed-ct-toolbar > *{
+
+body.template-collection .myed-ct-surface .myed-ct-toolbar > *,
+body.template-collection .myed-ct-surface .facets-container > *{
   position: relative;
   z-index: 1;
-  min-width: 0;
-  width: 100%;
 }
 
-.myed-ct-surface .facets.small-hide:not(.facets-pill){
+/* ==========================================================================
+   2) DESKTOP TOP BAR ALIGNMENT (Filter + Sort + Count)
+========================================================================== */
+
+body.template-collection .myed-ct-surface .facets.small-hide{
   background: transparent;
   border: 0;
   box-shadow: none;
-  padding: 0;
   margin: 0;
+  padding: 12px 18px;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1.4rem;
+  gap: 14px;
+
+  min-height: 56px;
+  box-sizing: border-box;
   flex-wrap: nowrap;
 }
 
-/* MYED — FIX 03: Topbar text vertical alignment (all filter layouts) */
-.myed-ct-surface .facets.small-hide:not(.facets-pill){
-  padding: 10px 14px;       /* sinirdan uzaklastir */
-  min-height: 52px;         /* stabil bar yuksekligi */
-  box-sizing: border-box;
-  align-items: center;      /* zaten var ama garanti */
-}
-
-/* label/headings default margin/line-height farkini sifirla */
-.myed-ct-surface .facets.small-hide:not(.facets-pill) :is(
-  .facets__heading,
-  .facet-filters__label,
-  .facet-filters__label label,
-  .product-count__text
-){
-  margin: 0;
-  line-height: 1.2;
-  white-space: nowrap;
-}
-
-/* sort alanini da dikey ortala */
-.myed-ct-surface .facets.small-hide:not(.facets-pill) .facet-filters.sorting,
-.myed-ct-surface .facets.small-hide:not(.facets-pill) .facet-filters__field{
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-/* select kutusu icindeki metin baseline kaymasini azalt */
-.myed-ct-surface .facets.small-hide:not(.facets-pill) .select__select,
-.myed-ct-surface .facets.small-hide:not(.facets-pill) .facet-filters__sort{
-  line-height: 1.2;
-}
-
-/* MYED — FIX 04: Topbar baseline + spacing (all layouts) */
-.myed-ct-surface .facets.small-hide:not(.facets-pill){
-  padding: 12px 18px;     /* kenara yapışma bitsin */
-  min-height: 56px;       /* stabil bar yüksekliği */
-  align-items: center;
-}
-
-/* Form + wrapper + sorting tek hizada */
-.myed-ct-surface .facets.small-hide:not(.facets-pill) :is(
+body.template-collection .myed-ct-surface .facets.small-hide :is(
   .facets__form,
   .facets__wrapper,
   .facet-filters.sorting,
@@ -127,8 +113,7 @@ body.template-collection{
   align-items: center;
 }
 
-/* Metin baseline farklarını sıfırla */
-.myed-ct-surface .facets.small-hide:not(.facets-pill) :is(
+body.template-collection .myed-ct-surface .facets.small-hide :is(
   .facets__heading,
   .facet-filters__label,
   .facet-filters__label label,
@@ -137,344 +122,447 @@ body.template-collection{
   margin: 0;
   line-height: 1.2;
   white-space: nowrap;
-}
-
-/* “Filter:” pill ile yanındaki dropdown çok yapışmasın */
-.myed-ct-surface .facets.small-hide:not(.facets-pill) .facets__heading{
-  margin-right: 10px;
-}
-
-.myed-ct-surface .facets.small-hide:not(.facets-pill) > form{
-  flex: 1 1 auto;
-  min-width: 0;
-}
-
-.myed-ct-surface .facets.small-hide:not(.facets-pill) .product-count{
-  margin-left: auto;
-  flex: 0 0 auto;
-}
-
-.myed-ct-surface .facets.small-hide:not(.facets-pill) .product-count__text{
-  margin: 0;
-}
-
-.myed-ct-surface .facets-container{
-  position: relative;
-  overflow: visible;
-  border-radius: var(--myed-ct-radius);
-  background: var(--myed-ct-glass-bg);
-  border: 1px solid var(--myed-ct-glass-border);
-  box-shadow: var(--myed-ct-glass-shadow);
-}
-
-.myed-ct-surface .facets-container::before{
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  border-radius: inherit;
-  background: var(--myed-ct-glass-frost);
-}
-
-@supports ((backdrop-filter: blur(1px))){
-  .myed-ct-surface .facets-container::before{
-    -webkit-backdrop-filter: blur(var(--myed-ct-blur,14px)) saturate(120%);
-    backdrop-filter: blur(var(--myed-ct-blur,14px)) saturate(120%);
-  }
-}
-
-.myed-ct-surface .facets-container > *{
-  position: relative;
-  z-index: 1;
-}
-.myed-ct-surface .facets__summary,
-.myed-ct-surface .facet-filters__field .select,
-.myed-ct-surface .facet-filters__sort{
-  background: var(--myed-ct-chip-bg);
-  border: 1px solid var(--myed-ct-glass-border);
-  border-radius: var(--myed-ct-chip-radius);
-  color: var(--myed-ct-text);
-}
-.myed-ct-surface .facets__summary{
-  display:inline-flex;
-  align-items:center;
-  gap:0.5rem;
-}
-.myed-ct-surface .facet-filters__field .select{overflow:hidden;}
-.myed-ct-surface .facets__summary .icon-caret,
-.myed-ct-surface .facet-filters__field select,
-.myed-ct-surface .facet-filters__sort{color: var(--myed-ct-text);}
-.myed-ct-surface .facet-filters__field select,
-.myed-ct-surface .select__select,
-.myed-ct-surface select.facet-filters__sort{
-  background: transparent;
-  color: var(--myed-ct-text);
-}
-.myed-ct-surface .product-count,
-.myed-ct-surface .product-count__text,
-.myed-ct-surface .facet-filters__label,
-.myed-ct-surface .facet-filters__label label,
-.myed-ct-surface .facets__heading,
-.myed-ct-surface .facets__summary,
-.myed-ct-surface .facets__summary span,
-.myed-ct-surface .facets__label,
-.myed-ct-surface .facet-filters__sort{
   color: var(--myed-ct-text);
   opacity: 1;
 }
 
-.myed-ct-surface .facets__heading{
+body.template-collection .myed-ct-surface .facets.small-hide .facets__heading{
   display: inline-flex;
   align-items: center;
-  padding: .6rem 1.2rem;
+  gap: .6rem;
+
+  padding: 8px 12px;
   border-radius: var(--myed-ct-chip-radius);
   background: var(--myed-ct-chip-bg);
   border: 1px solid var(--myed-ct-glass-border);
-  color: var(--myed-ct-text);
+}
+
+body.template-collection .myed-ct-surface .facets.small-hide .facet-filters__field{
+  gap: 10px;
+}
+
+body.template-collection .myed-ct-surface .facets.small-hide .product-count{
+  margin-left: auto;
+  flex: 0 0 auto;
+}
+
+body.template-collection .myed-ct-surface .facets.small-hide .product-count__text{
   margin: 0;
 }
 
-.myed-ct-surface .facets.small-hide:not(.facets-pill) .facets__summary,
-.myed-ct-surface .facets.small-hide:not(.facets-pill) .facet-filters__field .select,
-.myed-ct-surface .facets.small-hide:not(.facets-pill) .facet-filters__sort{
-  background: transparent;
-  border: 0;
-  box-shadow: none;
-}
-
-.myed-ct-surface .facets.small-hide:not(.facets-pill) .facets__summary:hover,
-.myed-ct-surface .facets.small-hide:not(.facets-pill) .facet-filters__field .select:hover{
-  background: rgba(255,255,255,0.08);
-}
-
-/* Facets dropdown panel */
-.myed-ct-surface details.facets__disclosure[open] > .facets__display,
-.myed-ct-surface details.disclosure-has-popup[open] > .facets__display,
-.myed-ct-surface .facets__display{
-  overflow: hidden;
-  isolation: isolate;
-  background: var(--myed-ct-glass-bg);
+/* Make SortBy pill-like (but still minimal) */
+body.template-collection .myed-ct-surface .facets.small-hide :is(
+  .facet-filters__field .select,
+  .facet-filters__sort
+){
+  border-radius: var(--myed-ct-chip-radius);
+  background: var(--myed-ct-chip-bg);
   border: 1px solid var(--myed-ct-glass-border);
-  border-radius: 16px;
-  box-shadow: var(--myed-ct-glass-shadow);
-  color: var(--myed-ct-text);
-}
-.myed-ct-surface .facets__display::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-  background: var(--myed-ct-glass-frost);
-}
-@supports ((backdrop-filter: blur(1px))){
-  .myed-ct-surface .facets__display::before{
-    -webkit-backdrop-filter: blur(var(--myed-ct-blur,14px)) saturate(120%);
-    backdrop-filter: blur(var(--myed-ct-blur,14px)) saturate(120%);
-  }
-}
-.myed-ct-surface .facets__display > *{
-  position: relative;
-  z-index: 1;
-}
-.myed-ct-surface .facet-checkbox,
-.myed-ct-surface .facet-checkbox__text,
-.myed-ct-surface .facet-checkbox__count,
-.myed-ct-surface .facets__selected,
-.myed-ct-surface .facets__reset,
-.myed-ct-surface .facets__button,
-.myed-ct-surface .facets__price input,
-.myed-ct-surface .facets__price label{
-  color: var(--myed-ct-text);
-}
-.myed-ct-surface .facet-checkbox__count,
-.myed-ct-surface .facets__price label{
-  color: var(--myed-ct-muted);
-}
-.myed-ct-surface .facets__price input{
-  background: rgba(255,255,255,0.08);
-  border:1px solid rgba(255,255,255,0.18);
-  border-radius:10px;
-}
-
-/* Mobile facets drawer */
-.myed-ct-surface .mobile-facets__inner,
-.myed-ct-surface .mobile-facets__main,
-.myed-ct-surface .mobile-facets__footer,
-.myed-ct-surface .mobile-facets__header{
-  background: var(--myed-ct-glass-bg);
-  color: var(--myed-ct-text);
-}
-.myed-ct-surface .mobile-facets__inner{
-  position: relative;
   overflow: hidden;
-  isolation: isolate;
 }
-.myed-ct-surface .mobile-facets__inner::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-  background: var(--myed-ct-glass-frost);
-}
-@supports ((backdrop-filter: blur(1px))){
-  .myed-ct-surface .mobile-facets__inner::before{
-    -webkit-backdrop-filter: blur(var(--myed-ct-blur,14px)) saturate(120%);
-    backdrop-filter: blur(var(--myed-ct-blur,14px)) saturate(120%);
-  }
-}
-.myed-ct-surface .mobile-facets__inner > *{position:relative; z-index:1;}
-.myed-ct-surface .mobile-facets,
-.myed-ct-surface .mobile-facets *{color: var(--myed-ct-text);}
-.myed-ct-surface .mobile-facets__close,
-.myed-ct-surface .mobile-facets__label,
-.myed-ct-surface .mobile-facets__summary,
-.myed-ct-surface .mobile-facets__count,
-.myed-ct-surface .mobile-facets__heading{color: var(--myed-ct-text);}
-.myed-ct-surface .mobile-facets__overlay{background: rgba(0,0,0,0.35);}
 
-.myed-ct-surface .mobile-facets,
-.myed-ct-surface .mobile-facets select,
-.myed-ct-surface .mobile-facets__sort select{
+body.template-collection .myed-ct-surface .facets.small-hide .select__select,
+body.template-collection .myed-ct-surface .facets.small-hide select.facet-filters__sort{
+  background: transparent;
+  color: var(--myed-ct-text) !important;
+  line-height: 1.2;
   color-scheme: dark;
 }
 
-/* MYED — FIX 02: Mobile sort dropdown readable */
-.myed-ct-surface .mobile-facets__sort label{
-  color: var(--myed-ct-muted);
-}
-.myed-ct-surface .mobile-facets__sort .select{
-  background: var(--myed-ct-chip-bg);
-  border: 1px solid var(--myed-ct-glass-border);
-  border-radius: 14px;
-}
-.myed-ct-surface .mobile-facets__sort select{
-  background: transparent;
-  color: var(--myed-ct-text);
-}
-.myed-ct-surface .mobile-facets__sort .icon-caret{
-  color: var(--myed-ct-text);
-}
-.myed-ct-surface #SortBy-mobile option,
-.myed-ct-surface .mobile-facets__sort select option{
-  background: #0a0e16;
-  color: #f5f7fa;
+body.template-collection .myed-ct-surface .facets.small-hide .select__select option,
+body.template-collection .myed-ct-surface .facets.small-hide select.facet-filters__sort option{
+  background: rgb(var(--myed-ct-bg-rgb,10,14,22));
+  color: rgba(var(--myed-ct-text-rgb,245,247,250), 0.92);
 }
 
-/* Product card image safety */
-.myed-ct-surface .card,
-.myed-ct-surface .card__inner,
-.myed-ct-surface .card__media,
-.myed-ct-surface .card__media img{
-  filter:none;
-  -webkit-backdrop-filter:none;
-  backdrop-filter:none;
-}
+/* ==========================================================================
+   3) FACETS DROPDOWNS (Availability/Price panels)
+========================================================================== */
 
-/* Product card content glass */
-.myed-ct-surface .card > .card__content{
+body.template-collection .myed-ct-surface :is(
+  details.facets__disclosure[open] > .facets__display,
+  details.disclosure-has-popup[open] > .facets__display,
+  .facets__display
+){
   position: relative;
   overflow: hidden;
   isolation: isolate;
-  border-radius:0 0 var(--myed-ct-radius) var(--myed-ct-radius);
+
   background: var(--myed-ct-glass-bg);
-  border:1px solid var(--myed-ct-glass-border);
-  box-shadow: var(--myed-ct-glass-shadow);
+  border: 1px solid var(--myed-ct-glass-border);
+  border-radius: 16px;
+  box-shadow: var(--myed-ct-shadow);
+
   color: var(--myed-ct-text);
 }
-.myed-ct-surface .card > .card__content::before{
+
+body.template-collection .myed-ct-surface .facets__display::before{
   content:"";
   position:absolute;
   inset:0;
   pointer-events:none;
   background: var(--myed-ct-glass-frost);
 }
+
 @supports ((backdrop-filter: blur(1px))){
-  .myed-ct-surface .card > .card__content::before{
+  body.template-collection .myed-ct-surface .facets__display::before{
     -webkit-backdrop-filter: blur(var(--myed-ct-blur,14px)) saturate(120%);
     backdrop-filter: blur(var(--myed-ct-blur,14px)) saturate(120%);
   }
 }
-.myed-ct-surface .card > .card__content > *{position:relative; z-index:1;}
-.myed-ct-surface .card > .card__content .card__information{padding:0;}
-.myed-ct-surface .card__heading,
-.myed-ct-surface .card__heading a,
-.myed-ct-surface .price,
-.myed-ct-surface .price *,
-.myed-ct-surface .card-information,
-.myed-ct-surface .caption-with-letter-spacing,
-.myed-ct-surface .caption-large{
-  color: var(--myed-ct-text);
-  opacity:1;
-}
-.myed-ct-surface .quick-add__submit{
-  color: var(--myed-ct-text);
-  border:1px solid rgba(255,255,255,0.18);
-  background: rgba(255,255,255,0.10);
-  border-radius: var(--myed-ct-chip-radius);
-}
-.myed-ct-surface .quick-add__submit:hover{
-  background: rgba(255,255,255,0.16);
-}
-.myed-ct-surface select[id^="SortBy"] option,
-.myed-ct-surface select.facet-filters__sort option{
-  background:#0a0e16;
-  color:#f5f7fa;
-}
 
-@media screen and (max-width:989px){
-  .myed-ct-surface .myed-ct-toolbar,
-  .myed-ct-surface .facets-container{
-    padding:12px 14px;
-    gap:12px;
-  }
-}
-
-/* MYED — FIX 01 (MOBILE): Facets overlay/inner always above products (non-drawer layouts) */
-@media screen and (max-width: 989px){
-  body.template-collection .mobile-facets{
-    z-index: 2147483000 !important;
-  }
-
-  body.template-collection .mobile-facets__wrapper .disclosure-has-popup[open] > summary::before{
-    position: fixed !important;
-    inset: 0 !important;
-    z-index: 2147483001 !important;
-    pointer-events: auto !important;
-  }
-
-  body.template-collection .mobile-facets__inner{
-    z-index: 2147483002 !important;
-    pointer-events: auto !important;
-  }
-
-  body.template-collection .mobile-facets__close,
-  body.template-collection .mobile-facets__close-button{
-    position: relative;
-    z-index: 2147483003 !important;
-    pointer-events: auto !important;
-  }
-}
-
-/* MYED — FIX 02 (CANONICAL): Drawer mode always on top (ALL VIEWPORTS) */
-body.template-collection .facets-container-drawer .mobile-facets{
-  z-index: 2147483200 !important;
-}
-
-body.template-collection .facets-container-drawer .mobile-facets__wrapper .disclosure-has-popup[open] > summary::before{
-  position: fixed !important;
-  inset: 0 !important;
-  z-index: 2147483201 !important;
-  pointer-events: auto !important;
-}
-
-body.template-collection .facets-container-drawer .mobile-facets__inner{
-  z-index: 2147483202 !important;
-  pointer-events: auto !important;
-}
-
-body.template-collection .facets-container-drawer .mobile-facets__close,
-body.template-collection .facets-container-drawer .mobile-facets__close-button{
+body.template-collection .myed-ct-surface .facets__display > *{
   position: relative;
-  z-index: 2147483203 !important;
+  z-index: 1;
+}
+
+body.template-collection .myed-ct-surface :is(
+  .facet-checkbox,
+  .facet-checkbox__text,
+  .facet-checkbox__count,
+  .facets__selected,
+  .facets__reset,
+  .facets__button,
+  .facets__price input,
+  .facets__price label,
+  .facets__label,
+  .facets__summary
+){
+  color: var(--myed-ct-text) !important;
+}
+
+body.template-collection .myed-ct-surface :is(.facet-checkbox__count, .facets__price label){
+  color: var(--myed-ct-muted) !important;
+}
+
+body.template-collection .myed-ct-surface .facets__price :is(input, .field__input){
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 10px;
+  color: var(--myed-ct-text) !important;
+  caret-color: currentColor;
+}
+
+body.template-collection .myed-ct-surface .facets__price :is(input, .field__input)::placeholder{
+  color: rgba(var(--myed-ct-text-rgb,245,247,250), 0.65) !important;
+}
+
+body.template-collection .myed-ct-surface :is(svg,.icon,.svg-wrapper svg){
+  fill: currentColor;
+  stroke: currentColor;
+}
+
+/* ==========================================================================
+   4) MOBILE FACETS DRAWER (glass + readable + option colors)
+========================================================================== */
+
+body.template-collection .myed-ct-surface :is(
+  .mobile-facets__inner,
+  .mobile-facets__main,
+  .mobile-facets__footer,
+  .mobile-facets__header
+){
+  background: var(--myed-ct-glass-bg);
+  color: var(--myed-ct-text);
+  color-scheme: dark;
+}
+
+body.template-collection .myed-ct-surface .mobile-facets__inner{
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+body.template-collection .myed-ct-surface .mobile-facets__inner::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background: var(--myed-ct-glass-frost);
+}
+
+@supports ((backdrop-filter: blur(1px))){
+  body.template-collection .myed-ct-surface .mobile-facets__inner::before{
+    -webkit-backdrop-filter: blur(var(--myed-ct-blur,14px)) saturate(120%);
+    backdrop-filter: blur(var(--myed-ct-blur,14px)) saturate(120%);
+  }
+}
+
+body.template-collection .myed-ct-surface .mobile-facets__inner > *{
+  position: relative;
+  z-index: 1;
+}
+
+body.template-collection .myed-ct-surface .mobile-facets__overlay{
+  background: rgba(0,0,0,0.35);
+}
+
+body.template-collection .myed-ct-surface :where(#main-collection-filters, .facets-container-drawer, .facets-container) .mobile-facets__inner{
+  color: rgba(var(--myed-ct-text-rgb,245,247,250), 0.92) !important;
+}
+
+body.template-collection .myed-ct-surface :where(#main-collection-filters, .facets-container-drawer, .facets-container) .mobile-facets__inner :is(
+  summary,
+  .facets__summary,
+  .facets__label,
+  .facet-checkbox__text,
+  .facet-checkbox__label,
+  .facet-filters__label,
+  .product-count__text,
+  .mobile-facets__count,
+  .mobile-facets__close,
+  .field__input,
+  input,
+  select,
+  label,
+  button,
+  a
+){
+  color: inherit !important;
+}
+
+body.template-collection .myed-ct-surface :where(#main-collection-filters, .facets-container-drawer, .facets-container) .mobile-facets__inner :is(input, .field__input)::placeholder{
+  color: rgba(var(--myed-ct-text-rgb,245,247,250), 0.65) !important;
+}
+
+body.template-collection .myed-ct-surface :where(#main-collection-filters, .facets-container-drawer, .facets-container) .mobile-facets__inner select option{
+  background: rgb(var(--myed-ct-bg-rgb,10,14,22));
+  color: rgba(var(--myed-ct-text-rgb,245,247,250), 0.92);
+}
+
+/* ==========================================================================
+   5) ACTIVE FACETS (chips) — price chip text WHITE + "Alle entfernen" pill
+   NOTE: This must override Dawn's inner tertiary button styles.
+========================================================================== */
+
+body.template-collection :where(#main-collection-filters, .facets-container-drawer, .facets-container) :is(.active-facets, .active-facets-mobile){
+  display: flex !important;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: nowrap;
+
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+
+  padding: 10px 16px 0;
+  margin: 0;
+
+  color: rgba(var(--myed-ct-text-rgb,245,247,250), 0.92) !important;
+}
+
+body.template-collection :where(#main-collection-filters, .facets-container-drawer, .facets-container) :is(.active-facets, .active-facets-mobile)::-webkit-scrollbar{
+  display: none;
+}
+
+body.template-collection :where(#main-collection-filters, .facets-container-drawer, .facets-container) facet-remove{
+  flex: 0 0 auto;
+  display: inline-flex;
+}
+
+/* Pill style for BOTH: selected filter + clear all (covers Dawn variants) */
+body.template-collection :where(#main-collection-filters, .facets-container-drawer, .facets-container) :is(
+  a.active-facets__button,
+  a.active-facets__button-remove,
+  a.active-facets__clear,
+  .active-facets__button,
+  .active-facets__button-remove,
+  .active-facets__clear
+){
+  flex: 0 0 auto;
+  display: inline-flex !important;
+  align-items: center;
+  gap: 8px;
+
+  height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+
+  background: rgba(var(--myed-ct-bg-rgb,10,14,22), calc(var(--myed-ct-bg-alpha,0.55) + 0.18)) !important;
+  border: 1px solid rgba(255,255,255, var(--myed-ct-border-alpha,0.16)) !important;
+
+  color: rgba(var(--myed-ct-text-rgb,245,247,250), 0.92) !important;
+  text-decoration: none !important;
+  white-space: nowrap !important;
+}
+
+/* Dawn forces black via inner tertiary button -> hard neutralize */
+body.template-collection :where(#main-collection-filters, .facets-container-drawer, .facets-container) :is(
+  .active-facets__button-inner,
+  .active-facets__button-inner.button,
+  .active-facets__button-inner.button--tertiary,
+  .active-facets__button-inner.button.button--tertiary
+){
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  min-height: 0 !important;
+
+  color: inherit !important;
+  font: inherit !important;
+  line-height: inherit !important;
+  text-decoration: none !important;
+}
+
+body.template-collection :where(#main-collection-filters, .facets-container-drawer, .facets-container)
+.active-facets__button-inner *{
+  color: inherit !important;
+}
+
+body.template-collection :where(#main-collection-filters, .facets-container-drawer, .facets-container) :is(svg,.icon,.svg-wrapper svg){
+  fill: currentColor !important;
+  stroke: currentColor !important;
+}
+
+/* Keep clear-all on far right when wrapper exists */
+body.template-collection :where(#main-collection-filters, .facets-container-drawer, .facets-container) .active-facets__button-wrapper{
+  margin-left: auto !important;
+  padding: 0 !important;
+}
+
+/* ==========================================================================
+   6) DRAWER STACKING (clickable + header behind when drawer open)
+   This prevents "tap closes instantly" and header stealing clicks.
+========================================================================== */
+
+body.template-collection :where(#main-collection-filters, .facets-container-drawer) .disclosure-has-popup[open] > summary::before{
+  z-index: 19990 !important;
+}
+
+body.template-collection :where(#main-collection-filters, .facets-container-drawer) .disclosure-has-popup[open] > summary + *{
+  position: relative;
+  z-index: 20004 !important;
+}
+
+body.template-collection :where(#main-collection-filters, .facets-container-drawer) .mobile-facets{
+  position: relative;
+  z-index: 20000 !important;
+}
+
+body.template-collection :where(#main-collection-filters, .facets-container-drawer) .mobile-facets__wrapper{
+  position: relative;
+  z-index: 20001 !important;
+}
+
+body.template-collection :where(#main-collection-filters, .facets-container-drawer) .mobile-facets__inner{
+  position: relative;
+  z-index: 20003 !important;
   pointer-events: auto !important;
+}
+
+body.template-collection :where(#main-collection-filters, .facets-container-drawer) .mobile-facets__overlay{
+  z-index: 19990 !important;
+}
+
+body.template-collection :where(#main-collection-filters, .facets-container-drawer) .mobile-facets__close{
+  position: relative;
+  z-index: 20010 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Drawer open -> header behind + not clickable */
+body.template-collection:is(.overflow-hidden, .overflow-hidden-tablet, .overflow-hidden-mobile)
+:where(
+  .header-wrapper,
+  header.myed-glass-header,
+  .myed-glass-header,
+  .shopify-section-header,
+  .section-header,
+  .header,
+  .header__icons,
+  .header__icon,
+  .header__icon--menu,
+  .header__heading,
+  .header__heading-link,
+  .header__inline-menu
+){
+  z-index: 0 !important;
+}
+
+/* ==========================================================================
+   7) Responsive spacing
+========================================================================== */
+
+@media screen and (max-width: 989px){
+  body.template-collection .myed-ct-surface .myed-ct-toolbar,
+  body.template-collection .myed-ct-surface .facets-container{
+    padding: 12px 14px;
+  }
+}
+
+body.template-collection .myed-ct-surface #main-collection-filters :is(
+  .active-facets__button,
+  .active-facets__button-remove,
+  .active-facets__clear
+){
+  text-decoration: none !important;
+  white-space: nowrap !important;
+}
+
+body.template-collection .myed-ct-surface #main-collection-filters :is(
+  .active-facets__button-inner,
+  .active-facets__button-remove,
+  .active-facets__clear
+) :is(svg,.icon,.svg-wrapper svg){
+  fill: currentColor !important;
+  stroke: currentColor !important;
+}
+
+/* ==========================================================
+   MyEdenDay — Collection SortBy Readability (CANONICAL v1)
+   Goal: "Sortieren nach / Ausgewählt" + caret icon always readable
+========================================================== */
+
+body.template-collection :where(#ProductGridContainer, #main-collection-filters, .facets-container, .facets-container-drawer) :is(
+  .facet-filters.sorting,
+  .facet-filters__label,
+  .facet-filters__label label,
+  .facet-filters__sort,
+  .select__select,
+  #SortBy,
+  #SortBy-mobile
+){
+  color: rgba(var(--myed-ct-text-rgb,245,247,250), 0.92) !important;
+  opacity: 1 !important;
+}
+
+body.template-collection :where(#ProductGridContainer, #main-collection-filters, .facets-container, .facets-container-drawer) :is(
+  .facet-filters__field .svg-wrapper,
+  .facet-filters__field .icon-caret,
+  .facet-filters__field .svg-wrapper svg,
+  .select .svg-wrapper svg
+){
+  color: rgba(var(--myed-ct-text-rgb,245,247,250), 0.92) !important;
+  fill: currentColor !important;
+  stroke: currentColor !important;
+  opacity: 1 !important;
+}
+
+/* Some browsers need explicit option colors */
+body.template-collection :where(#ProductGridContainer, #main-collection-filters, .facets-container, .facets-container-drawer) select option{
+  background: rgb(var(--myed-ct-bg-rgb,10,14,22));
+  color: rgba(var(--myed-ct-text-rgb,245,247,250), 0.92);
+}
+body.template-collection .myed-ct-surface{
+  --myed-ct-text: rgba(var(--myed-ct-text-rgb,245,247,250),0.92);
+  --myed-ct-muted: rgba(var(--myed-ct-text-rgb,245,247,250),0.78);
+
+  /* Back-compat: eski isimleri tekrar üret */
+  --myed-ct-glass-bg: rgba(10,14,22,var(--myed-ct-bg-alpha,0.55));
+  --myed-ct-glass-frost: rgba(255,255,255,var(--myed-ct-frost-alpha,0.06));
+  --myed-ct-glass-border: rgba(255,255,255,var(--myed-ct-border-alpha,0.14));
+  --myed-ct-glass-shadow: var(--myed-ct-shadow, 0 18px 40px rgba(0,0,0,0.28));
+}
+
+/* Close (X) kesin görünür olsun */
+body.template-collection #main-collection-filters .mobile-facets__close{
+  color: rgba(var(--myed-ct-text-rgb,245,247,250),0.92) !important;
+}
+body.template-collection #main-collection-filters .mobile-facets__close :is(svg,.icon,.svg-wrapper svg){
+  fill: currentColor !important;
+  stroke: currentColor !important;
 }

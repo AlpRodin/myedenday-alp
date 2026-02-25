@@ -38,12 +38,12 @@
 {%- endstyle -%}
 
 {%- style -%}
-  #shopify-section-{{ section.id }} .myed-ct-surface{
-    --myed-ct-text-rgb: {{ section.settings.myed_text_color | color_extract: 'red' }}, {{ section.settings.myed_text_color | color_extract: 'green' }}, {{ section.settings.myed_text_color | color_extract: 'blue' }};
+  body.template-collection, #shopify-section-{{ section.id }}{
+    --myed-ct-text-rgb: {{ section.settings.text_color | default: section.settings.myed_ct_text_color | default: section.settings.myed_text_color | color_extract: 'red' }}, {{ section.settings.text_color | default: section.settings.myed_ct_text_color | default: section.settings.myed_text_color | color_extract: 'green' }}, {{ section.settings.text_color | default: section.settings.myed_ct_text_color | default: section.settings.myed_text_color | color_extract: 'blue' }};
     --myed-ct-bg-alpha: {{ section.settings.myed_glass_bg_opacity | at_most: 75 | divided_by: 100.0 }};
     --myed-ct-frost-alpha: {{ section.settings.myed_glass_frost_opacity | at_most: 35 | divided_by: 100.0 }};
     --myed-ct-border-alpha: {{ section.settings.myed_glass_border_opacity | at_most: 35 | divided_by: 100.0 }};
-    --myed-ct-blur: {{ section.settings.myed_glass_blur | at_most: 18 }}px;
+    --myed-ct-blur: {{ section.settings.glass_blur | default: section.settings.myed_ct_glass_blur | default: section.settings.myed_glass_blur | at_most: 18 }}px;
   }
 {%- endstyle -%}
 
@@ -474,6 +474,56 @@
       "unit": "px",
       "label": "t:sections.all.padding.padding_bottom",
       "default": 36
+    },
+    {
+      "type": "header",
+      "content": "MyEdenDay — Collection Grid Glass Controls"
+    },
+    {
+      "type": "color",
+      "id": "myed_ct_text_color",
+      "label": "Text color",
+      "default": "#F5F7FA"
+    },
+    {
+      "type": "range",
+      "id": "myed_ct_glass_bg_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "label": "Glass background opacity",
+      "default": 55
+    },
+    {
+      "type": "range",
+      "id": "myed_ct_glass_frost_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "label": "Glass frost opacity",
+      "default": 6
+    },
+    {
+      "type": "range",
+      "id": "myed_ct_glass_border_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "label": "Glass border opacity",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "myed_ct_glass_blur",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "label": "Glass blur",
+      "default": 14
     }
   ]
 }
