@@ -308,9 +308,62 @@ body.template-search .template-search .mobile-facets__wrapper
   background: rgba(0,0,0, var(--myed-sg-drawer-overlay-alpha,0.58)) !important;
 }
 
-/* Kill Dawn "gradient" whites inside drawer */
-body.template-search .template-search .mobile-facets :is(.gradient, .color-background-1, .color-background-2){
+/* SEARCH-ONLY Drawer Paint */
+body.template-search :is(
+  .mobile-facets__inner,
+  .mobile-facets__main,
+  .mobile-facets__header,
+  .mobile-facets__footer,
+  .menu-drawer__inner-container,
+  .menu-drawer__navigation-container,
+  .menu-drawer__header,
+  .menu-drawer__footer
+){
+  --color-background: var(--myed-sg-bg-rgb, 10,14,22);
+  --color-foreground: var(--myed-sg-fg-rgb, 245,247,250);
+  --gradient-background: rgba(var(--myed-sg-bg-rgb,10,14,22), var(--myed-sg-drawer-alpha,0.90));
+  background: rgba(var(--myed-sg-bg-rgb,10,14,22), var(--myed-sg-drawer-alpha,0.90)) !important;
+  background-image: none !important;
+  color: rgba(var(--myed-sg-fg-rgb,245,247,250),0.92) !important;
+}
+
+body.template-search :is(
+  .mobile-facets__inner,
+  .mobile-facets__main,
+  .mobile-facets__header,
+  .mobile-facets__footer,
+  .menu-drawer__inner-container,
+  .menu-drawer__navigation-container,
+  .menu-drawer__header,
+  .menu-drawer__footer
+) :is(svg, .icon){
+  fill: rgba(var(--myed-sg-fg-rgb,245,247,250),0.92) !important;
+  stroke: rgba(var(--myed-sg-fg-rgb,245,247,250),0.92) !important;
+  color: rgba(var(--myed-sg-fg-rgb,245,247,250),0.92) !important;
+}
+
+body.template-search .mobile-facets__close{
+  position: relative;
+  z-index: 5010 !important;
+  color: rgba(var(--myed-sg-fg-rgb,245,247,250),0.92) !important;
   background: transparent !important;
+}
+
+/* Kill Dawn "gradient" whites inside drawer */
+body.template-search .template-search .mobile-facets :is(.color-background-1, .color-background-2){
+  background: transparent !important;
+  background-image: none !important;
+}
+
+body.template-search .template-search :is(
+  .mobile-facets__inner.gradient,
+  .mobile-facets__main.gradient,
+  .mobile-facets__header.gradient,
+  .mobile-facets__footer.gradient,
+  .mobile-facets__details.gradient,
+  .mobile-facets__submenu.gradient
+){
+  background: rgba(var(--myed-sg-bg-rgb,10,14,22), var(--myed-sg-drawer-alpha,0.92)) !important;
   background-image: none !important;
 }
 
@@ -323,6 +376,9 @@ body.template-search .template-search :is(
   .mobile-facets__details,
   .mobile-facets__submenu
 ){
+  --color-background: var(--myed-sg-bg-rgb, 10,14,22);
+  --color-foreground: var(--myed-sg-fg-rgb, 245,247,250);
+  --gradient-background: rgba(var(--myed-sg-bg-rgb,10,14,22), var(--myed-sg-drawer-alpha,0.92));
   background: rgba(var(--myed-sg-bg-rgb,10,14,22), var(--myed-sg-drawer-alpha,0.92)) !important;
   background-image: none !important;
   color: rgba(var(--myed-sg-fg-rgb,245,247,250), 0.92) !important;
@@ -376,4 +432,59 @@ body.template-search .template-search .card > .card__content{
   body.template-search .template-search__search .predictive-search--search-template{
     max-height: min(52vh, 40rem);
   }
+}
+
+/* ======================================================================
+   MyEdenDay — SEARCH-ONLY Drawer Paint (Dawn menu-drawer katman fix)
+   Scope: ONLY body.template-search
+   Goals:
+   - Drawer header dahil beyaz kalmasın
+   - X (close) görünür olsun
+   - Metin/ikonlar okunur olsun
+====================================================================== */
+body.template-search :is(
+  .mobile-facets__inner,
+  .mobile-facets__main,
+  .mobile-facets__header,
+  .mobile-facets__footer,
+  .menu-drawer__inner-container,
+  .menu-drawer__navigation-container,
+  .menu-drawer__header,
+  .menu-drawer__footer
+){
+  --color-background: var(--myed-sg-bg-rgb, 10,14,22);
+  --color-foreground: var(--myed-sg-fg-rgb, 245,247,250);
+  --gradient-background: rgba(var(--myed-sg-bg-rgb,10,14,22), var(--myed-sg-drawer-alpha,0.90));
+
+  background: rgba(var(--myed-sg-bg-rgb,10,14,22), var(--myed-sg-drawer-alpha,0.90)) !important;
+  background-image: none !important;
+  color: rgba(var(--myed-sg-fg-rgb,245,247,250), 0.92) !important;
+  color-scheme: dark;
+}
+
+body.template-search :is(
+  .mobile-facets__inner,
+  .mobile-facets__main,
+  .mobile-facets__header,
+  .mobile-facets__footer,
+  .menu-drawer__inner-container,
+  .menu-drawer__navigation-container
+) :is(a, button, label, span, p, h1, h2, h3, summary, input, select){
+  color: rgba(var(--myed-sg-fg-rgb,245,247,250), 0.92) !important;
+}
+
+body.template-search :is(
+  .mobile-facets,
+  .menu-drawer
+) :is(svg, .icon){
+  fill: currentColor !important;
+  stroke: currentColor !important;
+}
+
+/* Close (X) görünürlüğü */
+body.template-search :is(.mobile-facets__close, .menu-drawer__close){
+  position: relative;
+  z-index: 6000 !important;
+  color: rgba(var(--myed-sg-fg-rgb,245,247,250), 0.92) !important;
+  background: transparent !important;
 }

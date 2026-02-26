@@ -26,15 +26,15 @@
         "article_show_author": true,
         "padding_top": 36,
         "padding_bottom": 36,
-        "myed_text_color": "rgba(0,0,0,0)",
-        "myed_glass_bg_opacity": 100,
-        "myed_glass_frost_opacity": 100,
-        "myed_glass_border_opacity": 100,
-        "myed_glass_blur": 24,
-        "myed_bar_bg_opacity": 100,
-        "myed_bar_border_opacity": 40,
-        "myed_drawer_bg_opacity": 98,
-        "myed_drawer_overlay_opacity": 80
+        "myed_text_color": "#F5F7FA",
+        "myed_glass_bg_opacity": 55,
+        "myed_glass_frost_opacity": 6,
+        "myed_glass_border_opacity": 14,
+        "myed_glass_blur": 14,
+        "myed_bar_bg_opacity": 50,
+        "myed_bar_border_opacity": 16,
+        "myed_drawer_bg_opacity": 90,
+        "myed_drawer_overlay_opacity": 58
       }
     }
   },
