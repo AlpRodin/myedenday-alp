@@ -1,0 +1,224 @@
+﻿{%- comment -%}
+  MyED — Vitrine (OS 2.0)
+  Fixed scene showroom (no carousel)
+  - Desktop >= 990: right quick panel
+  - Tablet/Mobile < 990: bottom sheet
+  Assets:
+  - assets/myed-vitrine.css
+  - assets/myed-vitrine-scene.css
+  - assets/myed-vitrine.js
+  Snippets:
+  - snippets/myed-vitrine-card.liquid
+{%- endcomment -%}
+
+{{ 'myed-vitrine.css' | asset_url | stylesheet_tag }}
+{{ 'myed-vitrine-scene.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'myed-vitrine.js' | asset_url }}" defer="defer"></script>
+
+{%- liquid
+  assign section_id = section.id
+  assign has_product_block = false
+  for block in section.blocks
+    if block.type == 'product' and block.settings.product != blank
+      assign has_product_block = true
+      break
+    endif
+  endfor
+-%}
+
+<myed-vitrine
+  class="myed-vitrine myed-vitrine--ready"
+  data-section-id="{{ section_id }}"
+  data-mobile-break="990"
+>
+  <div class="myed-vitrine__surface" role="region" aria-label="Vitrine">
+    <div class="myed-vitrine__stage" aria-hidden="false">
+      <div class="myed-vitrine__stage-inner">
+
+        {%- comment -%} Scene FX layers (pure CSS, scoped) {%- endcomment -%}
+        <div class="myed-vitrine__fx" aria-hidden="true"></div>
+
+        {%- comment -%} Shelf / floor plane {%- endcomment -%}
+        <div
+          class="myed-vitrine__shelf"
+          style="--myed-shelf-y: {{ section.settings.shelf_y | default: 73 }}%; --myed-shelf-h: {{ section.settings.shelf_h | default: 140 }}px;"
+          aria-hidden="true"
+        ></div>
+
+        {%- comment -%} Visual items (decor) {%- endcomment -%}
+        <div class="myed-vitrine__items" aria-hidden="true">
+          {%- for block in section.blocks -%}
+            {%- if block.type == 'item' and block.settings.image != blank -%}
+              <figure class="myed-vitrine__item" {{ block.shopify_attributes }}>
+                <img
+                  src="{{ block.settings.image | image_url: width: 900 }}"
+                  srcset="
+                    {{ block.settings.image | image_url: width: 360 }} 360w,
+                    {{ block.settings.image | image_url: width: 540 }} 540w,
+                    {{ block.settings.image | image_url: width: 720 }} 720w,
+                    {{ block.settings.image | image_url: width: 900 }} 900w
+                  "
+                  sizes="(min-width: 990px) 420px, 60vw"
+                  alt="{{ block.settings.title | escape }}"
+                  loading="lazy"
+                  width="{{ block.settings.image.width }}"
+                  height="{{ block.settings.image.height }}"
+                >
+                {%- if block.settings.title != blank -%}
+                  <figcaption class="myed-vitrine__item-cap">{{ block.settings.title | escape }}</figcaption>
+                {%- endif -%}
+              </figure>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+
+        {%- comment -%} Primary product (first product block) {%- endcomment -%}
+        {%- assign primary_product = nil -%}
+        {%- assign primary_badge = '' -%}
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'product' and block.settings.product != blank -%}
+            {%- assign primary_product = block.settings.product -%}
+            {%- assign primary_badge = block.settings.badge | default: '' -%}
+            {%- break -%}
+          {%- endif -%}
+        {%- endfor -%}
+
+        <div class="myed-vitrine__hero">
+          {%- if primary_product != nil -%}
+            {%- render 'myed-vitrine-card',
+              product: primary_product,
+              badge: primary_badge,
+              cta_label: section.settings.cta_label,
+              details_label: section.settings.details_label
+            -%}
+          {%- else -%}
+            <div class="myed-vitrine__hero-fallback">
+              <div class="myed-vitrine__fallback-card">
+                <div class="myed-vitrine__fallback-badge">PREMIUM</div>
+                <div class="myed-vitrine__fallback-title">{{ section.settings.info_title | escape }}</div>
+                <div class="myed-vitrine__fallback-desc">{{ section.settings.info_desc | escape }}</div>
+                <div class="myed-vitrine__fallback-price">{{ section.settings.info_price | escape }}</div>
+              </div>
+            </div>
+          {%- endif -%}
+        </div>
+
+      </div>
+    </div>
+
+    {%- comment -%} Quick panel (desktop) / Bottom sheet (mobile) {%- endcomment -%}
+    <aside class="myed-vitrine__panel" aria-label="Product info">
+      <div class="myed-vitrine__panel-inner">
+        <div class="myed-vitrine__panel-header">
+          <h2 class="myed-vitrine__panel-title">{{ section.settings.info_title | escape }}</h2>
+          <button class="myed-vitrine__panel-close" type="button" data-myed-close aria-label="Close">×</button>
+        </div>
+
+        {%- if section.settings.info_desc != blank -%}
+          <div class="myed-vitrine__panel-desc rte">
+            {{ section.settings.info_desc }}
+          </div>
+        {%- endif -%}
+
+        {%- if section.settings.info_price != blank -%}
+          <div class="myed-vitrine__panel-price">{{ section.settings.info_price | escape }}</div>
+        {%- endif -%}
+
+        <div class="myed-vitrine__panel-actions">
+          <a class="myed-vitrine__btn myed-vitrine__btn--primary" href="{{ primary_product.url | default: routes.all_products_collection_url }}">
+            {{ section.settings.cta_label | escape }}
+          </a>
+          <a class="myed-vitrine__btn myed-vitrine__btn--ghost" href="{{ primary_product.url | default: routes.all_products_collection_url }}">
+            {{ section.settings.details_label | escape }}
+          </a>
+        </div>
+      </div>
+
+      <button class="myed-vitrine__sheet-handle" type="button" data-myed-open aria-label="Open details">
+        <span class="myed-vitrine__sheet-handle-dot"></span>
+      </button>
+    </aside>
+
+  </div>
+</myed-vitrine>
+
+{% schema %}
+{
+  "name": "MyED — Vitrine",
+  "tag": "section",
+  "class": "myed-vitrine-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "info_title",
+      "label": "Info title (preview)",
+      "default": "Vitamin C Serum"
+    },
+    {
+      "type": "richtext",
+      "id": "info_desc",
+      "label": "Info desc (preview)",
+      "default": "<p>Brighten and even out your tone with our potent vitamin C serum.</p>"
+    },
+    {
+      "type": "text",
+      "id": "info_price",
+      "label": "Info price (preview)",
+      "default": "$29.90"
+    },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "CTA label",
+      "default": "Add to cart"
+    },
+    {
+      "type": "text",
+      "id": "details_label",
+      "label": "Details label",
+      "default": "Details"
+    },
+    {
+      "type": "range",
+      "id": "shelf_y",
+      "label": "Shelf vertical position (%)",
+      "min": 55,
+      "max": 85,
+      "step": 1,
+      "default": 73
+    },
+    {
+      "type": "range",
+      "id": "shelf_h",
+      "label": "Shelf height (px)",
+      "min": 80,
+      "max": 190,
+      "step": 5,
+      "default": 140
+    }
+  ],
+  "blocks": [
+    {
+      "type": "product",
+      "name": "Product",
+      "limit": 1,
+      "settings": [
+        { "type": "product", "id": "product", "label": "Product" },
+        { "type": "text", "id": "badge", "label": "Badge (optional)", "default": "PREMIUM" }
+      ]
+    },
+    {
+      "type": "item",
+      "name": "Visual item",
+      "limit": 6,
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "text", "id": "title", "label": "Label (optional)", "default": "Deko" }
+      ]
+    }
+  ],
+  "presets": [
+    { "name": "MyED — Vitrine" }
+  ]
+}
+{% endschema %}

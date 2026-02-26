@@ -1,0 +1,53 @@
+{%- comment -%}
+  MyED — Vitrine Card (minimal)
+  Inputs:
+  - product (required)
+  - badge (optional)
+  - cta_label, details_label (optional)
+{%- endcomment -%}
+
+{%- if product == blank -%}
+  {%- break -%}
+{%- endif -%}
+
+<div class="myed-vitrine-card">
+  {%- if badge != blank -%}
+    <div class="myed-vitrine-card__badge">{{ badge | escape }}</div>
+  {%- endif -%}
+
+  <a class="myed-vitrine-card__media" href="{{ product.url }}">
+    {%- if product.featured_media != blank -%}
+      <img
+        src="{{ product.featured_media | image_url: width: 900 }}"
+        srcset="
+          {{ product.featured_media | image_url: width: 360 }} 360w,
+          {{ product.featured_media | image_url: width: 540 }} 540w,
+          {{ product.featured_media | image_url: width: 720 }} 720w,
+          {{ product.featured_media | image_url: width: 900 }} 900w
+        "
+        sizes="(min-width: 990px) 520px, 70vw"
+        alt="{{ product.title | escape }}"
+        loading="lazy"
+        width="{{ product.featured_media.width }}"
+        height="{{ product.featured_media.height }}"
+      >
+    {%- endif -%}
+  </a>
+
+  <div class="myed-vitrine-card__meta">
+    <div class="myed-vitrine-card__title">{{ product.title | escape }}</div>
+
+    <div class="myed-vitrine-card__price">
+      {%- render 'price', product: product, use_variant: true, show_badges: false -%}
+    </div>
+
+    <div class="myed-vitrine-card__actions">
+      <a class="myed-vitrine__btn myed-vitrine__btn--primary" href="{{ product.url }}">
+        {{ cta_label | default: 'Add to cart' | escape }}
+      </a>
+      <a class="myed-vitrine__btn myed-vitrine__btn--ghost" href="{{ product.url }}">
+        {{ details_label | default: 'Details' | escape }}
+      </a>
+    </div>
+  </div>
+</div>
