@@ -27,6 +27,10 @@
     assign results_url = '?q=' | append: terms | append: '&options%5Bprefix%5D=last&sort_by=' | append: sort_by
   endif
 
+  if request.page_type == 'search'
+    assign filter_type = 'drawer'
+  endif
+
   assign myed_has_active = false
   for myed_filter in results.filters
     if myed_filter.active_values.size > 0

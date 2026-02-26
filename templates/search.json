@@ -26,6 +26,7 @@
         "article_show_author": true,
         "padding_top": 36,
         "padding_bottom": 36,
+
         "myed_text_color": "#F5F7FA",
         "myed_glass_bg_opacity": 55,
         "myed_glass_frost_opacity": 6,
@@ -38,7 +39,5 @@
       }
     }
   },
-  "order": [
-    "main"
-  ]
+  "order": ["main"]
 }

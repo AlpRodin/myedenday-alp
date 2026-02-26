@@ -65,7 +65,7 @@
 {%- endstyle -%}
 
 {%- style -%}
-  body.template-search{
+  body.template-search, #shopify-section-{{ section.id }}{
     --myed-sg-fg-rgb: {{ section.settings.myed_text_color | color_extract: 'red' }}, {{ section.settings.myed_text_color | color_extract: 'green' }}, {{ section.settings.myed_text_color | color_extract: 'blue' }};
     --myed-sg-bg-alpha: {{ section.settings.myed_glass_bg_opacity | at_most: 75 | divided_by: 100.0 }};
     --myed-sg-frost-alpha: {{ section.settings.myed_glass_frost_opacity | at_most: 35 | divided_by: 100.0 }};
