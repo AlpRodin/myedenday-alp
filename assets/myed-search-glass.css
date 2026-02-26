@@ -116,6 +116,63 @@ body.template-search .template-search .predictive-search :is(a,p,span,small,stro
 /* ==========================================================
    6) DRAWER CONTROL BAR (one long pill)
 ========================================================== */
+body.template-search #main-search-filters .myed-sg-controlbar{
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 16px;
+  min-height: 48px;
+  flex-wrap: wrap;
+}
+body.template-search #main-search-filters .myed-sg-controlbar::before{
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 48px;
+  border-radius: var(--myed-sg-pill-radius, 999px);
+  background: rgba(var(--myed-sg-bg-rgb), var(--myed-sg-bar-alpha, 0.55));
+  border: 1px solid rgba(255,255,255, var(--myed-sg-bar-border-alpha, 0.16));
+  box-shadow: var(--myed-sg-shadow);
+  -webkit-backdrop-filter: blur(var(--myed-sg-blur,14px)) saturate(120%);
+  backdrop-filter: blur(var(--myed-sg-blur,14px)) saturate(120%);
+  z-index: 0;
+  pointer-events: none;
+}
+body.template-search #main-search-filters .myed-sg-controlbar > *{
+  position: relative;
+  z-index: 1;
+}
+body.template-search #main-search-filters .myed-sg-controlbar #FacetsWrapperDesktop{
+  flex: 1 1 auto;
+  min-width: 0;
+}
+body.template-search #main-search-filters .myed-sg-controlbar .myed-sg-right{
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+body.template-search #main-search-filters .myed-sg-controlbar .myed-sg-right .facet-filters,
+body.template-search #main-search-filters .myed-sg-controlbar .myed-sg-right .product-count{
+  margin: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+body.template-search #main-search-filters .myed-sg-controlbar .myed-sg-right :is(
+  .facet-filters__label,
+  .facet-filters__sort,
+  .product-count__text,
+  .facet-filters__field label,
+  .facet-filters__field span
+){
+  color: rgba(var(--myed-sg-fg-rgb,245,247,250), 0.92) !important;
+}
+
 body.template-search #main-search-filters .facets-container-drawer{
   position: relative;
   display: flex;
@@ -192,6 +249,15 @@ body.template-search #main-search-filters .facets-container-drawer .mobile-facet
   align-items: center;
   min-height: 48px;
 }
+body.template-search #main-search-filters .facets-container-drawer :is(
+  .facet-filters__label,
+  .facet-filters__sort,
+  .product-count__text,
+  .facet-filters__field label,
+  .facet-filters__field span
+){
+  color: rgba(var(--myed-sg-fg-rgb,245,247,250), 0.92) !important;
+}
 
 /* Sorting + count inside right group (no extra pills) */
 body.template-search #main-search-filters .myed-sg-drawer-right .facet-filters.sorting,
@@ -221,60 +287,72 @@ body.template-search #main-search-filters .myed-sg-drawer-right .facet-filters__
 
 body.template-search #main-search-filters .myed-sg-drawer-right .product-count__text{ margin: 0 !important; white-space: nowrap; }
 
-/* ==========================================================
-   7) Drawer panel (menu-drawer) styling + visibility fixes
-========================================================== */
-body.template-search .template-search .mobile-facets{ z-index: 5000 !important; color: rgba(var(--myed-sg-fg-rgb,245,247,250), 0.92); }
-body.template-search .template-search .mobile-facets :is(svg,.icon){ fill: currentColor; stroke: currentColor; }
-body.template-search .template-search .mobile-facets__wrapper{ position: relative; z-index: 5001 !important; }
+/* ======================================================================
+   MyEdenDay — Search Drawer FIX (search-only, safe targets)
+   Fixes: white header, missing X, unreadable text/inputs, gradient bleed
+====================================================================== */
 
-body.template-search .template-search .mobile-facets__wrapper .disclosure-has-popup[open] > summary::before{
-  z-index: 4990 !important;
-  background: rgba(0,0,0, var(--myed-sg-drawer-overlay-alpha, 0.58));
-}
-
-body.template-search .template-search .mobile-facets__close{
-  position: relative;
-  z-index: 5010 !important;
+body.template-search .template-search .mobile-facets{
+  z-index: 5000 !important;
   color: rgba(var(--myed-sg-fg-rgb,245,247,250), 0.92);
 }
 
+body.template-search .template-search .mobile-facets :is(svg,.icon){
+  fill: currentColor !important;
+  stroke: currentColor !important;
+}
+
+/* Overlay (darkness) */
+body.template-search .template-search .mobile-facets__wrapper
+  .disclosure-has-popup[open] > summary::before{
+  background: rgba(0,0,0, var(--myed-sg-drawer-overlay-alpha,0.58)) !important;
+}
+
+/* Kill Dawn "gradient" whites inside drawer */
+body.template-search .template-search .mobile-facets :is(.gradient, .color-background-1, .color-background-2){
+  background: transparent !important;
+  background-image: none !important;
+}
+
+/* Drawer surfaces INCLUDING HEADER (your missing piece) */
 body.template-search .template-search :is(
   .mobile-facets__inner,
   .mobile-facets__main,
-  .mobile-facets__submenu,
-  .mobile-facets__footer
+  .mobile-facets__header,
+  .mobile-facets__footer,
+  .mobile-facets__details,
+  .mobile-facets__submenu
 ){
-  background: rgba(var(--myed-sg-bg-rgb), var(--myed-sg-drawer-alpha, 0.92)) !important;
+  background: rgba(var(--myed-sg-bg-rgb,10,14,22), var(--myed-sg-drawer-alpha,0.92)) !important;
   background-image: none !important;
-  color: rgba(var(--myed-sg-fg-rgb,245,247,250), 0.92);
+  color: rgba(var(--myed-sg-fg-rgb,245,247,250), 0.92) !important;
   color-scheme: dark;
 }
 
-body.template-search .template-search .mobile-facets__inner{
-  border-left: 1px solid rgba(255,255,255, 0.16);
-  box-shadow: var(--myed-sg-shadow);
-  -webkit-backdrop-filter: blur(var(--myed-sg-blur,14px)) saturate(120%);
-  backdrop-filter: blur(var(--myed-sg-blur,14px)) saturate(120%);
-}
-body.template-search .template-search .mobile-facets__footer{ border-top: 1px solid rgba(255,255,255, var(--myed-sg-border-alpha, 0.14)); }
-body.template-search .template-search .mobile-facets__submenu{ border-left: 1px solid rgba(255,255,255, var(--myed-sg-border-alpha, 0.14)); }
-
-body.template-search .template-search .mobile-facets__highlight{ background-color: rgba(255,255,255, 0.10); }
-
-body.template-search .template-search .mobile-facets__inner :is(a,button,label,span,p,h2,h3){
-  color: rgba(var(--myed-sg-fg-rgb,245,247,250), 0.92);
+/* X button visibility (was disappearing) */
+body.template-search .template-search .mobile-facets__close{
+  position: relative;
+  z-index: 5010 !important;
+  color: rgba(var(--myed-sg-fg-rgb,245,247,250), 0.92) !important;
+  background: transparent !important;
 }
 
-/* Price inputs visibility (no white-on-white) */
+/* Links/labels/text inside drawer */
+body.template-search .template-search .mobile-facets__inner :is(a,button,label,span,p,h1,h2,h3,summary){
+  color: rgba(var(--myed-sg-fg-rgb,245,247,250), 0.92) !important;
+}
+
+/* Inputs (Price etc.) */
 body.template-search .template-search .mobile-facets :is(input,select,textarea){
-  color: rgba(var(--myed-sg-fg-rgb,245,247,250), 0.92);
+  color: rgba(var(--myed-sg-fg-rgb,245,247,250), 0.92) !important;
 }
+
 body.template-search .template-search .mobile-facets :is(input::placeholder,textarea::placeholder){
-  color: rgba(var(--myed-sg-fg-rgb,245,247,250), 0.55);
+  color: rgba(var(--myed-sg-fg-rgb,245,247,250), 0.55) !important;
 }
-body.template-search .template-search .mobile-facets :is(.field__input, input[type="number"], input[type="text"]){
-  background: rgba(var(--myed-sg-bg-rgb), 0.55) !important;
+
+body.template-search .template-search .mobile-facets :is(input[type="number"], input[type="text"], .field__input){
+  background: rgba(var(--myed-sg-bg-rgb,10,14,22), 0.55) !important;
   border: 1px solid rgba(255,255,255, 0.18) !important;
   border-radius: 14px;
   -webkit-backdrop-filter: blur(var(--myed-sg-blur,14px)) saturate(120%);
