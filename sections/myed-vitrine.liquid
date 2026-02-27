@@ -1,6 +1,6 @@
 {%- comment -%}
   MyED — Vitrine (OS 2.0)
-  B1: Showroom shelf scene with clickable product slots.
+  Showroom shelf scene with clickable product slots.
   - Desktop/Tablet: deterministic shelf lineup
   - Mobile: horizontal strip with scroll-snap
 {%- endcomment -%}
@@ -71,6 +71,7 @@
     --myed-scene-bg: {{ scene_bg_css }};
     --myed-shelf-y: {{ section.settings.shelf_y | default: 73 }}%;
     --myed-shelf-h: {{ section.settings.shelf_h | default: 140 }}px;
+    --myed-shelf-face-h: var(--myed-shelf-h);
   "
 >
   <div class="myed-vitrine__surface" role="region" aria-label="Vitrine">
@@ -92,7 +93,7 @@
         {%- endif -%}
 
         <div class="myed-vitrine__fx" aria-hidden="true"></div>
-
+        <div class="myed-vitrine__floor-fade" aria-hidden="true"></div>
         <div class="myed-vitrine__shelf" aria-hidden="true"></div>
 
         <div class="myed-vitrine__shelfline" role="list" style="--myed-slot-count: {{ slot_columns }};">
@@ -105,13 +106,14 @@
               {%- assign modal_desc_html = block.settings.modal_desc | default: '' | strip -%}
               {%- assign scene_label_s = block.settings.scene_label | default: '' | strip -%}
               {%- assign is_selected = false -%}
-              {%- if slot_index == selected_slot_index -%}
-                {%- assign is_selected = true -%}
-              {%- endif -%}
+              {%- if slot_index == selected_slot_index -%}{%- assign is_selected = true -%}{%- endif -%}
 
               <div class="myed-vitrine__slot{% if is_selected %} is-selected{% endif %}" role="listitem" data-slot-index="{{ slot_index }}" {{ block.shopify_attributes }}>
                 <button
                   class="myed-vitrine__slot-btn"
+                  {%- if slot_media != blank -%}
+                    style="--myed-slot-img: url('{{ slot_media | image_url: width: 700 }}');"
+                  {%- endif -%}
                   type="button"
                   data-myed-slot
                   data-product-handle="{{ slot_product.handle }}"
@@ -171,9 +173,7 @@
                 </script>
               </div>
 
-              {%- if slot_index >= 6 -%}
-                {% break %}
-              {%- endif -%}
+              {%- if slot_index >= 6 -%}{% break %}{%- endif -%}
             {%- endif -%}
           {%- endfor -%}
         </div>
