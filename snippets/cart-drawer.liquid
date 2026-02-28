@@ -10,6 +10,9 @@
 
 <script src="{{ 'cart.js' | asset_url }}" defer="defer"></script>
 <script src="{{ 'quantity-popover.js' | asset_url }}" defer="defer"></script>
+{%- if cart == empty -%}
+  {{ 'myed-cart-drawer-empty.css' | asset_url | stylesheet_tag }}
+{%- endif -%}
 
 <style>
   .drawer {
@@ -29,9 +32,10 @@
     >
       {%- if cart == empty -%}
         <div class="drawer__inner-empty">
-          <div class="cart-drawer__warnings center{% if settings.cart_drawer_collection != blank %} cart-drawer__warnings--has-collection{% endif %}">
-            <div class="cart-drawer__empty-content">
+          <div class="cart-drawer__warnings center myed-cd-empty">
+            <div class="cart-drawer__empty-content myed-cd-empty__card">
               <h2 class="cart__empty-text">{{ 'sections.cart.empty' | t }}</h2>
+              <p class="myed-cd-empty__subtext">Entdecke unsere Auswahl und finde deinen Favoriten.</p>
               <button
                 class="drawer__close"
                 type="button"
@@ -42,23 +46,25 @@
                   {{- 'icon-close.svg' | inline_asset_content -}}
                 </span>
               </button>
-              <a href="{{ routes.all_products_collection_url }}" class="button">
-                {{ 'general.continue_shopping' | t }}
-              </a>
+              <div class="myed-cd-empty__actions">
+                <a href="{{ routes.all_products_collection_url }}" class="button">
+                  Produkte entdecken
+                </a>
+                <a href="{{ routes.root_url }}" class="button button--secondary">
+                  Zur Startseite
+                </a>
+              </div>
 
               {%- if shop.customer_accounts_enabled and customer == null -%}
-                <p class="cart__login-title h3">{{ 'sections.cart.login.title' | t }}</p>
-                <p class="cart__login-paragraph">
-                  {{ 'sections.cart.login.paragraph_html' | t: link: routes.account_login_url }}
-                </p>
+                <div class="myed-cd-empty__account">
+                  <p class="cart__login-title h3">{{ 'sections.cart.login.title' | t }}</p>
+                  <p class="cart__login-paragraph">
+                    {{ 'sections.cart.login.paragraph_html' | t: link: routes.account_login_url }}
+                  </p>
+                </div>
               {%- endif -%}
             </div>
           </div>
-          {%- if settings.cart_drawer_collection != blank -%}
-            <div class="cart-drawer__collection">
-              {% render 'card-collection', card_collection: settings.cart_drawer_collection, columns: 1 %}
-            </div>
-          {%- endif -%}
         </div>
       {%- endif -%}
       <div class="drawer__header">

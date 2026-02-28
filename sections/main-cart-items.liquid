@@ -35,16 +35,27 @@
     </div>
 
     <div class="cart__warnings">
-      <h1 class="cart__empty-text">{{ 'sections.cart.empty' | t }}</h1>
-      <a href="{{ routes.all_products_collection_url }}" class="button">
-        {{ 'general.continue_shopping' | t }}
-      </a>
+      {%- if cart == empty -%}
+        {{ 'myed-cart-empty.css' | asset_url | stylesheet_tag }}
+        <div class="myed-cart-empty">
+          <div class="myed-cart-empty__card">
+            <h1 class="cart__empty-text">{{ 'sections.cart.empty' | t }}</h1>
+            <p class="myed-cart-empty__subtext">Entdecke unsere Auswahl und finde deinen Favoriten.</p>
+            <div class="myed-cart-empty__actions">
+              <a href="{{ routes.all_products_collection_url }}" class="button">Produkte entdecken</a>
+              <a href="{{ routes.root_url }}" class="button button--secondary">Zur Startseite</a>
+            </div>
 
-      {%- if shop.customer_accounts_enabled and customer == null -%}
-        <h2 class="cart__login-title">{{ 'sections.cart.login.title' | t }}</h2>
-        <p class="cart__login-paragraph">
-          {{ 'sections.cart.login.paragraph_html' | t: link: routes.account_login_url }}
-        </p>
+            {%- if shop.customer_accounts_enabled and customer == null -%}
+              <div class="myed-cart-empty__account">
+                <h2 class="cart__login-title">{{ 'sections.cart.login.title' | t }}</h2>
+                <p class="cart__login-paragraph">
+                  {{ 'sections.cart.login.paragraph_html' | t: link: routes.account_login_url }}
+                </p>
+              </div>
+            {%- endif -%}
+          </div>
+        </div>
       {%- endif -%}
     </div>
 
