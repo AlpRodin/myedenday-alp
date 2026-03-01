@@ -1,0 +1,127 @@
+/* ==========================================================================
+  MyEdenDay — 404 Glass (Scoped)
+  Scope: ONLY body.template-404
+========================================================================== */
+
+body.template-404{
+  --myed-404-card-bg: rgba(10, 14, 22, 0.45);
+  --myed-404-card-border: rgba(255, 255, 255, 0.14);
+  --myed-404-card-shadow: 0 18px 40px rgba(0,0,0,0.30);
+  --myed-404-card-radius: 22px;
+  --myed-404-card-blur: 14px;
+}
+
+body.template-404 #MainContent{
+  display: flex;
+  justify-content: center;
+  padding: clamp(2.4rem, 5vw, 6rem) 1.6rem;
+}
+
+body.template-404 .template-404.myed-404-glass{
+  --myed-404-text: var(--myed-404-text-color, #f5f7fa);
+  --myed-404-muted: var(--myed-404-muted-color, #c9d0da);
+  --myed-404-link: var(--myed-404-link-color, #f5f7fa);
+  --myed-404-underline: var(--myed-404-underline-color, #6e7a88);
+  --myed-404-underline-hover: var(--myed-404-underline-hover-color, #a7b3c2);
+
+  width: min(100%, 72rem);
+  margin: 0 auto;
+  padding: clamp(2.4rem, 4vw, 4rem);
+
+  border-radius: var(--myed-404-card-radius, 22px);
+  border: 1px solid var(--myed-404-card-border, rgba(255,255,255,0.14));
+  background: rgba(10, 14, 22, var(--myed-404-card-alpha, 0.45));
+  background-image: none;
+  box-shadow: var(--myed-404-card-shadow, 0 18px 40px rgba(0,0,0,0.30));
+
+  color: var(--myed-404-text);
+}
+
+body.template-404 .template-404.myed-404-glass--off{
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+@supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  body.template-404 .template-404.myed-404-glass{
+    -webkit-backdrop-filter: blur(var(--myed-404-card-blur, 14px)) saturate(1.2);
+    backdrop-filter: blur(var(--myed-404-card-blur, 14px)) saturate(1.2);
+  }
+}
+
+body.template-404 .template-404.myed-404-glass :is(p, small, .caption, .caption-with-letter-spacing){
+  margin: 0;
+  color: var(--myed-404-muted);
+}
+
+body.template-404 .template-404.myed-404-glass .title{
+  margin: 1.2rem 0 0;
+  color: var(--myed-404-text);
+}
+
+body.template-404 .template-404.myed-404-glass a{
+  color: var(--myed-404-link);
+  text-decoration-color: var(--myed-404-underline);
+}
+
+body.template-404 .template-404.myed-404-glass a:hover,
+body.template-404 .template-404.myed-404-glass a:focus-visible{
+  color: var(--myed-404-link);
+  text-decoration-color: var(--myed-404-underline-hover, var(--myed-404-underline));
+}
+
+body.template-404 .template-404.myed-404-glass .button{
+  margin-top: clamp(1.8rem, 3.5vw, 2.8rem);
+  border-color: rgba(255,255,255,0.20);
+  color: var(--myed-404-text);
+  background: rgba(255,255,255,0.06);
+}
+
+body.template-404 .template-404.myed-404-glass .button:hover,
+body.template-404 .template-404.myed-404-glass .button:focus-visible{
+  background: rgba(255,255,255,0.12);
+  color: var(--myed-404-text);
+}
+
+@media (max-width: 749px){
+  body.template-404 .template-404.myed-404-glass{
+    padding: 2rem 1.8rem;
+    border-radius: 18px;
+  }
+  body.template-404 .template-404.myed-404-glass .title{
+    font-size: clamp(2.4rem, 7vw, 3rem);
+    line-height: 1.2;
+  }
+}
+
+/* === FORCE COLOR BIND (404 ONLY) === */
+body.template-404 .template-404.myed-404-glass{
+  color: var(--myed-404-text) !important;
+}
+
+body.template-404 .template-404.myed-404-glass :is(h1,h2,h3,h4,.h1,.h2,.h3,.h4,.title){
+  color: var(--myed-404-text) !important;
+}
+
+body.template-404 .template-404.myed-404-glass :is(p, small, .caption, .caption-with-letter-spacing){
+  color: var(--myed-404-muted) !important;
+}
+
+body.template-404 .template-404.myed-404-glass a{
+  color: var(--myed-404-link) !important;
+  text-decoration-color: var(--myed-404-underline) !important;
+}
+
+body.template-404 .template-404.myed-404-glass a:hover,
+body.template-404 .template-404.myed-404-glass a:focus-visible{
+  color: var(--myed-404-link) !important;
+  text-decoration-color: var(--myed-404-underline-hover, var(--myed-404-underline)) !important;
+}
+
+body.template-404 .template-404.myed-404-glass .button{
+  color: var(--myed-404-text) !important;
+  border-color: rgba(255,255,255,0.20) !important;
+}

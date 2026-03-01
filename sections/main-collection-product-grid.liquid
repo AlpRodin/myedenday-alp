@@ -1,4 +1,8 @@
 {{ 'template-collection.css' | asset_url | stylesheet_tag }}
+{%- if section.settings.enable_filtering or section.settings.enable_sorting -%}
+  {{ 'component-facets.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'facets.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}
 {{ 'myed-collection-glass.css' | asset_url | stylesheet_tag }}
 {{ 'component-card.css' | asset_url | stylesheet_tag }}
 {{ 'component-price.css' | asset_url | stylesheet_tag }}
@@ -44,6 +48,12 @@
     --myed-ct-frost-alpha: {{ section.settings.myed_glass_frost_opacity | at_most: 35 | divided_by: 100.0 }};
     --myed-ct-border-alpha: {{ section.settings.myed_glass_border_opacity | at_most: 35 | divided_by: 100.0 }};
     --myed-ct-blur: {{ section.settings.myed_glass_blur | at_most: 18 }}px;
+    --myed-fc-text: {{ section.settings.myed_facets_text }};
+    --myed-fc-muted: {{ section.settings.myed_facets_muted }};
+    --myed-fc-bg: {{ section.settings.myed_facets_bg }};
+    --myed-fc-border: {{ section.settings.myed_facets_border }};
+    --myed-fc-chip-bg: {{ section.settings.myed_facets_chip_bg }};
+    --myed-fc-chip-text: {{ section.settings.myed_facets_chip_text }};
   }
 {%- endstyle -%}
 
@@ -110,8 +120,6 @@
     {%- endif -%}
 
     <div class="{% if section.settings.filter_type == 'vertical' %} facets-vertical page-width{% endif %}">
-      {{ 'component-facets.css' | asset_url | stylesheet_tag }}
-      <script src="{{ 'facets.js' | asset_url }}" defer="defer"></script>
       {%- if section.settings.enable_filtering or section.settings.enable_sorting -%}
         {%- if section.settings.filter_type == 'vertical' -%}
           <aside
@@ -264,6 +272,46 @@
     {
       "type": "header",
       "content": "MyEdenDay — Collection Glass Controls"
+    },
+    {
+      "type": "header",
+      "content": "MyEdenDay — Facets / Drawer Controls"
+    },
+    {
+      "type": "color",
+      "id": "myed_facets_text",
+      "label": "Facets text",
+      "default": "#F5F7FA"
+    },
+    {
+      "type": "color",
+      "id": "myed_facets_muted",
+      "label": "Facets muted",
+      "default": "#B8BEC8"
+    },
+    {
+      "type": "color",
+      "id": "myed_facets_bg",
+      "label": "Drawer bg",
+      "default": "#0A0E16"
+    },
+    {
+      "type": "color",
+      "id": "myed_facets_border",
+      "label": "Drawer border",
+      "default": "#2A2F38"
+    },
+    {
+      "type": "color",
+      "id": "myed_facets_chip_bg",
+      "label": "Active chip bg",
+      "default": "#1E2430"
+    },
+    {
+      "type": "color",
+      "id": "myed_facets_chip_text",
+      "label": "Active chip text",
+      "default": "#F5F7FA"
     },
     {
       "type": "color",

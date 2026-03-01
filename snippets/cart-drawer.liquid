@@ -21,7 +21,19 @@
 </style>
 
 <cart-drawer class="drawer{% if cart == empty %} is-empty{% endif %}">
-  <div id="CartDrawer" class="cart-drawer">
+  <div
+    id="CartDrawer"
+    class="cart-drawer{% unless settings.myed_cart_drawer_enable_glass %} myed-cd-off{% endunless %}"
+    style="
+      --myed-cart-drawer-text-color: {{ settings.myed_cart_drawer_text_color }};
+      --myed-cart-drawer-muted-color: {{ settings.myed_cart_drawer_muted_color }};
+      --myed-cart-drawer-link-color: {{ settings.myed_cart_drawer_link_color }};
+      --myed-cart-drawer-underline-color: {{ settings.myed_cart_drawer_underline_color }};
+      --myed-cart-drawer-underline-hover-color: {{ settings.myed_cart_drawer_underline_hover_color }};
+      --myed-cart-drawer-card-alpha: {{ settings.myed_cart_drawer_bg_opacity | divided_by: 100.0 }};
+      --myed-cart-drawer-card-blur: {{ settings.myed_cart_drawer_blur }}px;
+    "
+  >
     <div id="CartDrawer-Overlay" class="cart-drawer__overlay"></div>
     <div
       class="drawer__inner gradient color-{{ settings.cart_color_scheme }}"

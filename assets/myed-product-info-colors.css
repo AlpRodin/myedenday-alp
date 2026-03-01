@@ -1,0 +1,286 @@
+/* ==========================================================================
+  MyEdenDay — Product Info Colors (Scoped) — CANONICAL v3 (BLOCK OVERRIDES)
+  Scope: ONLY inside .myed-pi-scope (main-product)
+  Goal:
+  - Section-level defaults follow color scheme (var(--color-foreground))
+  - Each .myed-pi-block can override via CSS vars injected inline (when enabled)
+  - Accordion/collapsible content uses glass styling (scoped)
+========================================================================== */
+
+.myed-pi-scope{
+  --myed-pi-text: rgba(var(--color-foreground), 0.92);
+  --myed-pi-muted: rgba(var(--color-foreground), 0.72);
+  --myed-pi-link: rgba(var(--color-foreground), 0.92);
+  --myed-pi-underline: rgba(var(--color-foreground), 0.40);
+  --myed-pi-underline-hover: rgba(var(--color-foreground), 0.62);
+
+  /* Glass tokens (only used inside accordion blocks) */
+  --myed-pi-glass-bg: rgba(10,14,22,0.45);
+  --myed-pi-glass-border: rgba(255,255,255,0.14);
+  --myed-pi-glass-shadow: 0 18px 40px rgba(0,0,0,0.28);
+  --myed-pi-glass-radius: 18px;
+  --myed-pi-glass-blur: 14px;
+}
+
+/* Base: targeted text bindings (avoid blanket descendant forcing) */
+.myed-pi-scope .myed-pi-block :is(
+  .product__text,
+  .product__description,
+  .product__description p,
+  .product__description li,
+  .product__sku,
+  .quantity__label,
+  .quantity__rules,
+  .rating-text,
+  .rating-count
+){
+  color: var(--myed-pi-text);
+}
+
+/* Muted targets (vendor/tax/payment-terms + inventory line) */
+.myed-pi-scope .myed-pi-block :is(
+  .caption-with-letter-spacing,
+  .product__text.caption-with-letter-spacing,
+  .product__tax,
+  .shopify-payment-terms,
+  .installment,
+  .product__inventory
+){
+  color: var(--myed-pi-muted);
+}
+
+/* Headings + price */
+.myed-pi-scope .myed-pi-block :is(h1,h2,h3,h4,.h1,.h2,.h3,.h4){
+  color: var(--myed-pi-text);
+}
+
+/* Links */
+.myed-pi-scope .myed-pi-block a{
+  color: var(--myed-pi-link);
+  text-decoration-color: var(--myed-pi-underline);
+}
+
+.myed-pi-scope .myed-pi-block a:hover,
+.myed-pi-scope .myed-pi-block a:focus-visible{
+  color: var(--myed-pi-link);
+  text-decoration-color: var(--myed-pi-underline-hover);
+}
+
+/* Do NOT override inside complementary product cards */
+.myed-pi-scope .myed-pi-block .complementary-products,
+.myed-pi-scope .myed-pi-block .complementary-products *{
+  color: inherit;
+}
+
+/* ICON binding (scoped) — keep inventory dot intact */
+.myed-pi-scope .myed-pi-block .product__accordion summary :is(.svg-wrapper, .icon, svg){
+  color: var(--myed-pi-text);
+}
+
+.myed-pi-scope .myed-pi-block .product__accordion summary svg *,
+.myed-pi-scope .myed-pi-block .product__inventory svg *{
+  fill: currentColor;
+  stroke: currentColor;
+}
+
+/* Inventory exception: preserve inline status color */
+.myed-pi-scope .product__inventory .svg-wrapper{
+  color: inherit;
+}
+.myed-pi-scope .product__inventory svg *{
+  fill: currentColor;
+  stroke: currentColor;
+}
+
+/* ==========================================================================
+  ACCORDION / COLLAPSIBLE — GLASS (scoped)
+  Applies inside product info blocks only
+========================================================================== */
+
+/* Ensure summary text + caret uses vars */
+.myed-pi-scope .myed-pi-block .accordion summary,
+.myed-pi-scope .myed-pi-block .accordion summary *{
+  color: var(--myed-pi-text);
+}
+
+/* Glass surface for accordion item/content (best-effort Dawn selectors) */
+.myed-pi-scope .myed-pi-block :is(.accordion, .product__accordion) :is(.accordion__content, .accordion__panel, .accordion__content.rte, .rte){
+  color: var(--myed-pi-text);
+}
+
+.myed-pi-scope .myed-pi-block :is(.accordion, .product__accordion){
+  border-radius: var(--myed-pi-glass-radius);
+}
+
+/* Target the container that visually looks like “card” */
+.myed-pi-scope .myed-pi-block :is(.accordion__content, .accordion__panel){
+  background: var(--myed-pi-glass-bg);
+  border: 1px solid var(--myed-pi-glass-border);
+  border-radius: var(--myed-pi-glass-radius);
+  box-shadow: var(--myed-pi-glass-shadow);
+}
+
+@supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .myed-pi-scope .myed-pi-block :is(.accordion__content, .accordion__panel){
+    -webkit-backdrop-filter: blur(var(--myed-pi-glass-blur));
+    backdrop-filter: blur(var(--myed-pi-glass-blur));
+  }
+}
+
+/* ==========================================================================
+   MyED — POPUP MODAL GLASS + VARS (scoped)
+========================================================================== */
+.myed-pi-popup-scope{
+  --myed-pi-text: var(--myed-pi-text, rgba(var(--color-foreground), 0.92));
+  --myed-pi-muted: var(--myed-pi-muted, rgba(var(--color-foreground), 0.72));
+  --myed-pi-link: var(--myed-pi-link, rgba(var(--color-foreground), 0.92));
+  --myed-pi-underline: var(--myed-pi-underline, rgba(var(--color-foreground), 0.40));
+  --myed-pi-underline-hover: var(--myed-pi-underline-hover, rgba(var(--color-foreground), 0.62));
+}
+
+.myed-pi-popup-scope .product-popup-modal__content{
+  background: rgba(10,14,22,0.55);
+  border: 1px solid rgba(255,255,255,0.14);
+  box-shadow: 0 18px 40px rgba(0,0,0,0.28);
+  border-radius: 18px;
+}
+
+@supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .myed-pi-popup-scope .product-popup-modal__content{
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+  }
+}
+
+.myed-pi-popup-scope,
+.myed-pi-popup-scope .product-popup-modal__content-info,
+.myed-pi-popup-scope .product-popup-modal__content-info *{
+  color: var(--myed-pi-text);
+}
+
+.myed-pi-popup-scope a{
+  color: var(--myed-pi-link);
+  text-decoration-color: var(--myed-pi-underline);
+}
+.myed-pi-popup-scope a:hover,
+.myed-pi-popup-scope a:focus-visible{
+  color: var(--myed-pi-link);
+  text-decoration-color: var(--myed-pi-underline-hover, var(--myed-pi-underline));
+}
+
+/* Close button must stay visible on glass */
+.myed-pi-popup-scope .product-popup-modal__toggle{
+  color: var(--myed-pi-text);
+  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 999px;
+}
+.myed-pi-popup-scope .product-popup-modal__toggle:hover{
+  background: rgba(255,255,255,0.16);
+}
+.myed-pi-popup-scope .product-popup-modal__toggle svg{
+  color: currentColor;
+}
+.myed-pi-popup-scope .product-popup-modal__toggle svg *{
+  fill: currentColor;
+  stroke: currentColor;
+}
+
+/* ==========================================================================
+   MyED — ACCORDION GLASS (scoped)
+========================================================================== */
+.myed-pi-scope .myed-pi-block .product__accordion .accordion__content,
+.myed-pi-scope .myed-pi-block .product__accordion .accordion__content *{
+  color: var(--myed-pi-text);
+}
+
+.myed-pi-scope .myed-pi-block .product__accordion .accordion__content{
+  background: rgba(10,14,22,0.45);
+  border: 1px solid rgba(255,255,255,0.14);
+  box-shadow: 0 18px 40px rgba(0,0,0,0.28);
+  border-radius: 18px;
+}
+
+@supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .myed-pi-scope .myed-pi-block .product__accordion .accordion__content{
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+  }
+}
+
+/* Keep summary line readable */
+.myed-pi-scope .myed-pi-block .product__accordion summary,
+.myed-pi-scope .myed-pi-block .product__accordion summary *{
+  color: var(--myed-pi-text);
+}
+
+/* ========================================================================== 
+   FIX — BIND BUTTON/LINK-CLASS + SHARE + POPUP OPENER TO VARS (SCOPED)
+   Problem: Some UI elements are buttons (.link) not <a>, so link color rules miss them.
+========================================================================== */
+
+/* Treat button-like links inside blocks as "link" color */
+.myed-pi-scope .myed-pi-block :is(
+  button.link,
+  .link.button,
+  .underlined-link,
+  .product-popup-modal__button.link
+){
+  color: var(--myed-pi-link);
+}
+
+/* Share button (common Dawn markup) */
+.myed-pi-scope .myed-pi-block :is(
+  .share-button__button,
+  .share-button__fallback button,
+  .share-button__fallback .button,
+  .share-button__fallback .link
+){
+  color: var(--myed-pi-link);
+}
+
+/* Ensure share icon follows text color */
+.myed-pi-scope .myed-pi-block :is(
+  .share-button__button .svg-wrapper,
+  .share-button__button svg
+){
+  color: var(--myed-pi-link);
+}
+.myed-pi-scope .myed-pi-block :is(
+  .share-button__button svg *,
+  .share-button__fallback svg *
+){
+  fill: currentColor;
+  stroke: currentColor;
+}
+
+/* Popup opener button text must follow link color */
+.myed-pi-scope .myed-pi-block .product-popup-modal__button{
+  color: var(--myed-pi-link);
+  text-decoration-color: var(--myed-pi-underline);
+}
+.myed-pi-scope .myed-pi-block .product-popup-modal__button:hover,
+.myed-pi-scope .myed-pi-block .product-popup-modal__button:focus-visible{
+  color: var(--myed-pi-link);
+  text-decoration-color: var(--myed-pi-underline-hover);
+}
+
+/* Popup modal close "X" visibility on glass */
+.myed-pi-popup-scope .product-popup-modal__toggle{
+  color: var(--myed-pi-text);
+  background: rgba(10,14,22,0.35);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 999px;
+}
+.myed-pi-popup-scope .product-popup-modal__toggle svg{
+  color: var(--myed-pi-text);
+}
+.myed-pi-popup-scope .product-popup-modal__toggle svg *{
+  fill: currentColor;
+  stroke: currentColor;
+}
+
+/* Do NOT break inventory status dot color */
+.myed-pi-scope .product__inventory .svg-wrapper{
+  color: inherit;
+}

@@ -2,8 +2,19 @@
 {{ 'section-collection-list.css' | asset_url | stylesheet_tag }}
 {{ 'myed-collections-glass.css' | asset_url | stylesheet_tag }}
 
-<div class="page-width myed-cl-glass" style="--myed-cl-text: {{ section.settings.text_color }};">
-  <h1 class="title title--primary inline-richtext{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}" style="color: {{ section.settings.heading_color }};">
+<div
+  class="page-width myed-cl-glass{% unless section.settings.myed_cl_enable_glass %} myed-cl-glass--off{% endunless %}"
+  style="
+    --myed-cl-heading: {{ section.settings.heading_color }};
+    --myed-cl-text: {{ section.settings.text_color }};
+    --myed-cl-link: {{ section.settings.myed_cl_link_color | default: section.settings.link_color | default: section.settings.text_color }};
+    --myed-cl-underline: {{ section.settings.myed_cl_underline_color | default: section.settings.underline_color | default: '#6E7A88' }};
+    --myed-cl-underline-hover: {{ section.settings.myed_cl_underline_hover_color | default: section.settings.underline_hover_color | default: '#A7B3C2' }};
+    --myed-cl-card-alpha: {{ section.settings.myed_cl_bg_opacity | default: section.settings.glass_opacity | divided_by: 100.0 }};
+    --myed-cl-card-blur: {{ section.settings.myed_cl_blur | default: section.settings.glass_blur }}px;
+  "
+>
+  <h1 class="title title--primary inline-richtext{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}">
     {{ section.settings.title }}
   </h1>
   {%- liquid
@@ -70,6 +81,70 @@
       "id": "text_color",
       "label": "Card text color",
       "default": "#CFD6DF"
+    },
+    {
+      "type": "header",
+      "content": "MyED Collections Glass"
+    },
+    {
+      "type": "checkbox",
+      "id": "myed_cl_enable_glass",
+      "label": "Enable glass cards",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "glass_opacity",
+      "label": "Glass opacity",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 45,
+      "unit": "%"
+    },
+    {
+      "type": "range",
+      "id": "glass_blur",
+      "label": "Glass blur",
+      "min": 0,
+      "max": 28,
+      "step": 1,
+      "default": 14,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "glass_radius",
+      "label": "Card radius",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "default": 22,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "muted_text_color",
+      "label": "Muted text color",
+      "default": "#C9D0DA"
+    },
+    {
+      "type": "color",
+      "id": "link_color",
+      "label": "Link color",
+      "default": "#F5F7FA"
+    },
+    {
+      "type": "color",
+      "id": "underline_color",
+      "label": "Link underline color",
+      "default": "#6E7A88"
+    },
+    {
+      "type": "color",
+      "id": "underline_hover_color",
+      "label": "Link underline hover",
+      "default": "#A7B3C2"
     },
     {
       "type": "select",

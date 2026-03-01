@@ -10,7 +10,21 @@
   }
 </style>
 
-<div class="template-404 page-width page-margin center">
+<div
+  class="template-404 myed-404-glass{% unless section.settings.myed_404_enable_glass %} myed-404-glass--off{% endunless %} page-width page-margin center"
+  style="
+    --myed-404-text-color: {{ section.settings.myed_404_text_color }};
+    --myed-404-muted-color: {{ section.settings.myed_404_muted_color }};
+    --myed-404-link-color: {{ section.settings.myed_404_link_color }};
+    --myed-404-underline-color: {{ section.settings.myed_404_underline_color }};
+    --myed-404-underline-hover-color: {{ section.settings.myed_404_underline_hover_color }};
+    --myed-404-card-alpha: {{ section.settings.myed_404_bg_opacity | divided_by: 100.0 }};
+    --myed-404-card-blur: {{ section.settings.myed_404_blur }}px;
+    --myed-404-card-border: rgba(255,255,255,0.14);
+    --myed-404-card-shadow: 0 18px 40px rgba(0,0,0,0.30);
+    --myed-404-card-radius: 22px;
+  "
+>
   <p>
     {{ 'templates.404.subtext' | t }}
   </p>
@@ -21,3 +35,71 @@
     {{ 'general.continue_shopping' | t }}
   </a>
 </div>
+
+{% schema %}
+{
+  "name": "t:sections.main-404.name",
+  "settings": [
+    {
+      "type": "header",
+      "content": "MyED 404 Glass"
+    },
+    {
+      "type": "checkbox",
+      "id": "myed_404_enable_glass",
+      "label": "Enable glass card",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "myed_404_bg_opacity",
+      "label": "Glass opacity",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 45,
+      "unit": "%"
+    },
+    {
+      "type": "range",
+      "id": "myed_404_blur",
+      "label": "Glass blur",
+      "min": 0,
+      "max": 28,
+      "step": 1,
+      "default": 14,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "myed_404_text_color",
+      "label": "Text color",
+      "default": "#F5F7FA"
+    },
+    {
+      "type": "color",
+      "id": "myed_404_muted_color",
+      "label": "Muted text color",
+      "default": "#C9D0DA"
+    },
+    {
+      "type": "color",
+      "id": "myed_404_link_color",
+      "label": "Link color",
+      "default": "#F5F7FA"
+    },
+    {
+      "type": "color",
+      "id": "myed_404_underline_color",
+      "label": "Link underline color",
+      "default": "#6E7A88"
+    },
+    {
+      "type": "color",
+      "id": "myed_404_underline_hover_color",
+      "label": "Link underline hover",
+      "default": "#A7B3C2"
+    }
+  ]
+}
+{% endschema %}

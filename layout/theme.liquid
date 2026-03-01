@@ -261,6 +261,7 @@
 
     {%- if settings.cart_type == 'drawer' -%}
       {{ 'component-cart-drawer.css' | asset_url | stylesheet_tag }}
+      {{ 'myed-cart-drawer-glass.css' | asset_url | stylesheet_tag }}
       {{ 'component-cart.css' | asset_url | stylesheet_tag }}
       {{ 'component-totals.css' | asset_url | stylesheet_tag }}
       {{ 'component-price.css' | asset_url | stylesheet_tag }}
@@ -293,6 +294,9 @@
     {%- endif -%}
 
     {{ 'myed-theme-bg.css' | asset_url | stylesheet_tag }}
+    {%- if template.name == '404' -%}
+      {{ 'myed-404-glass.css' | asset_url | stylesheet_tag }}
+    {%- endif -%}
 
     <script>
       if (Shopify.designMode) {

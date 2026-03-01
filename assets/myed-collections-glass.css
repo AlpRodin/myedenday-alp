@@ -1,0 +1,149 @@
+/* ==========================================================================
+  MyEdenDay — Collections List Glass (CANONICAL)
+  Scope: ONLY .myed-cl-glass (main-list-collections)
+  Key fix: blur is applied on overlay layer, NOT on images.
+========================================================================== */
+
+.myed-cl-glass{
+  --myed-cl-heading: var(--myed-cl-heading, #F5F7FA);
+  --myed-cl-text: var(--myed-cl-text, #CFD6DF);
+  --myed-cl-link: var(--myed-cl-link, var(--myed-cl-text));
+  --myed-cl-underline: var(--myed-cl-underline, #6E7A88);
+  --myed-cl-underline-hover: var(--myed-cl-underline-hover, #A7B3C2);
+
+  --myed-cl-card-alpha: var(--myed-cl-card-alpha, 0.45);
+  --myed-cl-card-blur: var(--myed-cl-card-blur, 14px);
+  --myed-cl-card-bg: rgba(10,14,22,var(--myed-cl-card-alpha));
+  --myed-cl-card-border: rgba(255,255,255,0.14);
+  --myed-cl-card-shadow: 0 18px 40px rgba(0,0,0,0.28);
+  --myed-cl-card-radius: 22px;
+}
+
+/* Heading color binding */
+.myed-cl-glass .title{
+  color: var(--myed-cl-heading);
+}
+
+/* ----- CARD SURFACE TARGETS (Dawn card-collection) ----- */
+/* We style the card root containers WITHOUT touching the image element itself. */
+.myed-cl-glass :is(.card, .card--standard, .card--media){
+  position: relative;
+  border-radius: var(--myed-cl-card-radius);
+}
+
+/* Make inner containers inherit radius and clip overlay nicely */
+.myed-cl-glass :is(.card__inner, .card__content, .card__information, .card__information-container){
+  border-radius: var(--myed-cl-card-radius);
+}
+
+/* Ensure media/image stays crisp (no blur filters anywhere) */
+.myed-cl-glass :is(.card__media, .card__media img, .media, .media img){
+  filter: none !important;
+  transform: none;
+}
+
+/* Put text above overlay */
+.myed-cl-glass :is(.card__information, .card__content, .card__information-container){
+  position: relative;
+  z-index: 2;
+}
+
+/* Text + links binding */
+.myed-cl-glass :is(.card__heading, .card__heading a, .card__heading .full-unstyled-link){
+  color: var(--myed-cl-heading) !important;
+}
+
+.myed-cl-glass :is(.card__information, .card__information *, .card__content, .card__content *){
+  color: var(--myed-cl-text);
+}
+
+.myed-cl-glass a{
+  color: var(--myed-cl-link) !important;
+  text-decoration-color: var(--myed-cl-underline) !important;
+}
+
+.myed-cl-glass a:hover,
+.myed-cl-glass a:focus-visible{
+  color: var(--myed-cl-link) !important;
+  text-decoration-color: var(--myed-cl-underline-hover) !important;
+}
+
+/* Optional: soften card spacing/feel */
+.myed-cl-glass .collection-list__item{
+  --shadow: none;
+}
+
+/* No global button changes; keep Dawn controls intact */
+
+/* =========================
+   FIX: Glass only on text panel (keep image visible)
+========================= */
+
+.myed-cl-glass{
+  --myed-cl-card-radius: var(--myed-cl-card-radius, 22px);
+}
+
+/* Ensure card structure */
+.myed-cl-glass :is(.card, .card--standard, .card--media){
+  position: relative;
+  border-radius: var(--myed-cl-card-radius);
+}
+
+/* HARD STOP: no overlay on media containers */
+.myed-cl-glass :is(.card__inner, .card__media, .card__media img, .media, .media img){
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  filter: none !important;
+}
+
+/* Text panel glass target (Dawn) */
+.myed-cl-glass :is(.card__information, .card__content, .card__information-container){
+  position: relative;
+  z-index: 2;
+}
+
+/* Create a glass surface ONLY behind the text area */
+.myed-cl-glass :is(.card__information, .card__information-container)::before{
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(10,14,22,var(--myed-cl-card-alpha, 0.45));
+  border: 1px solid rgba(255,255,255,0.14);
+  box-shadow: var(--myed-cl-card-shadow, 0 18px 40px rgba(0,0,0,0.28));
+  border-radius: var(--myed-cl-card-radius);
+  pointer-events: none;
+  z-index: 0;
+}
+
+@supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .myed-cl-glass :is(.card__information, .card__information-container)::before{
+    -webkit-backdrop-filter: blur(var(--myed-cl-card-blur, 14px)) saturate(1.2);
+    backdrop-filter: blur(var(--myed-cl-card-blur, 14px)) saturate(1.2);
+  }
+}
+
+/* Put all text above the glass */
+.myed-cl-glass :is(.card__information, .card__information-container) > *{
+  position: relative;
+  z-index: 1;
+}
+
+/* Keep title/link colors bound to vars (force) */
+.myed-cl-glass :is(.card__heading, .card__heading a, .card__heading .full-unstyled-link){
+  color: var(--myed-cl-heading) !important;
+}
+
+.myed-cl-glass :is(.card__information, .card__information *){
+  color: var(--myed-cl-text) !important;
+}
+
+.myed-cl-glass a{
+  color: var(--myed-cl-link) !important;
+  text-decoration-color: var(--myed-cl-underline) !important;
+}
+
+.myed-cl-glass a:hover,
+.myed-cl-glass a:focus-visible{
+  color: var(--myed-cl-link) !important;
+  text-decoration-color: var(--myed-cl-underline-hover) !important;
+}

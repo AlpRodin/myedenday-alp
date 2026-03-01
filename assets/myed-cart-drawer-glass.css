@@ -1,0 +1,74 @@
+/* ==========================================================================
+  MyEdenDay — Cart Drawer Glass (Scoped)
+  Scope: ONLY the cart drawer right panel
+========================================================================== */
+
+cart-drawer,
+#CartDrawer.cart-drawer{
+  --myed-cd-text: var(--myed-cart-drawer-text-color, rgba(var(--color-foreground), 0.92));
+  --myed-cd-muted: var(--myed-cart-drawer-muted-color, rgba(var(--color-foreground), 0.72));
+  --myed-cd-link: var(--myed-cart-drawer-link-color, rgba(var(--color-foreground), 0.92));
+  --myed-cd-underline: var(--myed-cart-drawer-underline-color, rgba(var(--color-foreground), 0.40));
+  --myed-cd-underline-hover: var(--myed-cart-drawer-underline-hover-color, rgba(var(--color-foreground), 0.62));
+
+  --myed-cd-border: rgba(255,255,255,0.14);
+  --myed-cd-shadow: 0 18px 40px rgba(0,0,0,0.30);
+  --myed-cd-radius: 22px;
+}
+
+/* Glass surface: the actual panel is .drawer__inner inside #CartDrawer */
+#CartDrawer.cart-drawer .drawer__inner{
+  border: 1px solid var(--myed-cd-border);
+  border-radius: var(--myed-cd-radius);
+  background: rgba(10,14,22,var(--myed-cart-drawer-card-alpha, 0.45));
+  box-shadow: var(--myed-cd-shadow);
+}
+
+@supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  #CartDrawer.cart-drawer .drawer__inner{
+    -webkit-backdrop-filter: blur(var(--myed-cart-drawer-card-blur, 14px)) saturate(1.2);
+    backdrop-filter: blur(var(--myed-cart-drawer-card-blur, 14px)) saturate(1.2);
+  }
+}
+
+/* OFF state */
+#CartDrawer.cart-drawer.myed-cd-off .drawer__inner{
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+/* Force color bind inside drawer ONLY */
+#CartDrawer.cart-drawer{
+  color: var(--myed-cd-text);
+}
+
+#CartDrawer.cart-drawer :is(h1,h2,h3,h4,.h1,.h2,.h3,.h4,.drawer__heading,.cart__empty-text,.cart-item__name,.totals__total,.totals__total-value,.cart__checkout-button,.button){
+  color: var(--myed-cd-text) !important;
+}
+
+#CartDrawer.cart-drawer :is(p,small,.caption,.caption-large,.caption-with-letter-spacing,.tax-note,.cart-item__option,.product-option){
+  color: var(--myed-cd-muted) !important;
+}
+
+#CartDrawer.cart-drawer a{
+  color: var(--myed-cd-link) !important;
+  text-decoration-color: var(--myed-cd-underline) !important;
+}
+
+#CartDrawer.cart-drawer a:hover,
+#CartDrawer.cart-drawer a:focus-visible{
+  color: var(--myed-cd-link) !important;
+  text-decoration-color: var(--myed-cd-underline-hover, var(--myed-cd-underline)) !important;
+}
+
+/* Keep close X visible */
+#CartDrawer.cart-drawer .drawer__close{
+  color: var(--myed-cd-text) !important;
+}
+#CartDrawer.cart-drawer .drawer__close svg *{
+  fill: currentColor;
+  stroke: currentColor;
+}

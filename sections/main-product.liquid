@@ -87,18 +87,24 @@
           {%- assign product_form_id = 'product-form-' | append: section.id -%}
 
           {%- for block in section.blocks -%}
-            {%- case block.type -%}
-              {%- when '@app' -%}
-                {% render block %}
-              {%- when 'text' -%}
+            {%- if block.type == '@app' -%}
+              {% render block %}
+            {%- else -%}
+              <div class="myed-pi-block" data-myed-pi-block="{{ block.id }}" {{ block.shopify_attributes }}{% if block.settings.myed_override_colors %} style="
+                --myed-pi-text: {{ block.settings.myed_text_color }};
+                --myed-pi-muted: {{ block.settings.myed_muted_color }};
+                --myed-pi-link: {{ block.settings.myed_link_color }};
+                --myed-pi-underline: {{ block.settings.myed_underline_color }};
+              "{% endif %}>
+                {%- case block.type -%}
+                  {%- when 'text' -%}
                 <p
                   class="product__text inline-richtext{% if block.settings.text_style == 'uppercase' %} caption-with-letter-spacing{% elsif block.settings.text_style == 'subtitle' %} subtitle{% endif %}"
-                  {{ block.shopify_attributes }}
                 >
                   {{- block.settings.text -}}
                 </p>
-              {%- when 'title' -%}
-                <div class="product__title" {{ block.shopify_attributes }}>
+                  {%- when 'title' -%}
+                <div class="product__title">
                   <h1>{{ product.title | escape }}</h1>
                   <a href="{{ product.url }}" class="product__title">
                     <h2 class="h1">
@@ -106,8 +112,8 @@
                     </h2>
                   </a>
                 </div>
-              {%- when 'price' -%}
-                <div id="price-{{ section.id }}" role="status" {{ block.shopify_attributes }}>
+                  {%- when 'price' -%}
+                <div id="price-{{ section.id }}" role="status">
                   {%- render 'price',
                     product: product,
                     use_variant: true,
@@ -134,17 +140,16 @@
                     {%- endif -%}
                   </div>
                 {%- endif -%}
-                <div {{ block.shopify_attributes }}>
+                <div>
                   {%- assign product_form_installment_id = 'product-form-installment-' | append: section.id -%}
                   {%- form 'product', product, id: product_form_installment_id, class: 'installment caption-large' -%}
                     <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
                     {{ form | payment_terms }}
                   {%- endform -%}
                 </div>
-              {%- when 'inventory' -%}
+                  {%- when 'inventory' -%}
                 <p
                   class="product__inventory{% if block.settings.text_style == 'uppercase' %} caption-with-letter-spacing{% elsif block.settings.text_style == 'subtitle' %} subtitle{% endif %}{% if product.selected_or_first_available_variant.inventory_management != 'shopify' %} visibility-hidden{% endif %}"
-                  {{ block.shopify_attributes }}
                   id="Inventory-{{ section.id }}"
                   role="status"
                 >
@@ -192,26 +197,25 @@
                     {%- endif -%}
                   {%- endif -%}
                 </p>
-              {%- when 'description' -%}
+                  {%- when 'description' -%}
                 {%- if product.description != blank -%}
-                  <div class="product__description rte quick-add-hidden" {{ block.shopify_attributes }}>
+                  <div class="product__description rte quick-add-hidden">
                     {{ product.description }}
                   </div>
                 {%- endif -%}
-              {%- when 'sku' -%}
+                  {%- when 'sku' -%}
                 <p
                   class="product__sku{% if block.settings.text_style == 'uppercase' %} caption-with-letter-spacing{% elsif block.settings.text_style == 'subtitle' %} subtitle{% endif %}{% if product.selected_or_first_available_variant.sku.size == 0 %} visibility-hidden{% endif %}"
                   id="Sku-{{ section.id }}"
                   role="status"
-                  {{ block.shopify_attributes }}
                 >
                   <span class="visually-hidden">{{ 'products.product.sku' | t }}:</span>
                   {{- product.selected_or_first_available_variant.sku -}}
                 </p>
-              {%- when 'custom_liquid' -%}
+                  {%- when 'custom_liquid' -%}
                 {{ block.settings.custom_liquid }}
-              {%- when 'collapsible_tab' -%}
-                <div class="product__accordion accordion quick-add-hidden" {{ block.shopify_attributes }}>
+                  {%- when 'collapsible_tab' -%}
+                <div class="product__accordion accordion quick-add-hidden">
                   <details id="Details-{{ block.id }}-{{ section.id }}">
                     <summary>
                       <div class="summary__title">
@@ -228,11 +232,10 @@
                     </div>
                   </details>
                 </div>
-              {%- when 'quantity_selector' -%}
+                  {%- when 'quantity_selector' -%}
                 <div
                   id="Quantity-Form-{{ section.id }}"
                   class="product-form__input product-form__quantity{% if settings.inputs_shadow_vertical_offset != 0 and settings.inputs_shadow_vertical_offset < 0 %} product-form__quantity-top{% endif %}"
-                  {{ block.shopify_attributes }}
                 >
                   {% comment %} TODO: enable theme-check once `item_count_for_variant` is accepted as valid filter {% endcomment %}
                   {% # theme-check-disable %}
@@ -455,11 +458,10 @@
                     </volume-pricing>
                   {%- endif -%}
                 </div>
-              {%- when 'popup' -%}
+                  {%- when 'popup' -%}
                 <modal-opener
                   class="product-popup-modal__opener quick-add-hidden"
                   data-modal="#PopupModal-{{ block.id }}"
-                  {{ block.shopify_attributes }}
                 >
                   <button
                     id="ProductPopup-{{ block.id }}"
@@ -470,15 +472,15 @@
                     {{ block.settings.text | default: block.settings.page.title | escape }}
                   </button>
                 </modal-opener>
-              {%- when 'share' -%}
+                  {%- when 'share' -%}
                 {% liquid
                   assign share_url = product.selected_variant.url | default: product.url | prepend: request.origin
                   render 'share-button', block: block, share_link: share_url
                 %}
 
-              {%- when 'variant_picker' -%}
+                  {%- when 'variant_picker' -%}
                 {% render 'product-variant-picker', product: product, block: block, product_form_id: product_form_id %}
-              {%- when 'buy_buttons' -%}
+                  {%- when 'buy_buttons' -%}
                 {%- render 'buy-buttons',
                   block: block,
                   product: product,
@@ -486,7 +488,7 @@
                   section_id: section.id,
                   show_pickup_availability: true
                 -%}
-              {%- when 'rating' -%}
+                  {%- when 'rating' -%}
                 {%- if product.metafields.reviews.rating.value != blank -%}
                   <div class="rating-wrapper">
                     {% liquid
@@ -524,7 +526,7 @@
                     </p>
                   </div>
                 {%- endif -%}
-              {%- when 'complementary' -%}
+                  {%- when 'complementary' -%}
                 <product-recommendations
                   class="complementary-products quick-add-hidden{% if block.settings.make_collapsible_row %} is-accordion{% endif %}{% if block.settings.enable_quick_add %} complementary-products-contains-quick-add{% endif %}"
                   data-url="{{ routes.product_recommendations_url }}?limit={{ block.settings.product_list_limit }}&intent=complementary"
@@ -534,7 +536,6 @@
                   {%- if recommendations.performed and recommendations.products_count > 0 -%}
                     <aside
                       aria-label="{{ 'accessibility.complementary_products' | t }}"
-                      {{ block.shopify_attributes -}}
                       {% if block.settings.make_collapsible_row %}
                         class="product__accordion accordion"
                       {% endif %}
@@ -674,9 +675,11 @@
                     <script src="{{ 'quick-add.js' | asset_url }}" defer="defer"></script>
                   {%- endif -%}
                 </product-recommendations>
-              {%- when 'icon-with-text' -%}
+                  {%- when 'icon-with-text' -%}
                 {% render 'icon-with-text', block: block %}
-            {%- endcase -%}
+                {%- endcase -%}
+              </div>
+            {%- endif -%}
           {%- endfor -%}
           <a href="{{ product.url }}" class="link product__view-details animate-arrow">
             {{ 'products.product.view_full_details' | t }}
@@ -690,7 +693,27 @@
 
     {% assign popups = section.blocks | where: 'type', 'popup' %}
     {%- for block in popups -%}
-      <modal-dialog id="PopupModal-{{ block.id }}" class="product-popup-modal" {{ block.shopify_attributes }}>
+      <modal-dialog
+        id="PopupModal-{{ block.id }}"
+        class="product-popup-modal myed-pi-popup-scope"
+        style="
+          {%- if section.settings.myed_pi_override_colors -%}
+            --myed-pi-text: {{ section.settings.myed_pi_text_color }};
+            --myed-pi-muted: {{ section.settings.myed_pi_muted_color }};
+            --myed-pi-link: {{ section.settings.myed_pi_link_color }};
+            --myed-pi-underline: {{ section.settings.myed_pi_link_decoration_color }};
+            --myed-pi-underline-hover: {{ section.settings.myed_pi_link_decoration_color }};
+          {%- endif -%}
+          {%- if block.settings.myed_override_colors -%}
+            --myed-pi-text: {{ block.settings.myed_text_color }};
+            --myed-pi-muted: {{ block.settings.myed_muted_color }};
+            --myed-pi-link: {{ block.settings.myed_link_color }};
+            --myed-pi-underline: {{ block.settings.myed_underline_color }};
+            --myed-pi-underline-hover: {{ block.settings.myed_underline_color }};
+          {%- endif -%}
+        "
+        {{ block.shopify_attributes }}
+      >
         <div
           role="dialog"
           aria-label="{{ block.settings.text }}"
@@ -770,18 +793,124 @@
           ],
           "default": "body",
           "label": "t:sections.main-product.blocks.text.settings.text_style.label"
+        },
+        {
+          "type": "header",
+          "content": "MyED Product Info Colors"
+        },
+        {
+          "type": "checkbox",
+          "id": "myed_override_colors",
+          "label": "Override text/link colors (this block)",
+          "default": false
+        },
+        {
+          "type": "color",
+          "id": "myed_text_color",
+          "label": "Text color",
+          "default": "#F5F7FA"
+        },
+        {
+          "type": "color",
+          "id": "myed_muted_color",
+          "label": "Muted text color",
+          "default": "#C9D0DA"
+        },
+        {
+          "type": "color",
+          "id": "myed_link_color",
+          "label": "Link color",
+          "default": "#F5F7FA"
+        },
+        {
+          "type": "color",
+          "id": "myed_underline_color",
+          "label": "Link underline color",
+          "default": "#6E7A88"
         }
       ]
     },
     {
       "type": "title",
       "name": "t:sections.main-product.blocks.title.name",
-      "limit": 1
+      "limit": 1,
+      "settings": [
+        {
+          "type": "header",
+          "content": "MyED Product Info Colors"
+        },
+        {
+          "type": "checkbox",
+          "id": "myed_override_colors",
+          "label": "Override text/link colors (this block)",
+          "default": false
+        },
+        {
+          "type": "color",
+          "id": "myed_text_color",
+          "label": "Text color",
+          "default": "#F5F7FA"
+        },
+        {
+          "type": "color",
+          "id": "myed_muted_color",
+          "label": "Muted text color",
+          "default": "#C9D0DA"
+        },
+        {
+          "type": "color",
+          "id": "myed_link_color",
+          "label": "Link color",
+          "default": "#F5F7FA"
+        },
+        {
+          "type": "color",
+          "id": "myed_underline_color",
+          "label": "Link underline color",
+          "default": "#6E7A88"
+        }
+      ]
     },
     {
       "type": "price",
       "name": "t:sections.main-product.blocks.price.name",
-      "limit": 1
+      "limit": 1,
+      "settings": [
+        {
+          "type": "header",
+          "content": "MyED Product Info Colors"
+        },
+        {
+          "type": "checkbox",
+          "id": "myed_override_colors",
+          "label": "Override text/link colors (this block)",
+          "default": false
+        },
+        {
+          "type": "color",
+          "id": "myed_text_color",
+          "label": "Text color",
+          "default": "#F5F7FA"
+        },
+        {
+          "type": "color",
+          "id": "myed_muted_color",
+          "label": "Muted text color",
+          "default": "#C9D0DA"
+        },
+        {
+          "type": "color",
+          "id": "myed_link_color",
+          "label": "Link color",
+          "default": "#F5F7FA"
+        },
+        {
+          "type": "color",
+          "id": "myed_underline_color",
+          "label": "Link underline color",
+          "default": "#6E7A88"
+        }
+      ]
     },
     {
       "type": "sku",
@@ -807,6 +936,40 @@
           ],
           "default": "body",
           "label": "t:sections.main-product.blocks.sku.settings.text_style.label"
+        },
+        {
+          "type": "header",
+          "content": "MyED Product Info Colors"
+        },
+        {
+          "type": "checkbox",
+          "id": "myed_override_colors",
+          "label": "Override text/link colors (this block)",
+          "default": false
+        },
+        {
+          "type": "color",
+          "id": "myed_text_color",
+          "label": "Text color",
+          "default": "#F5F7FA"
+        },
+        {
+          "type": "color",
+          "id": "myed_muted_color",
+          "label": "Muted text color",
+          "default": "#C9D0DA"
+        },
+        {
+          "type": "color",
+          "id": "myed_link_color",
+          "label": "Link color",
+          "default": "#F5F7FA"
+        },
+        {
+          "type": "color",
+          "id": "myed_underline_color",
+          "label": "Link underline color",
+          "default": "#6E7A88"
         }
       ]
     },
@@ -849,13 +1012,83 @@
           "id": "show_inventory_quantity",
           "label": "t:sections.main-product.blocks.inventory.settings.show_inventory_quantity.label",
           "default": true
+        },
+        {
+          "type": "header",
+          "content": "MyED Product Info Colors"
+        },
+        {
+          "type": "checkbox",
+          "id": "myed_override_colors",
+          "label": "Override text/link colors (this block)",
+          "default": false
+        },
+        {
+          "type": "color",
+          "id": "myed_text_color",
+          "label": "Text color",
+          "default": "#F5F7FA"
+        },
+        {
+          "type": "color",
+          "id": "myed_muted_color",
+          "label": "Muted text color",
+          "default": "#C9D0DA"
+        },
+        {
+          "type": "color",
+          "id": "myed_link_color",
+          "label": "Link color",
+          "default": "#F5F7FA"
+        },
+        {
+          "type": "color",
+          "id": "myed_underline_color",
+          "label": "Link underline color",
+          "default": "#6E7A88"
         }
       ]
     },
     {
       "type": "quantity_selector",
       "name": "t:sections.main-product.blocks.quantity_selector.name",
-      "limit": 1
+      "limit": 1,
+      "settings": [
+        {
+          "type": "header",
+          "content": "MyED Product Info Colors"
+        },
+        {
+          "type": "checkbox",
+          "id": "myed_override_colors",
+          "label": "Override text/link colors (this block)",
+          "default": false
+        },
+        {
+          "type": "color",
+          "id": "myed_text_color",
+          "label": "Text color",
+          "default": "#F5F7FA"
+        },
+        {
+          "type": "color",
+          "id": "myed_muted_color",
+          "label": "Muted text color",
+          "default": "#C9D0DA"
+        },
+        {
+          "type": "color",
+          "id": "myed_link_color",
+          "label": "Link color",
+          "default": "#F5F7FA"
+        },
+        {
+          "type": "color",
+          "id": "myed_underline_color",
+          "label": "Link underline color",
+          "default": "#6E7A88"
+        }
+      ]
     },
     {
       "type": "variant_picker",
@@ -898,6 +1131,40 @@
             }
           ],
           "default": "circle"
+        },
+        {
+          "type": "header",
+          "content": "MyED Product Info Colors"
+        },
+        {
+          "type": "checkbox",
+          "id": "myed_override_colors",
+          "label": "Override text/link colors (this block)",
+          "default": false
+        },
+        {
+          "type": "color",
+          "id": "myed_text_color",
+          "label": "Text color",
+          "default": "#F5F7FA"
+        },
+        {
+          "type": "color",
+          "id": "myed_muted_color",
+          "label": "Muted text color",
+          "default": "#C9D0DA"
+        },
+        {
+          "type": "color",
+          "id": "myed_link_color",
+          "label": "Link color",
+          "default": "#F5F7FA"
+        },
+        {
+          "type": "color",
+          "id": "myed_underline_color",
+          "label": "Link underline color",
+          "default": "#6E7A88"
         }
       ]
     },
@@ -919,13 +1186,83 @@
           "default": true,
           "label": "t:sections.main-product.blocks.buy_buttons.settings.show_gift_card_recipient.label",
           "info": "t:sections.main-product.blocks.buy_buttons.settings.show_gift_card_recipient.info"
+        },
+        {
+          "type": "header",
+          "content": "MyED Product Info Colors"
+        },
+        {
+          "type": "checkbox",
+          "id": "myed_override_colors",
+          "label": "Override text/link colors (this block)",
+          "default": false
+        },
+        {
+          "type": "color",
+          "id": "myed_text_color",
+          "label": "Text color",
+          "default": "#F5F7FA"
+        },
+        {
+          "type": "color",
+          "id": "myed_muted_color",
+          "label": "Muted text color",
+          "default": "#C9D0DA"
+        },
+        {
+          "type": "color",
+          "id": "myed_link_color",
+          "label": "Link color",
+          "default": "#F5F7FA"
+        },
+        {
+          "type": "color",
+          "id": "myed_underline_color",
+          "label": "Link underline color",
+          "default": "#6E7A88"
         }
       ]
     },
     {
       "type": "description",
       "name": "t:sections.main-product.blocks.description.name",
-      "limit": 1
+      "limit": 1,
+      "settings": [
+        {
+          "type": "header",
+          "content": "MyED Product Info Colors"
+        },
+        {
+          "type": "checkbox",
+          "id": "myed_override_colors",
+          "label": "Override text/link colors (this block)",
+          "default": false
+        },
+        {
+          "type": "color",
+          "id": "myed_text_color",
+          "label": "Text color",
+          "default": "#F5F7FA"
+        },
+        {
+          "type": "color",
+          "id": "myed_muted_color",
+          "label": "Muted text color",
+          "default": "#C9D0DA"
+        },
+        {
+          "type": "color",
+          "id": "myed_link_color",
+          "label": "Link color",
+          "default": "#F5F7FA"
+        },
+        {
+          "type": "color",
+          "id": "myed_underline_color",
+          "label": "Link underline color",
+          "default": "#6E7A88"
+        }
+      ]
     },
     {
       "type": "share",
@@ -937,6 +1274,40 @@
           "id": "share_label",
           "label": "t:sections.main-product.blocks.share.settings.text.label",
           "default": "t:sections.main-product.blocks.share.settings.text.default"
+        },
+        {
+          "type": "header",
+          "content": "MyED Product Info Colors"
+        },
+        {
+          "type": "checkbox",
+          "id": "myed_override_colors",
+          "label": "Override text/link colors (this block)",
+          "default": false
+        },
+        {
+          "type": "color",
+          "id": "myed_text_color",
+          "label": "Text color",
+          "default": "#F5F7FA"
+        },
+        {
+          "type": "color",
+          "id": "myed_muted_color",
+          "label": "Muted text color",
+          "default": "#C9D0DA"
+        },
+        {
+          "type": "color",
+          "id": "myed_link_color",
+          "label": "Link color",
+          "default": "#F5F7FA"
+        },
+        {
+          "type": "color",
+          "id": "myed_underline_color",
+          "label": "Link underline color",
+          "default": "#6E7A88"
         }
       ]
     },
@@ -949,6 +1320,40 @@
           "id": "custom_liquid",
           "label": "t:sections.custom-liquid.settings.custom_liquid.label",
           "info": "t:sections.custom-liquid.settings.custom_liquid.info"
+        },
+        {
+          "type": "header",
+          "content": "MyED Product Info Colors"
+        },
+        {
+          "type": "checkbox",
+          "id": "myed_override_colors",
+          "label": "Override text/link colors (this block)",
+          "default": false
+        },
+        {
+          "type": "color",
+          "id": "myed_text_color",
+          "label": "Text color",
+          "default": "#F5F7FA"
+        },
+        {
+          "type": "color",
+          "id": "myed_muted_color",
+          "label": "Muted text color",
+          "default": "#C9D0DA"
+        },
+        {
+          "type": "color",
+          "id": "myed_link_color",
+          "label": "Link color",
+          "default": "#F5F7FA"
+        },
+        {
+          "type": "color",
+          "id": "myed_underline_color",
+          "label": "Link underline color",
+          "default": "#6E7A88"
         }
       ]
     },
@@ -1155,6 +1560,40 @@
           "type": "page",
           "id": "page",
           "label": "t:sections.main-product.blocks.collapsible_tab.settings.page.label"
+        },
+        {
+          "type": "header",
+          "content": "MyED Product Info Colors"
+        },
+        {
+          "type": "checkbox",
+          "id": "myed_override_colors",
+          "label": "Override text/link colors (this block)",
+          "default": false
+        },
+        {
+          "type": "color",
+          "id": "myed_text_color",
+          "label": "Text color",
+          "default": "#F5F7FA"
+        },
+        {
+          "type": "color",
+          "id": "myed_muted_color",
+          "label": "Muted text color",
+          "default": "#C9D0DA"
+        },
+        {
+          "type": "color",
+          "id": "myed_link_color",
+          "label": "Link color",
+          "default": "#F5F7FA"
+        },
+        {
+          "type": "color",
+          "id": "myed_underline_color",
+          "label": "Link underline color",
+          "default": "#6E7A88"
         }
       ]
     },
@@ -1172,6 +1611,40 @@
           "id": "page",
           "type": "page",
           "label": "t:sections.main-product.blocks.popup.settings.page.label"
+        },
+        {
+          "type": "header",
+          "content": "MyED Product Info Colors"
+        },
+        {
+          "type": "checkbox",
+          "id": "myed_override_colors",
+          "label": "Override text/link colors (this block)",
+          "default": false
+        },
+        {
+          "type": "color",
+          "id": "myed_text_color",
+          "label": "Text color",
+          "default": "#F5F7FA"
+        },
+        {
+          "type": "color",
+          "id": "myed_muted_color",
+          "label": "Muted text color",
+          "default": "#C9D0DA"
+        },
+        {
+          "type": "color",
+          "id": "myed_link_color",
+          "label": "Link color",
+          "default": "#F5F7FA"
+        },
+        {
+          "type": "color",
+          "id": "myed_underline_color",
+          "label": "Link underline color",
+          "default": "#6E7A88"
         }
       ]
     },
@@ -1183,6 +1656,40 @@
         {
           "type": "paragraph",
           "content": "t:sections.main-product.blocks.rating.settings.paragraph.content"
+        },
+        {
+          "type": "header",
+          "content": "MyED Product Info Colors"
+        },
+        {
+          "type": "checkbox",
+          "id": "myed_override_colors",
+          "label": "Override text/link colors (this block)",
+          "default": false
+        },
+        {
+          "type": "color",
+          "id": "myed_text_color",
+          "label": "Text color",
+          "default": "#F5F7FA"
+        },
+        {
+          "type": "color",
+          "id": "myed_muted_color",
+          "label": "Muted text color",
+          "default": "#C9D0DA"
+        },
+        {
+          "type": "color",
+          "id": "myed_link_color",
+          "label": "Link color",
+          "default": "#F5F7FA"
+        },
+        {
+          "type": "color",
+          "id": "myed_underline_color",
+          "label": "Link underline color",
+          "default": "#6E7A88"
         }
       ]
     },
@@ -1455,6 +1962,40 @@
           "id": "enable_quick_add",
           "label": "t:sections.main-product.blocks.complementary_products.settings.enable_quick_add.label",
           "default": false
+        },
+        {
+          "type": "header",
+          "content": "MyED Product Info Colors"
+        },
+        {
+          "type": "checkbox",
+          "id": "myed_override_colors",
+          "label": "Override text/link colors (this block)",
+          "default": false
+        },
+        {
+          "type": "color",
+          "id": "myed_text_color",
+          "label": "Text color",
+          "default": "#F5F7FA"
+        },
+        {
+          "type": "color",
+          "id": "myed_muted_color",
+          "label": "Muted text color",
+          "default": "#C9D0DA"
+        },
+        {
+          "type": "color",
+          "id": "myed_link_color",
+          "label": "Link color",
+          "default": "#F5F7FA"
+        },
+        {
+          "type": "color",
+          "id": "myed_underline_color",
+          "label": "Link underline color",
+          "default": "#6E7A88"
         }
       ]
     },
@@ -2078,6 +2619,40 @@
           "default": "t:sections.main-product.blocks.icon_with_text.settings.heading_3.default",
           "label": "t:sections.main-product.blocks.icon_with_text.settings.heading_3.label",
           "info": "t:sections.main-product.blocks.icon_with_text.settings.heading.info"
+        },
+        {
+          "type": "header",
+          "content": "MyED Product Info Colors"
+        },
+        {
+          "type": "checkbox",
+          "id": "myed_override_colors",
+          "label": "Override text/link colors (this block)",
+          "default": false
+        },
+        {
+          "type": "color",
+          "id": "myed_text_color",
+          "label": "Text color",
+          "default": "#F5F7FA"
+        },
+        {
+          "type": "color",
+          "id": "myed_muted_color",
+          "label": "Muted text color",
+          "default": "#C9D0DA"
+        },
+        {
+          "type": "color",
+          "id": "myed_link_color",
+          "label": "Link color",
+          "default": "#F5F7FA"
+        },
+        {
+          "type": "color",
+          "id": "myed_underline_color",
+          "label": "Link underline color",
+          "default": "#6E7A88"
         }
       ]
     }

@@ -1449,6 +1449,66 @@
         "id": "cart_color_scheme",
         "label": "t:sections.all.colors.label",
         "default": "scheme-1"
+      },
+      {
+        "type": "header",
+        "content": "MyED Cart Drawer Glass"
+      },
+      {
+        "type": "checkbox",
+        "id": "myed_cart_drawer_enable_glass",
+        "label": "Enable glass drawer",
+        "default": true
+      },
+      {
+        "type": "range",
+        "id": "myed_cart_drawer_bg_opacity",
+        "label": "Glass opacity",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "default": 45,
+        "unit": "%"
+      },
+      {
+        "type": "range",
+        "id": "myed_cart_drawer_blur",
+        "label": "Glass blur",
+        "min": 0,
+        "max": 28,
+        "step": 1,
+        "default": 14,
+        "unit": "px"
+      },
+      {
+        "type": "color",
+        "id": "myed_cart_drawer_text_color",
+        "label": "Text color",
+        "default": "#F5F7FA"
+      },
+      {
+        "type": "color",
+        "id": "myed_cart_drawer_muted_color",
+        "label": "Muted text color",
+        "default": "#C9D0DA"
+      },
+      {
+        "type": "color",
+        "id": "myed_cart_drawer_link_color",
+        "label": "Link color",
+        "default": "#F5F7FA"
+      },
+      {
+        "type": "color",
+        "id": "myed_cart_drawer_underline_color",
+        "label": "Link underline color",
+        "default": "#6E7A88"
+      },
+      {
+        "type": "color",
+        "id": "myed_cart_drawer_underline_hover_color",
+        "label": "Link underline hover",
+        "default": "#A7B3C2"
       }
     ]
   },

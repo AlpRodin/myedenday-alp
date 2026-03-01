@@ -2,6 +2,7 @@
 {{ 'component-totals.css' | asset_url | stylesheet_tag }}
 {{ 'component-price.css' | asset_url | stylesheet_tag }}
 {{ 'component-discounts.css' | asset_url | stylesheet_tag }}
+{{ 'myed-cart-glass.css' | asset_url | stylesheet_tag }}
 
 {%- style -%}
   .section-{{ section.id }}-padding {
@@ -18,9 +19,18 @@
 {%- endstyle -%}
 
 <div
-  class="gradient color-{{ section.settings.color_scheme }}{% if cart == empty %} is-empty{% endif %}"
+  class="gradient color-{{ section.settings.color_scheme }}{% if cart == empty %} is-empty{% endif %} myed-cart-scope myed-cart-footer-scope{% unless section.settings.myed_cart_enable_glass %} myed-cart-glass--off{% endunless %}"
   id="main-cart-footer"
   data-id="{{ section.id }}"
+  style="
+    --myed-cart-text-color: {{ section.settings.myed_cart_text_color }};
+    --myed-cart-muted-color: {{ section.settings.myed_cart_muted_color }};
+    --myed-cart-link-color: {{ section.settings.myed_cart_link_color }};
+    --myed-cart-underline-color: {{ section.settings.myed_cart_underline_color }};
+    --myed-cart-underline-hover-color: {{ section.settings.myed_cart_underline_hover_color }};
+    --myed-cart-card-alpha: {{ section.settings.myed_cart_bg_opacity | divided_by: 100.0 }};
+    --myed-cart-card-blur: {{ section.settings.myed_cart_blur }}px;
+  "
 >
   <div class="page-width">
     <div class="cart__footer isolate section-{{ section.id }}-padding">
@@ -167,6 +177,66 @@
       "unit": "px",
       "label": "t:sections.all.padding.padding_bottom",
       "default": 40
+    },
+    {
+      "type": "header",
+      "content": "MyED Cart Glass"
+    },
+    {
+      "type": "checkbox",
+      "id": "myed_cart_enable_glass",
+      "label": "Enable glass card",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "myed_cart_bg_opacity",
+      "label": "Glass opacity",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 45,
+      "unit": "%"
+    },
+    {
+      "type": "range",
+      "id": "myed_cart_blur",
+      "label": "Glass blur",
+      "min": 0,
+      "max": 28,
+      "step": 1,
+      "default": 14,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "myed_cart_text_color",
+      "label": "Text color",
+      "default": "#F5F7FA"
+    },
+    {
+      "type": "color",
+      "id": "myed_cart_muted_color",
+      "label": "Muted text color",
+      "default": "#C9D0DA"
+    },
+    {
+      "type": "color",
+      "id": "myed_cart_link_color",
+      "label": "Link color",
+      "default": "#F5F7FA"
+    },
+    {
+      "type": "color",
+      "id": "myed_cart_underline_color",
+      "label": "Link underline color",
+      "default": "#6E7A88"
+    },
+    {
+      "type": "color",
+      "id": "myed_cart_underline_hover_color",
+      "label": "Link underline hover",
+      "default": "#A7B3C2"
     }
   ],
   "blocks": [
