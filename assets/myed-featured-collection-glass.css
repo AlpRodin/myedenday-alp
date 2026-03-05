@@ -1,0 +1,97 @@
+/* ==========================================================================
+  MyEdenDay — Featured Collection: Glass Product Cards (SCOPED)
+  Scope: only .myed-fc-glass (featured-collection section)
+  No JS, no global card overrides
+========================================================================== */
+
+.myed-fc-glass{
+  --myed-fc-glass-bg: var(--myed-glass-bg, rgba(10, 14, 22, 0.55));
+  --myed-fc-glass-frost: var(--myed-glass-frost, rgba(255, 255, 255, 0.06));
+  --myed-fc-glass-border: var(--myed-glass-border, rgba(255, 255, 255, 0.14));
+  --myed-fc-glass-shadow: var(--myed-glass-shadow, 0 18px 40px rgba(0,0,0,0.28));
+  --myed-fc-glass-text: var(--myed-glass-text, rgba(245,247,250,0.92));
+}
+
+/* Card clips media + panel corners as one unit */
+.myed-fc-glass .card{
+  overflow: hidden;
+  border-radius: 18px;
+}
+
+/* Bottom glass panel under image (normal flow) */
+.myed-fc-glass .card > .card__content{
+  position: relative;
+  margin: 0;
+  padding: 0.95rem 1rem 1.05rem;
+  background: var(--myed-fc-glass-bg);
+  border-top: 1px solid var(--myed-fc-glass-border);
+  box-shadow: none;
+  color: var(--myed-fc-glass-text);
+}
+
+/* Frost layer */
+.myed-fc-glass .card > .card__content::before{
+  content:"";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: var(--myed-fc-glass-frost);
+}
+
+@supports ((backdrop-filter: blur(1px))){
+  .myed-fc-glass .card > .card__content::before{
+    -webkit-backdrop-filter: blur(12px) saturate(120%);
+    backdrop-filter: blur(12px) saturate(120%);
+  }
+}
+
+/* Ensure panel content sits above frost */
+.myed-fc-glass .card > .card__content > *{
+  position: relative;
+  z-index: 1;
+}
+
+/* Remove default paddings that look “cheap” on desktop */
+.myed-fc-glass .card > .card__content .card__information{
+  padding: 0;
+}
+
+.myed-fc-glass .card > .card__content .card__heading{
+  margin: 0;
+  line-height: 1.25;
+}
+
+.myed-fc-glass .card > .card__content .card__heading a{
+  color: var(--myed-fc-glass-text);
+  text-decoration: none;
+}
+
+/* Price + misc text */
+.myed-fc-glass .card > .card__content .card-information,
+.myed-fc-glass .card > .card__content .price,
+.myed-fc-glass .card > .card__content .caption-with-letter-spacing,
+.myed-fc-glass .card > .card__content .caption-large{
+  color: var(--myed-fc-glass-text);
+}
+
+/* Quick add button (CTA) stays inside the glass panel */
+.myed-fc-glass .card > .card__content .quick-add{
+  margin-top: 0.2rem;
+}
+
+.myed-fc-glass .card > .card__content .quick-add__submit{
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.18);
+  background: rgba(255,255,255,0.10);
+  color: var(--myed-fc-glass-text);
+}
+
+.myed-fc-glass .card > .card__content .quick-add__submit:hover{
+  background: rgba(255,255,255,0.16);
+}
+
+/* Keep badges visible above panel */
+.myed-fc-glass .card__badge{
+  z-index: 4;
+}

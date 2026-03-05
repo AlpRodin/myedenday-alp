@@ -1,0 +1,97 @@
+/* MyEdenDay — Collapsible Content Glass (scoped via section vars) */
+.myed-cc-surface .myed-cc-glass{
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--myed-cc-radius, 22px);
+  padding: clamp(16px, 2.4vw, 28px) clamp(18px, 3vw, 34px);
+  background: rgba(10,14,22,var(--myed-cc-bg-alpha,0.35));
+  border: 1px solid rgba(255,255,255,var(--myed-cc-border-alpha,0.14));
+  box-shadow: 0 18px 40px rgba(0,0,0,0.22);
+}
+
+.myed-cc-surface .myed-cc-glass::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  border-radius: inherit;
+  background: rgba(255,255,255,var(--myed-cc-frost-alpha,0.12));
+}
+
+@supports ((backdrop-filter: blur(1px))){
+  .myed-cc-surface .myed-cc-glass::before{
+    -webkit-backdrop-filter: blur(var(--myed-cc-blur,12px)) saturate(120%);
+    backdrop-filter: blur(var(--myed-cc-blur,12px)) saturate(120%);
+  }
+}
+
+.myed-cc-surface .myed-cc-glass > *{ position: relative; z-index: 1; }
+
+/* Text color (safe) */
+.myed-cc-surface .myed-cc-glass :is(h1,h2,h3,h4,p,span,li,summary,details,.rte,.rte *){
+  color: rgba(var(--myed-cc-text-rgb,245,247,250),0.92);
+}
+.myed-cc-surface .myed-cc-glass .rte a{
+  color: rgba(var(--myed-cc-text-rgb,245,247,250),0.92);
+  text-underline-offset: 0.2em;
+}
+
+/* Accordion rows — lightweight glass (no heavy per-row blur) */
+.myed-cc-surface .myed-cc-glass .accordion{
+  border-color: rgba(255,255,255,0.10);
+}
+
+.myed-cc-surface .myed-cc-glass .accordion summary{
+  border-radius: 14px;
+  background: rgba(10,14,22,0.18);
+  border: 1px solid rgba(255,255,255,0.10);
+  padding: 14px 16px;
+}
+
+.myed-cc-surface .myed-cc-glass .accordion[open] summary{
+  background: rgba(10,14,22,0.22);
+  border-color: rgba(255,255,255,0.14);
+}
+
+.myed-cc-surface .myed-cc-glass .accordion__content{
+  margin-top: 10px;
+  border-radius: 14px;
+  background: rgba(10,14,22,0.14);
+  border: 1px solid rgba(255,255,255,0.10);
+  padding: 14px 16px;
+}
+
+/* Media/Image glass frame */
+.myed-cc-surface .myed-cc-image-glass{
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--myed-cc-radius, 22px);
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(10,14,22,0.12);
+  box-shadow: 0 18px 40px rgba(0,0,0,0.18);
+}
+
+.myed-cc-surface .myed-cc-image-glass::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  border-radius: inherit;
+  background: rgba(255,255,255,0.08);
+}
+
+@supports ((backdrop-filter: blur(1px))){
+  .myed-cc-surface .myed-cc-image-glass::before{
+    -webkit-backdrop-filter: blur(calc(var(--myed-cc-blur,12px) * 0.75)) saturate(120%);
+    backdrop-filter: blur(calc(var(--myed-cc-blur,12px) * 0.75)) saturate(120%);
+  }
+}
+
+.myed-cc-surface .myed-cc-image-glass > *{ position: relative; z-index: 1; }
+
+/* Mobile spacing */
+@media (max-width: 749px){
+  .myed-cc-surface .myed-cc-glass{
+    padding: 16px 18px;
+  }
+}

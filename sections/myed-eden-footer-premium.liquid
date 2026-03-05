@@ -1,0 +1,494 @@
+{%- comment -%}
+  FILE: sections/myedenday-footer-premium.liquid
+  MyEdenDay — Footer (Premium) — PRO v5 (PILLS + ICONS + DIVIDER/SPACER + BADGES + OPTIONAL OK BUTTONS)
+
+  Fix:
+  - CSS include name matched: assets/myed-eden-footer-premium.css
+  - menu_column blocks render as panels (CSS now applies)
+  - Added badge_icon blocks (render + UI)
+  - Legal pills stay as bottom pill row (icon + link)
+  - Localization optional OK buttons
+{%- endcomment -%}
+
+{{ 'myed-eden-footer-premium.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign sid  = section.id
+  assign root = 'edf-' | append: sid
+
+  assign text_rgb = section.settings.text_color | color_to_rgb | remove: 'rgb(' | remove: ')' | strip
+  assign bg_rgb   = section.settings.bg_color   | color_to_rgb | remove: 'rgb(' | remove: ')' | strip
+
+  assign bg_img_d = section.settings.bg_image_desktop
+  assign bg_img_m = section.settings.bg_image_mobile
+
+  assign has_bg = false
+  if bg_img_d != blank or bg_img_m != blank
+    assign has_bg = true
+  endif
+
+  assign overlay_alpha = section.settings.bg_overlay_opacity | default: 18 | times: 0.01
+
+  assign enable_shimmer = section.settings.enable_shimmer
+  assign shimmer_opacity = section.settings.shimmer_opacity | default: 10 | times: 0.01
+
+  assign has_legal_pills = false
+  assign has_badges = false
+
+  for b in section.blocks
+    if b.type == 'legal_pill'
+      assign has_legal_pills = true
+    endif
+    if b.type == 'badge_icon'
+      assign has_badges = true
+    endif
+  endfor
+
+  assign show_ok = section.settings.show_ok_buttons
+-%}
+
+<footer
+  id="{{ root }}"
+  class="edf{% if has_bg %} edf--has-bg{% endif %}{% if enable_shimmer and has_bg %} edf--shimmer{% endif %}{% if request.design_mode %} edf--design{% endif %}{% if show_ok %} edf--ok{% endif %}"
+  data-edf
+>
+  {% style %}
+    #{{ root }}{
+      --edf-bg: {{ section.settings.bg_color }};
+      --edf-bg-rgb: {{ bg_rgb }};
+      --edf-text: {{ section.settings.text_color }};
+      --edf-text-rgb: {{ text_rgb }};
+      --edf-muted: {{ section.settings.muted_color }};
+      --edf-line: {{ section.settings.line_color }};
+      --edf-accent: {{ section.settings.accent_color }};
+
+      --edf-overlay: {{ section.settings.bg_overlay_color | color_modify: 'alpha', overlay_alpha }};
+
+      --edf-bg-image-d: {% if bg_img_d != blank %}url('{{ bg_img_d | image_url: width: 2400 }}'){% else %}none{% endif %};
+      --edf-bg-image-m: {% if bg_img_m != blank %}url('{{ bg_img_m | image_url: width: 1600 }}'){% else %}none{% endif %};
+
+      --edf-shimmer-a: {{ shimmer_opacity }};
+
+      --edf-maxw: {{ section.settings.max_width }}px;
+      --edf-logo-w: {{ section.settings.logo_width }}px;
+
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  {% endstyle %}
+
+  <div class="edf-wrap">
+    <div class="edf-top">
+      <!-- Brand (LOGO AYNI KALSIN) -->
+      <div class="edf-brand edf-panel">
+        {%- if section.settings.logo != blank -%}
+          <a class="edf-logo" href="{{ section.settings.logo_link | default: routes.root_url }}">
+            {{ section.settings.logo | image_url: width: 600 | image_tag: loading: 'lazy', alt: section.settings.logo_alt | default: shop.name }}
+          </a>
+        {%- else -%}
+          <a class="edf-logo edf-logo--text" href="{{ routes.root_url }}">{{ shop.name }}</a>
+        {%- endif -%}
+
+        {%- if section.settings.brand_text != blank -%}
+          <div class="edf-brand-text rte">{{ section.settings.brand_text }}</div>
+        {%- endif -%}
+
+        {%- if section.settings.show_social -%}
+          <div class="edf-social" aria-label="Social links">
+            {%- for block in section.blocks -%}
+              {%- if block.type == 'social_link' and block.settings.url != blank and block.settings.label != blank -%}
+                <a href="{{ block.settings.url }}" target="_blank" rel="noopener" class="edf-pill-mini" {{ block.shopify_attributes }}>
+                  {%- if block.settings.icon != blank -%}
+                    <span class="edf-pill__icon">
+                      {{ block.settings.icon | image_url: width: 64 | image_tag: loading: 'lazy', alt: block.settings.label | escape }}
+                    </span>
+                  {%- endif -%}
+                  <span class="edf-pill__text">{{ block.settings.label | escape }}</span>
+                </a>
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+
+        {%- if section.settings.note != blank -%}
+          <div class="edf-note">{{ section.settings.note }}</div>
+        {%- endif -%}
+      </div>
+
+      <!-- Menus area -->
+      <div class="edf-menus" aria-label="Footer menus">
+        {%- for block in section.blocks -%}
+          {%- case block.type -%}
+
+            {%- when 'menu_column' -%}
+              <div class="edf-col edf-panel" {{ block.shopify_attributes }}>
+                {%- if block.settings.heading != blank -%}
+                  <h3 class="edf-h">{{ block.settings.heading | escape }}</h3>
+                {%- endif -%}
+                {%- if block.settings.menu != blank -%}
+                  <ul class="edf-links">
+                    {%- for link in block.settings.menu.links -%}
+                      <li><a href="{{ link.url }}">{{ link.title | escape }}</a></li>
+                    {%- endfor -%}
+                  </ul>
+                {%- endif -%}
+              </div>
+
+            {%- when 'newsletter' -%}
+              <div class="edf-col edf-panel edf-newsletter" {{ block.shopify_attributes }}>
+                {%- if block.settings.kicker != blank -%}
+                  <h3 class="edf-h">{{ block.settings.kicker | escape }}</h3>
+                {%- endif -%}
+                {%- if block.settings.text != blank -%}
+                  <p class="edf-news-text">{{ block.settings.text | escape }}</p>
+                {%- endif -%}
+                {%- form 'customer' -%}
+                  <input type="hidden" name="contact[tags]" value="newsletter">
+                  <div class="edf-form-row">
+                    <label class="visually-hidden" for="EdfEmail-{{ block.id }}-{{ section.id }}">Email</label>
+                    <input
+                      id="EdfEmail-{{ block.id }}-{{ section.id }}"
+                      class="edf-input"
+                      type="email"
+                      name="contact[email]"
+                      value="{{ form.email }}"
+                      autocomplete="email"
+                      autocorrect="off"
+                      autocapitalize="off"
+                      placeholder="{{ block.settings.placeholder | default: 'Email address' | escape }}"
+                      required
+                    >
+                    <button class="edf-btn" type="submit" name="commit">
+                      {{ block.settings.button_label | default: 'Subscribe' | escape }}
+                    </button>
+                  </div>
+                {%- endform -%}
+              </div>
+
+            {%- when 'divider' -%}
+              <div class="edf-divider" data-guide="Divider" {{ block.shopify_attributes }}></div>
+
+            {%- when 'spacer' -%}
+              <div
+                class="edf-spacer"
+                style="--edf-spacer-h: {{ block.settings.height | default: 12 }}px"
+                data-guide="Spacer"
+                {{ block.shopify_attributes }}
+              ></div>
+
+          {%- endcase -%}
+        {%- endfor -%}
+
+        {%- if section.settings.legal_menu != blank and section.settings.show_legal_column -%}
+          <div class="edf-col edf-panel">
+            <h3 class="edf-h">{{ section.settings.legal_heading | escape }}</h3>
+            <ul class="edf-links">
+              {%- for link in section.settings.legal_menu.links -%}
+                <li><a href="{{ link.url }}">{{ link.title | escape }}</a></li>
+              {%- endfor -%}
+            </ul>
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+
+    <!-- Bottom -->
+    <div class="edf-bottom">
+      <div class="edf-meta">
+        <span>© {{ 'now' | date: '%Y' }} {{ shop.name }}</span>
+
+        {%- if section.settings.small_legal_text != blank -%}
+          <span>{{ section.settings.small_legal_text }}</span>
+        {%- endif -%}
+      </div>
+
+      {%- if section.settings.show_payments -%}
+        <div class="edf-payments" aria-label="Payment methods">
+          {%- assign has_any_payment = false -%}
+
+          {%- if section.settings.payments_mode == 'enabled' or section.settings.payments_mode == 'enabled_plus_custom' -%}
+            {%- for type in shop.enabled_payment_types -%}
+              {%- assign has_any_payment = true -%}
+              <span class="edf-pay">{{ type | payment_type_svg_tag }}</span>
+            {%- endfor -%}
+          {%- endif -%}
+
+          {%- if section.settings.payments_mode == 'custom' or section.settings.payments_mode == 'enabled_plus_custom' -%}
+            {%- for block in section.blocks -%}
+              {%- if block.type == 'payment_icon' and block.settings.icon != blank -%}
+                {%- assign has_any_payment = true -%}
+                <span class="edf-pay" {{ block.shopify_attributes }}>
+                  {{ block.settings.icon | image_url: width: 200 | image_tag: loading: 'lazy', alt: block.settings.alt | default: 'Payment' }}
+                </span>
+              {%- endif -%}
+            {%- endfor -%}
+          {%- endif -%}
+
+          {%- if request.design_mode and has_any_payment == false -%}
+            <span class="edf-hint">
+              Payment icons aktif değil: “Show payment icons” açık olmalı ve “Payment icons source” doğru seçilmeli.
+            </span>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    </div>
+
+    <!-- Legal bar: pills + badges + localization -->
+    {%- if has_legal_pills or section.settings.legal_menu != blank or has_badges or section.settings.show_localization -%}
+      <div class="edf-legalbar" aria-label="Legal pills">
+        <div class="edf-legalleft">
+          <div class="edf-legalpills">
+            {%- if has_legal_pills -%}
+              {%- for block in section.blocks -%}
+                {%- if block.type == 'legal_pill' and block.settings.link != blank -%}
+                  <a class="edf-pill" href="{{ block.settings.link }}" {{ block.shopify_attributes }}>
+                    {%- if block.settings.icon != blank -%}
+                      <span class="edf-pill__icon">
+                        {{ block.settings.icon | image_url: width: 64 | image_tag: loading: 'lazy', alt: block.settings.label | escape }}
+                      </span>
+                    {%- endif -%}
+                    <span class="edf-pill__text">{{ block.settings.label | default: 'Link' | escape }}</span>
+                  </a>
+                {%- endif -%}
+              {%- endfor -%}
+            {%- else -%}
+              {%- for link in section.settings.legal_menu.links -%}
+                <a class="edf-pill" href="{{ link.url }}">
+                  <span class="edf-pill__text">{{ link.title | escape }}</span>
+                </a>
+              {%- endfor -%}
+            {%- endif -%}
+          </div>
+
+          {%- if has_badges -%}
+            <div class="edf-badges" aria-label="Badges">
+              {%- for block in section.blocks -%}
+                {%- if block.type == 'badge_icon' and block.settings.image != blank -%}
+                  {%- assign badge_alt = block.settings.alt | default: 'Badge' -%}
+                  {%- if block.settings.link != blank -%}
+                    <a class="edf-badge" href="{{ block.settings.link }}" {{ block.shopify_attributes }}>
+                      {{ block.settings.image | image_url: width: 96 | image_tag: loading: 'lazy', alt: badge_alt }}
+                    </a>
+                  {%- else -%}
+                    <span class="edf-badge" {{ block.shopify_attributes }}>
+                      {{ block.settings.image | image_url: width: 96 | image_tag: loading: 'lazy', alt: badge_alt }}
+                    </span>
+                  {%- endif -%}
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
+          {%- endif -%}
+        </div>
+
+        {%- if section.settings.show_localization -%}
+          <div class="edf-loc">
+            {%- if localization.available_countries.size > 1 -%}
+              <localization-form>
+                {%- form 'localization' -%}
+                  <select name="country_code" aria-label="Country">
+                    {%- for country in localization.available_countries -%}
+                      <option value="{{ country.iso_code }}" {% if country.iso_code == localization.country.iso_code %}selected{% endif %}>
+                        {{ country.name }} ({{ country.currency.iso_code }})
+                      </option>
+                    {%- endfor -%}
+                  </select>
+                  {%- if show_ok -%}
+                    <button class="edf-ok" type="submit">{{ section.settings.country_ok_label | default: 'OK' | escape }}</button>
+                  {%- endif -%}
+                {%- endform -%}
+              </localization-form>
+            {%- endif -%}
+
+            {%- if localization.available_languages.size > 1 -%}
+              <localization-form>
+                {%- form 'localization' -%}
+                  <select name="locale_code" aria-label="Language">
+                    {%- for language in localization.available_languages -%}
+                      <option value="{{ language.iso_code }}" {% if language.iso_code == localization.language.iso_code %}selected{% endif %}>
+                        {{ language.endonym_name }}
+                      </option>
+                    {%- endfor -%}
+                  </select>
+                  {%- if show_ok -%}
+                    <button class="edf-ok" type="submit">{{ section.settings.language_ok_label | default: 'OK' | escape }}</button>
+                  {%- endif -%}
+                {%- endform -%}
+              </localization-form>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+  </div>
+
+  <script>
+    (function(){
+      var root = document.getElementById({{ root | json }});
+      if(!root) return;
+
+      var okMode = root.classList.contains('edf--ok');
+      if(okMode) return; // OK butonları açıkken auto-submit yapma
+
+      var selects = root.querySelectorAll('localization-form select');
+      if(!selects.length) return;
+
+      selects.forEach(function(sel){
+        sel.addEventListener('change', function(){
+          var form = sel.closest('form');
+          if(form) form.submit();
+        });
+      });
+    })();
+  </script>
+</footer>
+
+{% schema %}
+{
+  "name": "Eden Footer Premium",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    { "type": "range", "id": "max_width", "label": "Max width", "min": 900, "max": 1400, "step": 20, "unit": "px", "default": 1200 },
+
+    { "type": "header", "content": "Background image + overlay" },
+    { "type": "image_picker", "id": "bg_image_desktop", "label": "Background image (desktop)" },
+    { "type": "image_picker", "id": "bg_image_mobile", "label": "Background image (mobile)" },
+    { "type": "color", "id": "bg_overlay_color", "label": "Overlay color", "default": "#000000" },
+    { "type": "range", "id": "bg_overlay_opacity", "label": "Overlay opacity (%)", "min": 0, "max": 65, "step": 1, "default": 18 },
+
+    { "type": "header", "content": "Premium shimmer (subtle motion)" },
+    { "type": "checkbox", "id": "enable_shimmer", "label": "Enable shimmer", "default": true },
+    { "type": "range", "id": "shimmer_opacity", "label": "Shimmer intensity (%)", "min": 0, "max": 22, "step": 1, "default": 10 },
+
+    { "type": "header", "content": "Brand" },
+    { "type": "image_picker", "id": "logo", "label": "Footer logo" },
+    { "type": "range", "id": "logo_width", "label": "Logo width", "min": 80, "max": 220, "step": 10, "unit": "px", "default": 140 },
+    { "type": "text", "id": "logo_alt", "label": "Logo alt text (optional)" },
+    { "type": "url", "id": "logo_link", "label": "Logo link (optional)" },
+    { "type": "richtext", "id": "brand_text", "label": "Brand text", "default": "<p>Premium daily rituals for calm, order, and repetition.</p>" },
+    { "type": "text", "id": "note", "label": "Small note (optional)" },
+
+    { "type": "header", "content": "Legal menu (optional column)" },
+    { "type": "checkbox", "id": "show_legal_column", "label": "Show Rechtliches as a column", "default": false },
+    { "type": "text", "id": "legal_heading", "label": "Legal heading", "default": "Rechtliches" },
+    { "type": "link_list", "id": "legal_menu", "label": "Legal menu (fallback if no legal pills)" },
+    { "type": "text", "id": "small_legal_text", "label": "Bottom micro text (optional)" },
+
+    { "type": "header", "content": "Social" },
+    { "type": "checkbox", "id": "show_social", "label": "Show social links", "default": true },
+
+    { "type": "header", "content": "Payments" },
+    { "type": "checkbox", "id": "show_payments", "label": "Show payment icons", "default": true },
+    {
+      "type": "select",
+      "id": "payments_mode",
+      "label": "Payment icons source",
+      "default": "enabled",
+      "options": [
+        { "value": "enabled", "label": "Enabled Shopify payments (auto)" },
+        { "value": "custom", "label": "Custom icons only (blocks)" },
+        { "value": "enabled_plus_custom", "label": "Enabled + Custom (blocks)" }
+      ]
+    },
+
+    { "type": "header", "content": "Localization" },
+    { "type": "checkbox", "id": "show_localization", "label": "Show country/language selector (if available)", "default": true },
+    { "type": "checkbox", "id": "show_ok_buttons", "label": "Show OK buttons", "default": false },
+    { "type": "text", "id": "country_ok_label", "label": "Country OK label", "default": "OK" },
+    { "type": "text", "id": "language_ok_label", "label": "Language OK label", "default": "OK" },
+
+    { "type": "header", "content": "Design" },
+    { "type": "color", "id": "bg_color", "label": "Fallback background (no image)", "default": "#0B0B0B" },
+    { "type": "color", "id": "text_color", "label": "Text", "default": "#F2F2F2" },
+    { "type": "color", "id": "muted_color", "label": "Muted", "default": "#B8B8B8" },
+    { "type": "color", "id": "line_color", "label": "Line", "default": "#232323" },
+    { "type": "color", "id": "accent_color", "label": "Accent", "default": "#A67B5B" },
+
+    { "type": "header", "content": "Spacing" },
+    { "type": "range", "id": "padding_top", "min": 20, "max": 120, "step": 4, "unit": "px", "label": "Top", "default": 48 },
+    { "type": "range", "id": "padding_bottom", "min": 20, "max": 140, "step": 4, "unit": "px", "label": "Bottom", "default": 52 }
+  ],
+  "blocks": [
+    {
+      "type": "menu_column",
+      "name": "Menu column",
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Heading", "default": "Service" },
+        { "type": "link_list", "id": "menu", "label": "Menu" }
+      ]
+    },
+    {
+      "type": "newsletter",
+      "name": "Newsletter",
+      "settings": [
+        { "type": "text", "id": "kicker", "label": "Kicker", "default": "Newsletter" },
+        { "type": "text", "id": "text", "label": "Text", "default": "Short, calm updates. No spam." },
+        { "type": "text", "id": "placeholder", "label": "Email placeholder", "default": "Email address" },
+        { "type": "text", "id": "button_label", "label": "Button label", "default": "Subscribe" }
+      ]
+    },
+    {
+      "type": "legal_pill",
+      "name": "Legal pill (icon + link)",
+      "settings": [
+        { "type": "image_picker", "id": "icon", "label": "Pill icon (badge)" },
+        { "type": "text", "id": "label", "label": "Label", "default": "Impressum" },
+        { "type": "url", "id": "link", "label": "Link" }
+      ]
+    },
+    {
+      "type": "badge_icon",
+      "name": "Badge icon (image)",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Badge image" },
+        { "type": "text", "id": "alt", "label": "Alt text", "default": "Badge" },
+        { "type": "url", "id": "link", "label": "Optional link" }
+      ]
+    },
+    { "type": "divider", "name": "Divider line", "settings": [] },
+    {
+      "type": "spacer",
+      "name": "Spacer",
+      "settings": [
+        { "type": "range", "id": "height", "label": "Height", "min": 4, "max": 60, "step": 2, "unit": "px", "default": 12 }
+      ]
+    },
+    {
+      "type": "payment_icon",
+      "name": "Payment icon (custom)",
+      "settings": [
+        { "type": "image_picker", "id": "icon", "label": "Icon image (SVG/PNG)" },
+        { "type": "text", "id": "alt", "label": "Alt text (optional)" }
+      ]
+    },
+    {
+      "type": "social_link",
+      "name": "Social link (pill)",
+      "settings": [
+        { "type": "image_picker", "id": "icon", "label": "Optional icon" },
+        { "type": "text", "id": "label", "label": "Label", "default": "Instagram" },
+        { "type": "url", "id": "url", "label": "URL" }
+      ]
+    }
+  ],
+  "max_blocks": 50,
+  "presets": [
+    {
+      "name": "Eden Footer Premium",
+      "blocks": [
+        { "type": "menu_column", "settings": { "heading": "Rituale" } },
+        { "type": "menu_column", "settings": { "heading": "Informationen" } },
+        { "type": "menu_column", "settings": { "heading": "Service" } },
+        { "type": "newsletter" },
+        { "type": "divider" },
+        { "type": "spacer", "settings": { "height": 12 } },
+        { "type": "legal_pill", "settings": { "label": "Impressum" } },
+        { "type": "legal_pill", "settings": { "label": "Datenschutz" } },
+        { "type": "legal_pill", "settings": { "label": "AGB" } },
+        { "type": "legal_pill", "settings": { "label": "Widerruf" } },
+        { "type": "social_link", "settings": { "label": "Instagram" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

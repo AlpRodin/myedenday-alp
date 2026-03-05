@@ -1,0 +1,4 @@
+# Shopify CLI theme config for myedenday-alp
+store = "myedenday-3.myshopify.com"
+# theme_id will be set after theme list
+theme_id = "194591588690"

@@ -1,0 +1,26 @@
+/* MyEdenDay — Site Background (stable) */
+html { background: transparent !important; }
+
+body.myed-has-site-bg,
+body.myed-has-site-bg.gradient {
+  background: transparent !important;
+}
+
+.myed-site-bg{
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: -1;
+
+  background: var(--myed-bg-image, none) center / cover no-repeat;
+  background-attachment: fixed;
+
+  opacity: calc(clamp(0, var(--myed-bg-opacity, 0.18), 1) * var(--myed-bg-enabled, 0));
+}
+
+@media (max-width: 749px){
+  .myed-site-bg{ background-attachment: scroll; }
+}
+

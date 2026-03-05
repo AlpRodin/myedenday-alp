@@ -1,0 +1,305 @@
+{%- comment -%}
+  MyEdenDay — Featured Grid (Reusable, Shopify-safe)
+  - Collection-driven product grid
+  - Optional anchor id for cross-section linking (Eden Cycle -> Featured Grid)
+  - No libraries, minimal JS (none)
+{%- endcomment -%}
+
+{% style %}
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=Manrope:wght@400;500;700;800;900&display=swap');
+
+#shopify-section-{{ section.id }}{
+  --bg: {{ section.settings.bg }};
+  --text: {{ section.settings.text }};
+  --accent: {{ section.settings.accent }};
+  --border: {{ section.settings.border }};
+  --radius: 16px;
+}
+
+#shopify-section-{{ section.id }} .ed-grid{
+  background: var(--bg);
+  color: var(--text);
+  padding: {{ section.settings.pad_y }}px 0;
+}
+
+#shopify-section-{{ section.id }} .ed-container{
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+#shopify-section-{{ section.id }} .ed-head{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:16px;
+  margin-bottom:18px;
+}
+
+#shopify-section-{{ section.id }} .ed-title{
+  margin:0;
+  font-size: clamp(22px, 2.4vw, 32px);
+  font-weight: 900;
+  color: var(--accent);
+  letter-spacing:-0.01em;
+}
+
+#shopify-section-{{ section.id }} .ed-sub{
+  margin-top:6px;
+  font-size:14px;
+  line-height:1.55;
+  color: color-mix(in srgb, var(--text) 78%, transparent);
+  max-width: 56ch;
+}
+
+#shopify-section-{{ section.id }} .ed-viewall{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  text-decoration:none;
+  font-weight: 900;
+  font-size: 12px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  border-bottom: 1px solid rgba(58, 64, 53, 0.25);
+  border-bottom: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+  padding-bottom: 3px;
+  white-space:nowrap;
+}
+#shopify-section-{{ section.id }} .ed-viewall:hover{
+  border-bottom-color: color-mix(in srgb, var(--accent) 60%, transparent);
+}
+
+#shopify-section-{{ section.id }} .ed-grid-items{
+  display:grid;
+  gap:14px;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+@media (min-width: 768px){
+  #shopify-section-{{ section.id }} .ed-grid-items{
+    gap:16px;
+    grid-template-columns: repeat({{ section.settings.cols_d }}, 1fr);
+  }
+}
+
+#shopify-section-{{ section.id }} .ed-card{
+    border: 1px solid rgba(229, 226, 217, 0.9);
+    border: 1px solid color-mix(in srgb, var(--border) 90%, transparent);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, #fff 60%, transparent);
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  min-height: 100%;
+}
+
+#shopify-section-{{ section.id }} .ed-media{
+  aspect-ratio:1/1;
+  overflow:hidden;
+  background: color-mix(in srgb, #fff 70%, transparent);
+}
+
+#shopify-section-{{ section.id }} .ed-media img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+
+#shopify-section-{{ section.id }} .ed-body{
+  padding:14px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  flex:1 1 auto;
+}
+
+#shopify-section-{{ section.id }} .ed-title-sm{
+  margin:0;
+  font-size:14px;
+  font-weight:900;
+  line-height:1.25;
+  color: var(--accent);
+}
+
+#shopify-section-{{ section.id }} .ed-price{
+  font-size:14px;
+  font-weight:900;
+  color: var(--accent);
+  opacity:.92;
+}
+
+#shopify-section-{{ section.id }} .ed-actions{
+  margin-top:auto;
+}
+
+#shopify-section-{{ section.id }} .ed-btn{
+  display:inline-flex;
+  width:100%;
+  justify-content:center;
+  padding:12px;
+  text-align:center;
+  border-radius:12px;
+  border:1px solid var(--accent);
+  background: transparent;
+  color: var(--accent);
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  text-decoration:none;
+}
+#shopify-section-{{ section.id }} .ed-btn:hover{
+  background: var(--accent);
+  color:#fff;
+}
+
+#shopify-section-{{ section.id }} .ed-empty{
+  margin:0;
+  padding: 48px 24px;
+  text-align: center;
+  border:1px dashed rgba(229, 226, 217, 0.9);
+  border:1px dashed color-mix(in srgb, var(--border) 100%, transparent);
+  border-radius: 12px;
+  color: rgba(74, 74, 74, 0.78);
+  color: color-mix(in srgb, var(--text) 78%, transparent);
+}
+#shopify-section-{{ section.id }} .ed-empty svg{
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 16px;
+  opacity: 0.3;
+  stroke: currentColor;
+}
+#shopify-section-{{ section.id }} .ed-empty h3{
+  margin: 0 0 8px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+}
+#shopify-section-{{ section.id }} .ed-empty p{
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+}
+{% endstyle %}
+
+{%- assign anchor_id = section.settings.anchor_id | default: 'featured-grid' | handle -%}
+
+<section class="ed-grid" id="{{ anchor_id }}" aria-label="Featured products" data-ed-featured-grid="{{ anchor_id }}">
+  <div class="ed-container">
+
+    <div class="ed-head">
+      <div>
+        {%- if section.settings.title != blank -%}
+          <h2 class="ed-title">{{ section.settings.title }}</h2>
+        {%- endif -%}
+        {%- if section.settings.sub != blank -%}
+          <div class="ed-sub">{{ section.settings.sub }}</div>
+        {%- endif -%}
+      </div>
+
+      {%- if section.settings.collection != blank and section.settings.show_view_all -%}
+        <a class="ed-viewall" href="{{ section.settings.collection.url }}" data-ed-featured-viewall>
+          {{ section.settings.view_all_label }}
+        </a>
+      {%- endif -%}
+    </div>
+
+    {%- if section.settings.collection == blank -%}
+      <div class="ed-empty">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M20 7h-4V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2H4a1 1 0 000 2h1v11a2 2 0 002 2h10a2 2 0 002-2V9h1a1 1 0 100-2zM10 5h4v2h-4V5z" stroke="currentColor" stroke-width="2"/></svg>
+        <h3>Noch keine Collection ausgewählt</h3>
+        <p>Gehe zum Theme Editor und wähle eine Collection aus, um Produkte anzuzeigen.</p>
+      </div>
+    {%- elsif section.settings.collection.products_count == 0 -%}
+      <div class="ed-empty">
+        <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path d="M12 8v4M12 16h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <h3>Diese Collection ist leer</h3>
+        <p>Füge Produkte zur Collection "{{ section.settings.collection.title }}" hinzu, um sie hier anzuzeigen.</p>
+      </div>
+    {%- else -%}
+      <div class="ed-grid-items">
+        {%- for product in section.settings.collection.products limit: section.settings.limit -%}
+          <article class="ed-card">
+            <a class="ed-media" href="{{ product.url }}" aria-label="{{ product.title | escape }}" data-ed-featured-link data-product-title="{{ product.title | escape }}">
+              {%- if product.featured_image -%}
+                <picture>
+                  <source
+                    srcset="{{ product.featured_image | image_url: width: 240, format: 'webp' }} 240w,
+                            {{ product.featured_image | image_url: width: 360, format: 'webp' }} 360w,
+                            {{ product.featured_image | image_url: width: 480, format: 'webp' }} 480w,
+                            {{ product.featured_image | image_url: width: 600, format: 'webp' }} 600w,
+                            {{ product.featured_image | image_url: width: 800, format: 'webp' }} 800w"
+                    sizes="(max-width: 560px) 100vw, (max-width: 990px) 50vw, 25vw"
+                    type="image/webp"
+                  />
+                  {{
+                    product.featured_image
+                    | image_url: width: 800
+                    | image_tag:
+                      loading: 'lazy',
+                      widths: '240, 360, 480, 600, 720, 800',
+                      sizes: '(max-width: 560px) 100vw, (max-width: 990px) 50vw, 25vw',
+                      alt: product.featured_image.alt | default: product.title | escape
+                  }}
+                </picture>
+              {%- else -%}
+                {{ 'product-1' | placeholder_svg_tag }}
+              {%- endif -%}
+            </a>
+
+            <div class="ed-body">
+              <h3 class="ed-title-sm">{{ product.title }}</h3>
+              <div class="ed-price">{{ product.price | money }}</div>
+
+              <div class="ed-actions">
+                <a class="ed-btn" href="{{ product.url }}">
+                  {{ section.settings.details_label }}
+                </a>
+              </div>
+            </div>
+          </article>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "MyEdenDay — Featured Grid",
+  "settings": [
+    { "type": "text", "id": "anchor_id", "label": "Anchor ID (scroll hedefi)", "default": "featured-grid" },
+
+    { "type": "text", "id": "title", "label": "Başlık", "default": "Bestseller" },
+    { "type": "richtext", "id": "sub", "label": "Alt metin", "default": "<p>Unsere beliebtesten Produkte</p>" },
+
+    { "type": "collection", "id": "collection", "label": "Kollektion" },
+    { "type": "range", "id": "limit", "label": "Ürün sayısı", "min": 4, "max": 12, "step": 1, "default": 8 },
+
+    { "type": "header", "content": "Layout" },
+    { "type": "range", "id": "cols_d", "label": "Desktop kolon", "min": 2, "max": 4, "step": 1, "default": 4 },
+    { "type": "range", "id": "pad_y", "label": "Dikey boşluk", "min": 24, "max": 96, "step": 4, "unit": "px", "default": 56 },
+
+    { "type": "header", "content": "Buton" },
+    { "type": "text", "id": "details_label", "label": "Buton yazısı", "default": "Details" },
+
+    { "type": "header", "content": "View all" },
+    { "type": "checkbox", "id": "show_view_all", "label": "Kollektion linki göster", "default": true },
+    { "type": "text", "id": "view_all_label", "label": "Link yazısı", "default": "View all" },
+
+    { "type": "header", "content": "Renkler" },
+    { "type": "color", "id": "bg", "label": "Arka plan", "default": "#F9F8F5" },
+    { "type": "color", "id": "text", "label": "Metin", "default": "#4A4A4A" },
+    { "type": "color", "id": "accent", "label": "Vurgu", "default": "#3A4035" },
+    { "type": "color", "id": "border", "label": "Border", "default": "#E5E2D9" }
+  ],
+  "presets": [
+    { "name": "MyEdenDay — Featured Grid" }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,157 @@
+﻿/* ==========================================================================
+  MyEdenDay - Header Localization Glass (FINAL, SINGLE SOURCE)
+  Fixes:
+  - Header triggers (Deutschland/EUR/Deutsch) + icons + hamburger share SAME color
+  - Popover dropdown is glass + white text (only inside popover)
+  - Scoped to header only, logo untouched
+========================================================================== */
+
+/* Real header wrapper selector (Dawn): .shopify-section.section-header */
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) {
+  --myed-header-fg: var(--myed-header-text, rgb(var(--color-foreground, 17, 17, 17)));
+}
+
+/* ---------- HEADER CONTROLS: ONE COLOR ---------- */
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) :is(
+  .header__icons,
+  .header__icons a,
+  .header__icons button,
+  .header__icon,
+  .header__menu-item,
+  localization-form,
+  .localization-form,
+  .localization-selector,
+  .localization-form__select,
+  .disclosure__button
+){
+  color: var(--myed-header-fg) !important;
+  opacity: 1 !important;
+}
+
+/* Ensure trigger text/caret inside button inherits trigger color */
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) :is(
+  localization-form .disclosure__button,
+  .localization-form .disclosure__button,
+  .localization-form__select
+),
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) :is(
+  localization-form .disclosure__button *,
+  .localization-form .disclosure__button *,
+  .localization-form__select *
+){
+  color: inherit !important;
+}
+
+/* SVG icons follow currentColor */
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) :is(
+  .header__icons svg,
+  .header__icon svg,
+  localization-form svg,
+  .localization-form svg
+){
+  color: inherit !important;
+}
+
+/* SVG strokes/fills use currentColor */
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) :is(.header__icons, .header__icon, localization-form, .localization-form) svg [fill]:not([fill="none"]){
+  fill: currentColor !important;
+}
+
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) :is(.header__icons, .header__icon, localization-form, .localization-form) svg path,
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) :is(.header__icons, .header__icon, localization-form, .localization-form) svg circle,
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) :is(.header__icons, .header__icon, localization-form, .localization-form) svg rect,
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) :is(.header__icons, .header__icon, localization-form, .localization-form) svg line,
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) :is(.header__icons, .header__icon, localization-form, .localization-form) svg polyline,
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) :is(.header__icons, .header__icon, localization-form, .localization-form) svg polygon{
+  stroke: currentColor !important;
+}
+
+/* Caret / chevrons in localization triggers */
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) .icon-caret,
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) .icon-caret *{
+  stroke: currentColor !important;
+  fill: currentColor !important;
+}
+
+/* ---------- DROPDOWN POPOVER: GLASS + WHITE TEXT (only inside popover) ---------- */
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) :is(localization-form, .localization-form, .disclosure){
+  --myed-loc-bg: rgba(10, 14, 22, 0.58);
+  --myed-loc-border: rgba(255, 255, 255, 0.14);
+  --myed-loc-text: rgba(255, 255, 255, 0.92);
+  --myed-loc-hover: rgba(255, 255, 255, 0.08);
+  --myed-loc-shadow: 0 18px 40px rgba(0,0,0,0.28);
+  --myed-loc-radius: 18px;
+}
+
+/* ---------- GLASS HEADER OVERRIDE (keep old look from myed-header-glass) ---------- */
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"])
+  .myed-glass-header :is(localization-form, .localization-form, .disclosure){
+  /* match previous dark popover used in glass.css */
+  --myed-loc-bg: rgba(10, 14, 22, 0.92);
+  --myed-loc-border: rgba(255, 255, 255, 0.14);
+  --myed-loc-radius: 14px;
+}
+
+/* Popover wrapper */
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) :is(
+  localization-form .disclosure__list-wrapper,
+  .localization-form .disclosure__list-wrapper,
+  .localization-form .localization-form__popover
+){
+  background: var(--myed-loc-bg) !important;
+  border: 1px solid var(--myed-loc-border) !important;
+  border-radius: var(--myed-loc-radius) !important;
+  box-shadow: var(--myed-loc-shadow) !important;
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  overflow: hidden;
+
+  width: auto !important;
+  min-width: 240px;
+  max-width: min(360px, calc(100vw - 24px));
+
+  /* Popover text must be white */
+  color: var(--myed-loc-text) !important;
+}
+
+/* List */
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) :is(
+  localization-form .disclosure__list,
+  .localization-form .disclosure__list
+){
+  padding: 10px !important;
+  margin: 0 !important;
+  background: transparent !important;
+}
+
+/* Links inside popover (not trigger) */
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) :is(
+  localization-form .disclosure__list-wrapper .disclosure__link,
+  .localization-form .disclosure__list-wrapper .disclosure__link
+){
+  color: inherit !important;
+}
+
+@media (hover:hover){
+  :where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) :is(
+    localization-form .disclosure__list-wrapper .disclosure__link:hover,
+    .localization-form .disclosure__list-wrapper .disclosure__link:hover
+  ){
+    background: var(--myed-loc-hover) !important;
+  }
+}
+
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) :is(
+  localization-form .disclosure__list-wrapper .disclosure__link[aria-current="true"],
+  .localization-form .disclosure__list-wrapper .disclosure__link[aria-current="true"]
+){
+  background: rgba(255,255,255,0.12) !important;
+}
+
+/* Keep all text inside popover white */
+:where(.shopify-section.section-header, .section-header, [id^="shopify-section-"][id*="__header"]) :is(
+  localization-form .disclosure__list-wrapper *,
+  .localization-form .disclosure__list-wrapper *
+){
+  color: inherit !important;
+}

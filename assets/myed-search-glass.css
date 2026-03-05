@@ -1,0 +1,238 @@
+/* Scope: ONLY search template, ONLY when site bg is active */
+body.myed-has-site-bg .template-search {
+  --myed-search-fg: 245, 247, 250;
+  --myed-search-bg: 10, 14, 22;
+  position: relative;
+}
+
+/* Header area glass surface */
+body.myed-has-site-bg .template-search__header.page-width {
+  background: rgba(var(--myed-search-bg), 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 22px;
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  padding: 22px;
+}
+
+/* General text/link readability */
+body.myed-has-site-bg .template-search,
+body.myed-has-site-bg .template-search :is(h1, h2, h3, p, a, span, small, label) {
+  color: rgba(var(--myed-search-fg), 0.9);
+}
+
+/* Facets + sorting (these are the "Availability / Price / Sortieren..." lines) */
+body.myed-has-site-bg .template-search :is(.facet-filters, .facets, .sorting) {
+  color: rgba(var(--myed-search-fg), 0.9);
+}
+
+body.myed-has-site-bg .template-search :is(.facet-filters__sort, .select__select) {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: rgba(var(--myed-search-fg), 0.92);
+}
+
+/* Product card text (titles/prices) */
+body.myed-has-site-bg .template-search :is(.card__heading, .price, .price-item) {
+  color: rgba(var(--myed-search-fg), 0.92);
+}
+
+/* Predictive dropdown on search template */
+body.myed-has-site-bg .template-search .predictive-search {
+  background: rgba(var(--myed-search-bg), 0.92);
+  color: rgba(var(--myed-search-fg), 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 14px;
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  z-index: 80;
+}
+
+body.myed-has-site-bg .template-search .predictive-search :is(a, p, span, small, strong, li, div) {
+  color: rgba(var(--myed-search-fg), 0.92);
+}
+
+/* Facets drawer + mobile facets */
+body.myed-has-site-bg .template-search :is(
+  .mobile-facets,
+  .mobile-facets__main,
+  .facets__disclosure[open],
+  .facets__display,
+  .facets__wrapper
+) {
+  background: rgba(var(--myed-search-bg), 0.92);
+  color: rgba(var(--myed-search-fg), 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  z-index: 90;
+}
+
+body.myed-has-site-bg .template-search :is(
+  .mobile-facets,
+  .mobile-facets__main,
+  .facets__disclosure[open],
+  .facets__display,
+  .facets__wrapper
+) :is(a, button, label, span, p, h2, h3, input) {
+  color: rgba(var(--myed-search-fg), 0.92);
+}
+
+/* ==========================================================
+   MyED — Search Template Layering Fix (Predictive + Facets)
+   Scope: ONLY .template-search, ONLY when site bg is active
+========================================================== */
+body.myed-has-site-bg .template-search{
+  position: relative;
+}
+
+/* Header/search area should be above product grid */
+body.myed-has-site-bg .template-search__header{
+  position: relative;
+  z-index: 20;
+}
+body.myed-has-site-bg .template-search__search{
+  position: relative;
+  z-index: 30;
+}
+
+/* Predictive dropdown must overlay product tiles */
+body.myed-has-site-bg .template-search__search .field{
+  position: relative;
+}
+body.myed-has-site-bg .template-search__search .predictive-search{
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 10px);
+  z-index: 80;
+}
+
+/* Product grid stays underneath */
+body.myed-has-site-bg .template-search .product-grid-container,
+body.myed-has-site-bg .template-search__results{
+  position: relative;
+  z-index: 1;
+}
+
+/* Mobile facets drawer should be above everything */
+@media (max-width: 989px){
+  body.myed-has-site-bg .template-search .mobile-facets__wrapper,
+  body.myed-has-site-bg .template-search .mobile-facets__inner{
+    position: relative;
+    z-index: 120;
+  }
+}
+
+/* ======================================================================
+  MyED - Search Template Glass Fix (Facets + Input + Layering)
+  Scope: ONLY template-search, ONLY when site bg is active
+====================================================================== */
+
+body.myed-has-site-bg.template-search,
+body.template-search.myed-has-site-bg{
+  --myed-sg-bg: 10, 14, 22;
+  --myed-sg-fg: 245, 247, 250;
+  --myed-sg-radius: 22px;
+  --myed-sg-border: rgba(255,255,255,0.14);
+  --myed-sg-shadow: 0 18px 40px rgba(0,0,0,0.28);
+}
+
+/* Ensure stable stacking context */
+body.myed-has-site-bg.template-search .template-search{
+  position: relative;
+  z-index: 0;
+}
+
+/* Search input = glass (fix white input inconsistency) */
+body.myed-has-site-bg.template-search .template-search__search .field{
+  background: rgba(var(--myed-sg-bg), 0.62);
+  border: 1px solid rgba(255,255,255,0.16);
+  border-radius: 14px;
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+
+body.myed-has-site-bg.template-search .template-search__search .field__input{
+  background: transparent;
+  color: rgba(var(--myed-sg-fg), 0.92);
+}
+
+body.myed-has-site-bg.template-search .template-search__search .field__label{
+  color: rgba(var(--myed-sg-fg), 0.65);
+}
+
+body.myed-has-site-bg.template-search .template-search__search :is(.reset__button, .search__button){
+  color: rgba(var(--myed-sg-fg), 0.85);
+}
+
+body.myed-has-site-bg.template-search .template-search__search :is(.reset__button, .search__button) :is(svg, .icon){
+  fill: currentColor;
+  stroke: currentColor;
+}
+
+/* Predictive dropdown must sit above results grid */
+body.myed-has-site-bg.template-search .template-search predictive-search{
+  position: relative;
+  z-index: 140;
+}
+body.myed-has-site-bg.template-search .template-search .predictive-search{
+  z-index: 150;
+}
+
+/* Results grid stays below predictive */
+body.myed-has-site-bg.template-search .template-search .product-grid-container{
+  position: relative;
+  z-index: 1;
+}
+
+/* "Filter" trigger = glass pill */
+body.myed-has-site-bg.template-search .template-search .mobile-facets__open{
+  background: rgba(var(--myed-sg-bg), 0.55);
+  border: 1px solid rgba(255,255,255,0.16);
+  border-radius: 999px;
+  padding: 10px 14px;
+  box-shadow: var(--myed-sg-shadow);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  color: rgba(var(--myed-sg-fg), 0.92);
+}
+
+body.myed-has-site-bg.template-search .template-search .mobile-facets__open :is(svg, .icon){
+  fill: currentColor;
+  stroke: currentColor;
+}
+
+/* Facets drawer = glass (fix "white empty panel") */
+body.myed-has-site-bg.template-search .template-search .mobile-facets__wrapper{
+  position: relative;
+  z-index: 160;
+}
+
+body.myed-has-site-bg.template-search .template-search .mobile-facets__wrapper .disclosure-has-popup[open] > summary::before{
+  z-index: 155;
+  background: rgba(0,0,0,0.45);
+}
+
+body.myed-has-site-bg.template-search .template-search .mobile-facets__inner{
+  background: rgba(var(--myed-sg-bg), 0.82);
+  border-left: 1px solid rgba(255,255,255,0.16);
+  box-shadow: var(--myed-sg-shadow);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  color: rgba(var(--myed-sg-fg), 0.92);
+}
+
+body.myed-has-site-bg.template-search .template-search .mobile-facets__header{
+  background: rgba(var(--myed-sg-bg), 0.92);
+  color: rgba(var(--myed-sg-fg), 0.92);
+}
+
+body.myed-has-site-bg.template-search .template-search .mobile-facets__count{
+  color: rgba(var(--myed-sg-fg), 0.72);
+}
+
+/* Make links/labels readable inside drawer */
+body.myed-has-site-bg.template-search .template-search .mobile-facets__inner :is(a, button, label, span, p, h2, h3, input){
+  color: rgba(var(--myed-sg-fg), 0.92);
+}
